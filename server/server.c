@@ -1,7 +1,11 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <pthread.h>
+#include <signal.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/resource.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -15,38 +19,102 @@ struct sockaddr_in *create_address(int port) {
     return address;
 }
 
+void *serve_client(void *fd) {
+    char buffer[2048];
+    int client_fd = *(int *)fd;
+    ssize_t bytes_received = read(client_fd, buffer, 2048);
+
+    buffer[bytes_received] = '\0';
+    FILE *f = fopen("server.txt", "a");
+    fprintf(f, "Server received: %s\n", buffer);
+    fclose(f);
+    return NULL;
+}
+
+void daemonize_server(void) {
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        printf("Error forking\n");
+        exit(1);
+    }
+    if (pid != 0) {
+        exit(0);
+    }
+    if (pid == 0) {
+        if (setsid() == -1) {
+            printf("Error setsid\n");
+            exit(1);
+        }
+        pid = fork();
+        if (pid < 0) {
+            printf("Error forking\n");
+            exit(1);
+        }
+        if (pid != 0) {
+            printf("Daemon started. PID: %d\n", pid);
+            exit(0);
+        }
+        if (pid == 0) {
+            struct rlimit rlim;
+
+            chdir("/");
+            getrlimit(RLIMIT_NOFILE, &rlim);
+            for (int fd = 0; fd < rlim.rlim_max; ++fd) {
+                close(fd);
+            }
+        }
+    }
+}
 
 int main(int argc, char **argv) {
     if (argc != 2) {
         printf("Send port as a parameter (8000)\n");
         exit(1);
     }
+    // daemonize_server(); // doesn't work
+
     int port = atoi(argv[1]);
-    char buffer[2048];
     struct sockaddr_in *server_address = create_address(port);
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (bind(server_fd, (struct sockaddr *)server_address, sizeof(*server_address)) == -1) {
         free(server_address);
-        printf("Error binding\n");
+        FILE *f = fopen("server.txt", "w");
+        fprintf(f, "Error binding\n");
+        fclose(f);
         exit(1);
     }
     if (listen(server_fd, 2) == -1) {
-        printf("Error listening to socket\n");
         free(server_address);
+        FILE *f = fopen("server.txt", "w");
+        fprintf(f, "Error listening\n");
+        fclose(f);
         exit(1);
     }
-    printf("Server is listening on port %d\n", port);
-    int client_fd = accept(server_fd, NULL, NULL);
-    if (client_fd == -1) {
-        printf("Error accepting connection\n");
-        free(server_address);
-        exit(1);
+
+    FILE *f = fopen("server.txt", "w");
+    fprintf(f, "Server started\n");
+    fclose(f);
+    while (true) {
+        int client_fd = accept(server_fd, NULL, NULL);
+
+        if (client_fd == -1) {
+
+            free(server_address);
+            exit(1);
+        }
+        pthread_t thread;
+        if (pthread_create(&thread, NULL, serve_client, &client_fd) != 0) {
+            break;
+        }
+        pthread_detach(thread);
     }
-    ssize_t bytes_received = read(client_fd, buffer, 2048);
-    buffer[bytes_received] = '\0';
-    printf("Server received: %s\n", buffer);
+
     free(server_address);
     close(server_fd);
     return 0;
 }
+
+
+

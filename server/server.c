@@ -2,6 +2,7 @@
 #include <netinet/in.h>
 #include <pthread.h>
 #include <signal.h>
+#include <sys/syslog.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,9 +26,8 @@ void *serve_client(void *fd) {
     ssize_t bytes_received = read(client_fd, buffer, 2048);
 
     buffer[bytes_received] = '\0';
-    FILE *f = fopen("server.txt", "a");
-    fprintf(f, "Server received: %s\n", buffer);
-    fclose(f);
+    syslog(LOG_INFO, "Server received: %s", buffer);
+    close(client_fd);
     return NULL;
 }
 
@@ -41,38 +41,35 @@ void daemonize_server(void) {
     if (pid != 0) {
         exit(0);
     }
-    if (pid == 0) {
-        if (setsid() == -1) {
-            printf("Error setsid\n");
-            exit(1);
-        }
-        pid = fork();
-        if (pid < 0) {
-            printf("Error forking\n");
-            exit(1);
-        }
-        if (pid != 0) {
-            printf("Daemon started. PID: %d\n", pid);
-            exit(0);
-        }
-        if (pid == 0) {
-            struct rlimit rlim;
-
-            chdir("/");
-            getrlimit(RLIMIT_NOFILE, &rlim);
-            for (int fd = 0; fd < rlim.rlim_max; ++fd) {
-                close(fd);
-            }
-        }
+    if (setsid() == -1) {
+        printf("Error setsid\n");
+        exit(1);
     }
+    pid = fork();
+    if (pid < 0) {
+        printf("Error forking\n");
+        exit(1);
+    }
+    if (pid != 0) {
+        printf("Daemon started. PID: %d\n", pid);
+        exit(0);
+    }
+    struct rlimit rlim;
+
+    chdir("/");
+    getrlimit(RLIMIT_NOFILE, &rlim);
+    for (int fd = 0; fd < rlim.rlim_max; ++fd) {
+        close(fd);
+    }
+    openlog(NULL, LOG_PID, LOG_DAEMON);
 }
 
 int main(int argc, char **argv) {
     if (argc != 2) {
-        printf("Send port as a parameter (8000)\n");
+        printf("Usage: %s <port>\n", argv[0]);
         exit(1);
     }
-    // daemonize_server(); // doesn't work
+    daemonize_server();
 
     int port = atoi(argv[1]);
     struct sockaddr_in *server_address = create_address(port);
@@ -80,27 +77,20 @@ int main(int argc, char **argv) {
 
     if (bind(server_fd, (struct sockaddr *)server_address, sizeof(*server_address)) == -1) {
         free(server_address);
-        FILE *f = fopen("server.txt", "w");
-        fprintf(f, "Error binding\n");
-        fclose(f);
+        syslog(LOG_ERR, "Error binding");
         exit(1);
     }
     if (listen(server_fd, 2) == -1) {
         free(server_address);
-        FILE *f = fopen("server.txt", "w");
-        fprintf(f, "Error listening\n");
-        fclose(f);
+        syslog(LOG_ERR, "Error listening");
         exit(1);
     }
 
-    FILE *f = fopen("server.txt", "w");
-    fprintf(f, "Server started\n");
-    fclose(f);
+    syslog(LOG_INFO, "Server started with PID: %d", getpid());
     while (true) {
         int client_fd = accept(server_fd, NULL, NULL);
 
         if (client_fd == -1) {
-
             free(server_address);
             exit(1);
         }
@@ -108,6 +98,7 @@ int main(int argc, char **argv) {
         if (pthread_create(&thread, NULL, serve_client, &client_fd) != 0) {
             break;
         }
+
         pthread_detach(thread);
     }
 
@@ -115,6 +106,7 @@ int main(int argc, char **argv) {
     close(server_fd);
     return 0;
 }
+
 
 
 

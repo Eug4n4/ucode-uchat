@@ -1,15 +1,5 @@
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <pthread.h>
-#include <signal.h>
-#include <sys/syslog.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/resource.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include "db.h"
+
 
 struct sockaddr_in *create_address(int port) {
     struct sockaddr_in *address = malloc(sizeof(struct sockaddr_in));
@@ -21,50 +11,21 @@ struct sockaddr_in *create_address(int port) {
 }
 
 void *serve_client(void *fd) {
-    char buffer[2048];
+    char buffer[BUFFER_SIZE];
     int client_fd = *(int *)fd;
-    ssize_t bytes_received = read(client_fd, buffer, 2048);
-
-    buffer[bytes_received] = '\0';
-    syslog(LOG_INFO, "Server received: %s", buffer);
+    t_accepted_client *client = malloc(sizeof(t_accepted_client));
+    client->client_fd = client_fd;
+    read(client_fd, buffer, BUFFER_SIZE);
+    cJSON *request = cJSON_Parse(buffer);
+    process_request_type(request, client);
+    free(client);
     close(client_fd);
     return NULL;
 }
 
-void daemonize_server(void) {
-    pid_t pid = fork();
-
-    if (pid < 0) {
-        printf("Error forking\n");
-        exit(1);
-    }
-    if (pid != 0) {
-        exit(0);
-    }
-    if (setsid() == -1) {
-        printf("Error setsid\n");
-        exit(1);
-    }
-    pid = fork();
-    if (pid < 0) {
-        printf("Error forking\n");
-        exit(1);
-    }
-    if (pid != 0) {
-        printf("Daemon started. PID: %d\n", pid);
-        exit(0);
-    }
-    struct rlimit rlim;
-
-    chdir("/");
-    getrlimit(RLIMIT_NOFILE, &rlim);
-    for (int fd = 0; fd < rlim.rlim_max; ++fd) {
-        close(fd);
-    }
-    openlog(NULL, LOG_PID, LOG_DAEMON);
-}
 
 int main(int argc, char **argv) {
+
     if (argc != 2) {
         printf("Usage: %s <port>\n", argv[0]);
         exit(1);

@@ -9,7 +9,10 @@ void process_response_type(int response_type, t_accepted_client *client) {
         generate_login_response(FAIL_LOGIN, client);
         break;
     case OK_REGISTRATION:
-        //TODO generate registration response
+        generate_registration_response(OK_REGISTRATION, client);
+            break;
+    case FAIL_REGISTRATION:
+        generate_registration_response(FAIL_REGISTRATION, client);
             break;
     default:
         break;

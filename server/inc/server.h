@@ -20,8 +20,8 @@
 #define BUFFER_SIZE 2048
 
 typedef enum e_request_type {
-    LOGIN,
-    REGISTRATION
+    REGISTRATION,
+    LOGIN
 } t_request_type;
 
 typedef enum e_response_type {
@@ -47,8 +47,10 @@ typedef struct s_accepted_client {
 void daemonize_server(void);
 
 void handle_login_request(cJSON *request, t_accepted_client *client);
+void handle_registration_request(cJSON *request, t_accepted_client *client);
 void generate_login_response(int response, t_accepted_client *client);
-void send_login_response(cJSON *response, t_accepted_client *client);
+void generate_registration_response(int response, t_accepted_client *client);
+void send_response(cJSON *response, t_accepted_client *client);
 
 void process_request_type(cJSON *request, t_accepted_client *client);
 void process_response_type(int response_type, t_accepted_client *client);

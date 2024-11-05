@@ -5,7 +5,7 @@ void process_request_type(cJSON *request, t_accepted_client *client) {
 
     switch (req_type->valueint) {
     case REGISTRATION:
-        // TODO handle registration request
+        handle_registration_request(request, client);
         break;
     case LOGIN:
         handle_login_request(request, client);

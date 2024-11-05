@@ -1,6 +1,5 @@
 #include "db.h"
 
-
 struct sockaddr_in *create_address(int port) {
     struct sockaddr_in *address = malloc(sizeof(struct sockaddr_in));
 
@@ -23,14 +22,17 @@ void *serve_client(void *fd) {
     return NULL;
 }
 
-
 int main(int argc, char **argv) {
-
-    if (argc != 2) {
-        printf("Usage: %s <port>\n", argv[0]);
+    if (argc != 3) {
+        printf("Usage: %s <port> <debug>\n", argv[0]);
         exit(1);
     }
-    daemonize_server();
+
+    int debug_mode = atoi(argv[2]); // Convert debug argument to int
+
+    if (!debug_mode) {
+        daemonize_server(); // Only daemonize if not in debug mode
+    }
 
     int port = atoi(argv[1]);
     struct sockaddr_in *server_address = create_address(port);
@@ -38,23 +40,41 @@ int main(int argc, char **argv) {
 
     if (bind(server_fd, (struct sockaddr *)server_address, sizeof(*server_address)) == -1) {
         free(server_address);
-        syslog(LOG_ERR, "Error binding");
+        if (debug_mode) {
+            perror("Error binding");
+        } else {
+            syslog(LOG_ERR, "Error binding");
+        }
         exit(1);
     }
+    
     if (listen(server_fd, 2) == -1) {
         free(server_address);
-        syslog(LOG_ERR, "Error listening");
+        if (debug_mode) {
+            perror("Error listening");
+        } else {
+            syslog(LOG_ERR, "Error listening");
+        }
         exit(1);
     }
 
-    syslog(LOG_INFO, "Server started with PID: %d", getpid());
+    if (debug_mode) {
+        printf("Server started in debug mode (PID: %d)\n", getpid());
+    } else {
+        syslog(LOG_INFO, "Server started with PID: %d", getpid());
+    }
+
     while (true) {
         int client_fd = accept(server_fd, NULL, NULL);
 
         if (client_fd == -1) {
             free(server_address);
+            if (debug_mode) {
+                perror("Error accepting connection");
+            }
             exit(1);
         }
+
         pthread_t thread;
         if (pthread_create(&thread, NULL, serve_client, &client_fd) != 0) {
             break;
@@ -67,7 +87,3 @@ int main(int argc, char **argv) {
     close(server_fd);
     return 0;
 }
-
-
-
-

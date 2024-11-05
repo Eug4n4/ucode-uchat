@@ -2,3 +2,5 @@ client/client
 server/server
 *.a
 *.o
+test.db
+.vscode

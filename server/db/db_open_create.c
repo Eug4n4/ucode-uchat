@@ -3,12 +3,12 @@
 
 void create_users_table(sqlite3 *db) {
     int ok = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS users("
-                           "id INT PRIMARY KEY NOT NULL,"
-                           "login TEXT UNIQUE NOT NULL,"
-                           "password TEXT NOT NULL,"
-                           "display_name TEXT NOT NULL,"
-                           "first_name TEXT NOT NULL,"
-                           "last_name TEXT NOT NULL);",
+                               "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                               "login TEXT UNIQUE NOT NULL,"
+                               "password TEXT NOT NULL,"
+                               "display_name TEXT NOT NULL,"
+                               "first_name TEXT,"
+                               "last_name TEXT);",
                            NULL, NULL, NULL);
     if (ok != SQLITE_OK) {
         syslog(LOG_ERR, "Can't create table: %s", sqlite3_errmsg(db));

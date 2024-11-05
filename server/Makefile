@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -g
 SRCDIR = src
 INCDIR = inc
 OBJDIR = obj
@@ -18,7 +18,7 @@ all: $(BIN)
 
 
 $(BIN): $(OBJFILES) $(DB_OBJFILES)
-	$(CC) -o $@ $^ -I../$(CJSON_DIR) -I../$(SQLITE_DIR) -L../$(CJSON_DIR) -L../$(SQLITE_DIR) -l$(CJSON) -l$(SQLITE)
+	$(CC) -o $@ $^ -I../$(CJSON_DIR) -I../$(SQLITE_DIR) -L../$(CJSON_DIR) -L../$(SQLITE_DIR) -l$(CJSON) -l$(SQLITE) -lpthread -ldl
 
 $(OBJFILES): | $(OBJDIR)
 

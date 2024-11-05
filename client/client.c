@@ -18,6 +18,9 @@
 #define KEY_PASSWORD "password"
 #define KEY_CONTENT "content"
 
+#define KEY_RESPONSE_TYPE "response_type"
+#define KEY_MESSAGE "message"
+
 #define h_addr h_addr_list[0]
 #define BUF_SIZE 2048
 
@@ -50,7 +53,7 @@ char *stdin_read(char *buf) {
 
 int main(int argc, char * argv[]) {
     if (argc < 3) { 
-       printf("Send host and port as parameters\n");
+       printf("Usage: %s <host> <port>\n", argv[0]);
        exit(1);
     }
     struct sockaddr_in serv_address;
@@ -83,7 +86,8 @@ int main(int argc, char * argv[]) {
     int ans;
     cJSON *request;
     cJSON *content;
-    while(true) {
+    cJSON *server_response;
+    //while(true) {
         printf("type 0 to register 1 to log in\n>");
         scanf("%d", &ans);
         fgetc(stdin);
@@ -98,7 +102,6 @@ int main(int argc, char * argv[]) {
             cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_DISPLAY_NAME, cJSON_CreateString(stdin_read(buf)));
             printf("create password\n>");
             cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_PASSWORD, cJSON_CreateString(stdin_read(buf)));
-
         }
         else if (ans == 1) {
             request = create_request_login();
@@ -108,7 +111,6 @@ int main(int argc, char * argv[]) {
             cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_EMAIL, cJSON_CreateString(stdin_read(buf)));
             printf("enter password\n>");
             cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_PASSWORD, cJSON_CreateString(stdin_read(buf)));
-
         }
         char *str = cJSON_PrintUnformatted(request);
         if(send(server_fd, str, strlen(str), 0) == -1) {
@@ -117,24 +119,35 @@ int main(int argc, char * argv[]) {
         }
         if(str != NULL) {
             free(str);
-        }
-        break; // temporarily. Waiting for the server update
+        }        
 
-        int server_response;
-        fscanf(fdopen(server_fd, "r+"), "%d", &server_response);
-        if(server_response == 0) {
-            if(ans == 0) {
-                printf("You have successfully registered\n");
-            }
-            else if (ans == 1) {
-                printf("You have successfully logged in\n");
-            }
-            break;
+        switch (recv(server_fd, buf, BUF_SIZE, 0))
+        {
+        case 0:
+            printf("Nothing to read");
+            exit(-1);
+        case -1:
+            exit(-1);
+            printf("%s\n", strerror(errno));
         }
-        else if (server_response == -1){
-            printf("Something went wrong\n");
+        server_response = cJSON_Parse(buf);
+        if (server_response == NULL) {
+            printf("Error receiving response from server\n");
+            exit(1);
         }
-    }
+        //cJSON *response_type = cJSON_GetObjectItemCaseSensitive(server_response, KEY_RESPONSE_TYPE);
+        cJSON *response_content = cJSON_GetObjectItemCaseSensitive(server_response, KEY_CONTENT);
+        cJSON *response_message = cJSON_GetObjectItemCaseSensitive(response_content, KEY_MESSAGE);
+
+        printf("%s\n", response_message->valuestring);
+        // if(response_type->valueint == 0 || response_type->valueint == 2) {
+        //     break;
+        // }
+
+        cJSON_Delete(server_response);
+        cJSON_Delete(request);
+        memset(buf, 0, BUF_SIZE);
+    //}
     close(server_fd);
     return 0;
 }

@@ -1,6 +1,5 @@
 #include "db.h"
 
-
 t_user *db_get_user_by_login(const char *login) {
     sqlite3 *db = db_open("test.db");
     sqlite3_stmt *stmt;
@@ -25,11 +24,16 @@ t_user *db_get_user_by_login(const char *login) {
         user->login = strdup((char *)sqlite3_column_text(stmt, 1));
         user->password = strdup((char *)sqlite3_column_text(stmt, 2));
         user->display_name = strdup((char *)sqlite3_column_text(stmt, 3));
-        user->first_name = strdup((char *)sqlite3_column_text(stmt, 4));
-        user->last_name = strdup((char *)sqlite3_column_text(stmt, 5));
+
+        // Check if first_name and last_name are NULL
+        const char *first_name = (const char *)sqlite3_column_text(stmt, 4);
+        user->first_name = first_name ? strdup(first_name) : NULL;
+
+        const char *last_name = (const char *)sqlite3_column_text(stmt, 5);
+        user->last_name = last_name ? strdup(last_name) : NULL;
     }
+    
     sqlite3_finalize(stmt);
     db_close(db);
     return user;
 }
-

@@ -1,6 +1,6 @@
 CC = clang
 
-CFLAGS = -Wall -pthread
+CFLAGS = -Wall -g -pthread
 
 LIBS_DIR = libs
 

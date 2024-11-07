@@ -1,5 +1,21 @@
 #include "db.h"
 
+void create_messages_table(sqlite3 *db) {
+    int ok = sqlite3_exec(db , "CREATE TABLE IF NOT EXISTS messages("
+                               "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                               "sender_id INTEGER NOT NULL,"
+                               "receiver_id INTEGER NOT NULL,"
+                               "message TEXT NOT NULL,"
+                               "timestamp INTEGER NOT NULL,"
+                               "FOREIGN KEY(sender_id) REFERENCES users(id),"
+                               "FOREIGN KEY(receiver_id) REFERENCES chats(id));",
+                               NULL,NULL,NULL);
+    if (ok != SQLITE_OK) {
+        syslog(LOG_ERR, "Can't create messages table: %s", sqlite3_errmsg(db));
+    }
+}
+
+
 void create_chat_users_table(sqlite3* db) {
     int ok = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS chat_users("
                               "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -9,7 +25,7 @@ void create_chat_users_table(sqlite3* db) {
                               "FOREIGN KEY(user_id) REFERENCES users(id));",
                               NULL, NULL, NULL);
     if (ok != SQLITE_OK) {
-        syslog(LOG_ERR, "Can't create table: %s", sqlite3_errmsg(db));
+        syslog(LOG_ERR, "Can't create chat_users table: %s", sqlite3_errmsg(db));
 
     }
 }
@@ -22,9 +38,9 @@ void create_chats_table(sqlite3 *db) {
                               "type INTEGER NOT NULL);",
                               NULL, NULL, NULL);
     if (ok != SQLITE_OK) {
-        syslog(LOG_ERR, "Can't create table: %s", sqlite3_errmsg(db));
+        syslog(LOG_ERR, "Can't create chats table: %s", sqlite3_errmsg(db));
 
-        // printf("Can't create users table: %s\n", sqlite3_errmsg(db));
+        // printf("Can't create chats table: %s\n", sqlite3_errmsg(db));
     }
 }
 
@@ -37,7 +53,7 @@ void create_users_table(sqlite3 *db) {
                                "display_name TEXT NOT NULL);",
                                 NULL, NULL, NULL);
     if (ok != SQLITE_OK) {
-        syslog(LOG_ERR, "Can't create table: %s", sqlite3_errmsg(db));
+        syslog(LOG_ERR, "Can't create users table: %s", sqlite3_errmsg(db));
 
         // printf("Can't create users table: %s\n", sqlite3_errmsg(db));
     }

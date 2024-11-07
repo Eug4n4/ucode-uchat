@@ -12,11 +12,9 @@ t_user *create_user(void) {
 
 
 void free_user(t_user *user) {
-    free(user->login);
+    free(user->username);
     free(user->password);
     free(user->display_name);
-    free(user->first_name);
-    free(user->last_name);
     free(user);
 }
 

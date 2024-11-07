@@ -6,7 +6,7 @@ void handle_registration_request(cJSON *request, t_accepted_client *client) {
     cJSON *display_name = cJSON_GetObjectItemCaseSensitive(content, "display_name");
     cJSON *password = cJSON_GetObjectItemCaseSensitive(content, "password");
 
-    t_user *user = db_get_user_by_login(email->valuestring);
+    t_user *user = db_get_user_by_username(email->valuestring);
 
     if (user) {
         process_response_type(FAIL_REGISTRATION, client);
@@ -21,12 +21,12 @@ void handle_registration_request(cJSON *request, t_accepted_client *client) {
 
 
 void handle_login_request(cJSON *request, t_accepted_client *client) {
-    cJSON *login = cJSON_GetObjectItemCaseSensitive(request, "content")->child;
-    cJSON *password = login->next;
-    t_user *user = db_get_user_by_login(login->valuestring);
+    cJSON *username = cJSON_GetObjectItemCaseSensitive(request, "content")->child;
+    cJSON *password = username->next;
+    t_user *user = db_get_user_by_username(username->valuestring);
 
     if (user) {
-        if (strcmp(login->valuestring, user->login) == 0 &&
+        if (strcmp(username->valuestring, user->username) == 0 &&
             strcmp(password->valuestring, user->password) == 0) {
             process_response_type(OK_LOGIN, client);
             return;

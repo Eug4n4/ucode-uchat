@@ -33,11 +33,10 @@ typedef enum e_response_type {
 
 typedef struct s_user {
     int id;
-    char *login;
+    char *username;
     char *password;
     char *display_name;
-    char *first_name;
-    char *last_name;
+
 } t_user;
 
 typedef struct s_accepted_client {

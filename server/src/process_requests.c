@@ -10,6 +10,9 @@ void process_request_type(cJSON *request, t_accepted_client *client) {
     case LOGIN:
         handle_login_request(request, client);
         break;
+    case CREATE_NEW_PRIVATE_CHAT:
+        handle_new_private_chat_request(request, client);
+        break;
     default:
         break;
     }

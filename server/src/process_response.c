@@ -14,6 +14,12 @@ void process_response_type(int response_type, t_accepted_client *client) {
     case FAIL_REGISTRATION:
         generate_registration_response(FAIL_REGISTRATION, client);
             break;
+    case OK_CREATE_NEW_PRIVATE_CHAT:
+        generate_new_private_chat_response(OK_CREATE_NEW_PRIVATE_CHAT, client);
+            break;
+    case FAIL_CREATE_NEW_PRIVATE_CHAT:
+        generate_new_private_chat_response(FAIL_CREATE_NEW_PRIVATE_CHAT, client);
+            break;
     default:
         break;
     }

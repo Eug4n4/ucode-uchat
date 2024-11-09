@@ -46,3 +46,26 @@ void generate_registration_response(int response, t_accepted_client *client) {
         break;
     }
 }
+
+void generate_new_private_chat_response(int response, t_accepted_client *client) {
+    cJSON *new_private_chat_response = cJSON_CreateObject();
+    cJSON *content = cJSON_CreateObject();
+
+    switch (response) {
+    case OK_CREATE_NEW_PRIVATE_CHAT:
+        cJSON_AddNumberToObject(new_private_chat_response, "response_type", OK_CREATE_NEW_PRIVATE_CHAT);
+        cJSON_AddStringToObject(content, "message", "New private chat is created");
+        cJSON_AddItemToObject(new_private_chat_response, "content", content);
+        send_response(new_private_chat_response, client);
+        break;
+
+    case FAIL_CREATE_NEW_PRIVATE_CHAT:
+        cJSON_AddNumberToObject(new_private_chat_response, "response_type", FAIL_CREATE_NEW_PRIVATE_CHAT);
+        cJSON_AddStringToObject(content, "message", "Failed to create new private chat");
+        cJSON_AddItemToObject(new_private_chat_response, "content", content);
+        send_response(new_private_chat_response, client);
+        break;
+    default:
+        break;
+    }
+}

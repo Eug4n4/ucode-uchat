@@ -13,7 +13,7 @@
 #include "../libs/cjson/cJSON.h"
 
 #define KEY_REQUEST_TYPE "request_type"
-#define KEY_EMAIL "email"
+#define KEY_USERNAME "username"
 #define KEY_DISPLAY_NAME "display_name"
 #define KEY_PASSWORD "password"
 #define KEY_CONTENT "content"
@@ -28,7 +28,7 @@ cJSON *create_request_registration() {
     cJSON *json = cJSON_CreateObject();
     cJSON_AddNumberToObject(json, KEY_REQUEST_TYPE, 0);
     cJSON *content = cJSON_CreateObject();
-    cJSON_AddStringToObject(content, KEY_EMAIL, "");
+    cJSON_AddStringToObject(content, KEY_USERNAME, "");
     cJSON_AddStringToObject(content, KEY_DISPLAY_NAME, "");
     cJSON_AddStringToObject(content, KEY_PASSWORD, "");
     cJSON_AddItemToObject(json, KEY_CONTENT, content);
@@ -39,13 +39,22 @@ cJSON *create_request_login() {
     cJSON *json = cJSON_CreateObject();
     cJSON_AddNumberToObject(json, KEY_REQUEST_TYPE, 1);
     cJSON *content = cJSON_CreateObject();
-    cJSON_AddStringToObject(content, KEY_EMAIL, "");
+    cJSON_AddStringToObject(content, KEY_USERNAME, "");
     cJSON_AddStringToObject(content, KEY_PASSWORD, "");
     cJSON_AddItemToObject(json, KEY_CONTENT, content);
     return json;
 }
 
-char *stdin_read(char *buf) {
+cJSON *create_request_new_private_chat() {
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddNumberToObject(json, KEY_REQUEST_TYPE, 2);
+    cJSON *content = cJSON_CreateObject();
+    cJSON_AddStringToObject(content, KEY_USERNAME, "");
+    cJSON_AddItemToObject(json, KEY_CONTENT, content);
+    return json;
+}
+
+char *stdin_str_read(char *buf) {
     fgets(buf, BUF_SIZE - 1, stdin);
     buf[strlen(buf) - 1] = '\0';
     return buf;
@@ -66,7 +75,6 @@ int main(int argc, char * argv[]) {
         printf("Failed to create socket\n");
         exit(1);
     }
-    printf("Looking for the host\n");
     server = gethostbyname(argv[1]);
     if(server == NULL) {
         printf("Host not found\n");
@@ -77,7 +85,6 @@ int main(int argc, char * argv[]) {
     memcpy(&serv_address.sin_addr.s_addr, server->h_addr, server->h_length);
     serv_address.sin_port = htons(port);
 
-    printf ("Connecting to server\n");
     if(connect(server_fd, (struct sockaddr*)&serv_address, sizeof(serv_address)) < 0) {
         printf("Connection failed\n");
         exit(1);
@@ -96,21 +103,20 @@ int main(int argc, char * argv[]) {
             request = create_request_registration();
             content = cJSON_GetObjectItemCaseSensitive(request, KEY_CONTENT);
 
-            printf("enter email\n>");
-            cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_EMAIL, cJSON_CreateString(stdin_read(buf)));
-            printf("create name\n>");
-            cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_DISPLAY_NAME, cJSON_CreateString(stdin_read(buf)));
+            printf("create username\n>");
+            cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_USERNAME, cJSON_CreateString(stdin_str_read(buf)));
+            cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_DISPLAY_NAME, cJSON_CreateString(buf));
             printf("create password\n>");
-            cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_PASSWORD, cJSON_CreateString(stdin_read(buf)));
+            cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_PASSWORD, cJSON_CreateString(stdin_str_read(buf)));
         }
         else if (ans == 1) {
             request = create_request_login();
             content = cJSON_GetObjectItemCaseSensitive(request, KEY_CONTENT);
 
-            printf("enter email\n>");
-            cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_EMAIL, cJSON_CreateString(stdin_read(buf)));
+            printf("enter username\n>");
+            cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_USERNAME, cJSON_CreateString(stdin_str_read(buf)));
             printf("enter password\n>");
-            cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_PASSWORD, cJSON_CreateString(stdin_read(buf)));
+            cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_PASSWORD, cJSON_CreateString(stdin_str_read(buf)));
         }
         char *str = cJSON_PrintUnformatted(request);
         if(send(server_fd, str, strlen(str), 0) == -1) {
@@ -135,7 +141,7 @@ int main(int argc, char * argv[]) {
             printf("Error receiving response from server\n");
             exit(1);
         }
-        //cJSON *response_type = cJSON_GetObjectItemCaseSensitive(server_response, KEY_RESPONSE_TYPE);
+        cJSON *response_type = cJSON_GetObjectItemCaseSensitive(server_response, KEY_RESPONSE_TYPE);
         cJSON *response_content = cJSON_GetObjectItemCaseSensitive(server_response, KEY_CONTENT);
         cJSON *response_message = cJSON_GetObjectItemCaseSensitive(response_content, KEY_MESSAGE);
 
@@ -143,11 +149,52 @@ int main(int argc, char * argv[]) {
         // if(response_type->valueint == 0 || response_type->valueint == 2) {
         //     break;
         // }
-
         cJSON_Delete(server_response);
         cJSON_Delete(request);
         memset(buf, 0, BUF_SIZE);
+        if(response_type->valueint == 1 || response_type->valueint == 3) {
+            return 0;
+        }
     //}
+
+    request = create_request_new_private_chat();
+    content = cJSON_GetObjectItemCaseSensitive(request, KEY_CONTENT);
+
+    printf("Enter the username of the person you want to start a chat with\n>");
+    cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_USERNAME, cJSON_CreateString(stdin_str_read(buf)));
+
+    char *str = cJSON_PrintUnformatted(request);
+    if(send(server_fd, str, strlen(str), 0) == -1) {
+        printf("%s\n", strerror(errno));
+        exit(-1);
+    }
+    if(str != NULL) {
+        free(str);
+    }
+
+    switch (recv(server_fd, buf, BUF_SIZE, 0))
+    {
+    case 0:
+        printf("Nothing to read");
+        exit(-1);
+    case -1:
+        exit(-1);
+        printf("%s\n", strerror(errno));
+    }
+    server_response = cJSON_Parse(buf);
+    if (server_response == NULL) {
+        printf("Error receiving response from server\n");
+        exit(1);
+    }
+
+    //response_type = cJSON_GetObjectItemCaseSensitive(server_response, KEY_RESPONSE_TYPE);
+    response_content = cJSON_GetObjectItemCaseSensitive(server_response, KEY_CONTENT);
+    response_message = cJSON_GetObjectItemCaseSensitive(response_content, KEY_MESSAGE);
+
+    printf("%s\n", response_message->valuestring);
+
+    cJSON_Delete(server_response);
+    cJSON_Delete(request);
     close(server_fd);
     return 0;
 }

@@ -1,6 +1,6 @@
 #include "db.h"
 
-int db_add_new_user(const char *username, const char *display_name, const char *password, int *new_user_id) {
+int db_add_new_user(const char *username, const char *display_name, const char *password) {
     sqlite3 *db = db_open("test.db");
     sqlite3_stmt *stmt;
     const char *sql = "INSERT INTO users (username, display_name, password) VALUES (?, ?, ?);";
@@ -14,8 +14,7 @@ int db_add_new_user(const char *username, const char *display_name, const char *
 
     sqlite3_step(stmt);
 
-    *new_user_id = (int)sqlite3_last_insert_rowid(db);
-    
+
     sqlite3_finalize(stmt);
     db_close(db);
     return 0;

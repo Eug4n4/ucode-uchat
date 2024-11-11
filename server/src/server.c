@@ -2,7 +2,6 @@
 
 struct sockaddr_in *create_address(int port) {
     struct sockaddr_in *address = malloc(sizeof(struct sockaddr_in));
-
     address->sin_family = AF_INET;
     address->sin_port = htons(port);
     address->sin_addr.s_addr = INADDR_ANY;
@@ -14,9 +13,32 @@ void *serve_client(void *fd) {
     int client_fd = *(int *)fd;
     t_accepted_client *client = malloc(sizeof(t_accepted_client));
     client->client_fd = client_fd;
-    read(client_fd, buffer, BUFFER_SIZE);
-    cJSON *request = cJSON_Parse(buffer);
-    process_request_type(request, client);
+
+    while (true) {
+        memset(buffer, 0, sizeof(buffer));
+        ssize_t bytes_read = read(client_fd, buffer, sizeof(buffer));
+
+        if (bytes_read <= 0) {
+            if (bytes_read == 0) {
+                printf("Client disconnected.\n");
+            } else {
+                perror("Error reading from client");
+            }
+            break;
+        }
+
+        printf("Received request: %s\n", buffer);
+        cJSON *request = cJSON_Parse(buffer);
+
+        if (request == NULL) {
+            printf("Failed to parse JSON request\n");
+            continue;
+        }
+
+        process_request_type(request, client);
+        cJSON_Delete(request);
+    }
+
     free(client);
     close(client_fd);
     return NULL;
@@ -28,10 +50,10 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    int debug_mode = atoi(argv[2]); // Convert debug argument to int
+    int debug_mode = atoi(argv[2]);
 
     if (!debug_mode) {
-        daemonize_server(); // Only daemonize if not in debug mode
+        daemonize_server();
     }
 
     int port = atoi(argv[1]);
@@ -47,7 +69,7 @@ int main(int argc, char **argv) {
         }
         exit(1);
     }
-    
+
     if (listen(server_fd, 2) == -1) {
         free(server_address);
         if (debug_mode) {

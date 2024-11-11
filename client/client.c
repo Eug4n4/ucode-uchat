@@ -163,7 +163,7 @@ int main(int argc, char * argv[]) {
     printf("Enter the username of the person you want to start a chat with\n>");
     cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_USERNAME, cJSON_CreateString(stdin_str_read(buf)));
 
-    char *str = cJSON_PrintUnformatted(request);
+    str = cJSON_PrintUnformatted(request);
     if(send(server_fd, str, strlen(str), 0) == -1) {
         printf("%s\n", strerror(errno));
         exit(-1);

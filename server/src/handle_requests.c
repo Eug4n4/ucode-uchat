@@ -11,9 +11,10 @@ void handle_registration_request(cJSON *request, t_accepted_client *client) {
     if (user) {
         process_response_type(FAIL_REGISTRATION, client);
     } else {
-        if (db_add_new_user(username->valuestring, display_name->valuestring, password->valuestring) == 0) {
+        int new_user_id = -2;
+        if (db_add_new_user(username->valuestring, display_name->valuestring, password->valuestring, &new_user_id) == 0) {
             client->is_logged_in = true;
-            client->client_id = user->id;
+            client->client_id = new_user_id;
             process_response_type(OK_REGISTRATION, client);
         } else {
             client->is_logged_in = false;

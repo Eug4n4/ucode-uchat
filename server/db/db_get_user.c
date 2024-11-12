@@ -30,9 +30,8 @@ t_user *db_get_user_by_username(const char *username) {
         // const char *last_name = (const char *)sqlite3_column_text(stmt, 5);
         // user->last_name = last_name ? strdup(last_name) : NULL;
     }
-    
+
     sqlite3_finalize(stmt);
     db_close(db);
     return user;
 }
-

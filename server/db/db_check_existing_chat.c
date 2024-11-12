@@ -21,4 +21,3 @@ int db_check_existing_chat(int user1_id, int user2_id) {
     }
     return chat_id;
 }
-

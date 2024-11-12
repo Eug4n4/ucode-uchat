@@ -10,6 +10,8 @@ int db_add_new_user(const char *username, const char *display_name, const char *
 int db_check_existing_chat(int user1_id, int user2_id);
 int db_create_chat(const char *chat_name, int chat_type);
 int db_link_users_to_chat(int chat_id, int user_id);
+int db_save_message(int sender_id, int chat_id, const char *message);
+t_client_node *db_get_online_chat_users(t_server_state *state, int chat_id);
+bool db_check_user_in_chat(int user_id, int chat_id);
 
-#endif // DB_H
-
+#endif  // DB_H

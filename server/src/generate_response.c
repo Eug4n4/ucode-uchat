@@ -69,3 +69,26 @@ void generate_new_private_chat_response(int response, t_accepted_client *client)
         break;
     }
 }
+
+void generate_message_response(int response, t_accepted_client *client) {
+    cJSON *message_response = cJSON_CreateObject();
+    cJSON *content = cJSON_CreateObject();
+
+    switch (response) {
+    case OK_MESSAGE:
+        cJSON_AddNumberToObject(message_response, "response_type", OK_MESSAGE);
+        cJSON_AddStringToObject(content, "message", "Message is sent succesfully");
+        cJSON_AddItemToObject(message_response, "content", content);
+        send_response(message_response, client);
+        break;
+
+    case FAIL_MESSAGE:
+        cJSON_AddNumberToObject(message_response, "response_type", FAIL_MESSAGE);
+        cJSON_AddStringToObject(content, "message", "Failed to send message");
+        cJSON_AddItemToObject(message_response, "content", content);
+        send_response(message_response, client);
+        break;
+    default:
+        break;
+    }
+}

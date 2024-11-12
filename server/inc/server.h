@@ -16,23 +16,13 @@
 #include <unistd.h>
 #include "sqlite3.h"
 #include "cJSON.h"
+#include <stdint.h>
 
 #define BUFFER_SIZE 2048
 
-typedef enum e_request_type {
-    REGISTRATION,
-    LOGIN,
-    CREATE_NEW_PRIVATE_CHAT
-} t_request_type;
+typedef enum e_request_type { REGISTRATION, LOGIN, CREATE_NEW_PRIVATE_CHAT, GET_ALL_CHATS, MESSAGE } t_request_type;
 
-typedef enum e_response_type {
-    OK_LOGIN,
-    FAIL_LOGIN,
-    OK_REGISTRATION,
-    FAIL_REGISTRATION,
-    OK_CREATE_NEW_PRIVATE_CHAT,
-    FAIL_CREATE_NEW_PRIVATE_CHAT
-} t_response_type;
+typedef enum e_response_type { OK_LOGIN, FAIL_LOGIN, OK_REGISTRATION, FAIL_REGISTRATION, OK_CREATE_NEW_PRIVATE_CHAT, FAIL_CREATE_NEW_PRIVATE_CHAT, OK_GET_ALL_CHATS, FAIL_GET_ALL_CHATS, OK_MESSAGE, FAIL_MESSAGE } t_response_type;
 
 typedef struct s_user {
     int id;
@@ -48,21 +38,36 @@ typedef struct s_accepted_client {
     int client_id;
 } t_accepted_client;
 
+typedef struct s_client_node {
+    t_accepted_client *client;
+    struct s_client_node *next;
+} t_client_node;
+
+// Struct to hold server state (client list and mutex)
+typedef struct s_server_state {
+    t_client_node *client_list_head;
+    pthread_mutex_t client_list_mutex;
+} t_server_state;
+
 void daemonize_server(void);
 
 void handle_login_request(cJSON *request, t_accepted_client *client);
 void handle_registration_request(cJSON *request, t_accepted_client *client);
 void handle_new_private_chat_request(cJSON *request, t_accepted_client *client);
+void handle_message_request(cJSON *request, t_accepted_client *client, t_server_state *state);
 void generate_login_response(int response, t_accepted_client *client);
 void generate_registration_response(int response, t_accepted_client *client);
 void generate_new_private_chat_response(int response, t_accepted_client *client);
+void generate_message_response(int response, t_accepted_client *client);
 void send_response(cJSON *response, t_accepted_client *client);
+void send_message_to_online_chat_users(int chat_id, t_accepted_client *sender, const char *message, t_server_state *state);
 
-void process_request_type(cJSON *request, t_accepted_client *client);
+void process_request_type(cJSON *request, t_accepted_client *client, t_server_state *state);
 void process_response_type(int response_type, t_accepted_client *client);
 
+void add_client(t_server_state *state, t_accepted_client *client);
+void remove_client(t_server_state *state, t_accepted_client *client);
 t_user *create_user(void);
 void free_user(t_user *user);
 
-#endif // SERVER_H
-
+#endif  // SERVER_H

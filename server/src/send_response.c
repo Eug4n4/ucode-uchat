@@ -5,4 +5,3 @@ void send_response(cJSON *response, t_accepted_client *client) {
 
     write(client->client_fd, response_str, strlen(response_str));
 }
-

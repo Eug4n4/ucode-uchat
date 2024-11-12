@@ -4,3 +4,4 @@ server/server
 *.o
 test.db
 .vscode
+.clang-format

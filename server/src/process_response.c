@@ -26,6 +26,9 @@ void process_response_type(int response_type, t_accepted_client *client) {
     case FAIL_MESSAGE:
         generate_message_response(FAIL_MESSAGE, client);
         break;
+    case FAIL_GET_ALL_CHATS:
+        generate_all_chats_response(FAIL_GET_ALL_CHATS, NULL, client);
+        break;
     default:
         break;
     }

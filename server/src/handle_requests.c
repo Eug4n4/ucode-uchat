@@ -95,3 +95,15 @@ void handle_message_request(cJSON *request, t_accepted_client *client, t_server_
     send_message_to_online_chat_users(chat_id, client, message, state);
     process_response_type(OK_MESSAGE, client);
 }
+
+void handle_all_chats_request(t_accepted_client *client) {
+    if (client->is_logged_in) {
+        t_chats *chats = db_get_all_user_chats(client->client_id);
+        generate_all_chats_response(OK_GET_ALL_CHATS, &chats, client);
+        free_chats(&chats);
+    } else {
+        process_response_type(FAIL_GET_ALL_CHATS, client);
+    }
+
+}
+

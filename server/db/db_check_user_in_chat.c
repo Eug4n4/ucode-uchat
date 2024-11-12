@@ -25,3 +25,4 @@ bool db_check_user_in_chat(int user_id, int chat_id) {
     sqlite3_close(db);
     return is_in_chat;
 }
+

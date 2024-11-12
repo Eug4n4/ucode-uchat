@@ -34,3 +34,4 @@ void remove_client(t_server_state *state, t_accepted_client *client) {
     }
     pthread_mutex_unlock(&state->client_list_mutex);
 }
+

@@ -92,3 +92,36 @@ void generate_message_response(int response, t_accepted_client *client) {
         break;
     }
 }
+
+void generate_all_chats_response(int response, t_chats **chats, t_accepted_client *client) {
+    cJSON *all_chats_response = cJSON_CreateObject();
+    cJSON *content = cJSON_CreateObject();
+    cJSON *json_chats = cJSON_CreateArray();
+
+    switch (response) {
+    case OK_GET_ALL_CHATS:
+        cJSON_AddNumberToObject(all_chats_response, "response_type", OK_GET_ALL_CHATS);
+        t_chats *head = *chats;
+        while (head->chat) {
+            cJSON *chat = cJSON_CreateObject();
+            cJSON_AddNumberToObject(chat, "chat_id", head->chat->id);
+            cJSON_AddNumberToObject(chat, "chat_type", head->chat->type);
+            cJSON_AddStringToObject(chat, "chat_name", head->chat->name);
+            cJSON_AddItemToArray(json_chats, chat);
+
+            head = head->next;
+        }
+        cJSON_AddItemToObject(content, "chats", json_chats);
+        cJSON_AddItemToObject(all_chats_response, "content", content);
+        send_response(all_chats_response, client);
+        break;
+    case FAIL_GET_ALL_CHATS:
+        cJSON_AddNumberToObject(all_chats_response, "response_type", FAIL_GET_ALL_CHATS);
+        cJSON_AddStringToObject(content, "message", "User must be logged in before getting all his chats");
+        cJSON_AddItemToObject(all_chats_response, "content", content);
+        send_response(all_chats_response, client);
+        break;
+    default:
+        break;
+    }
+}

@@ -24,6 +24,19 @@ typedef enum e_request_type { REGISTRATION, LOGIN, CREATE_NEW_PRIVATE_CHAT, GET_
 
 typedef enum e_response_type { OK_LOGIN, FAIL_LOGIN, OK_REGISTRATION, FAIL_REGISTRATION, OK_CREATE_NEW_PRIVATE_CHAT, FAIL_CREATE_NEW_PRIVATE_CHAT, OK_GET_ALL_CHATS, FAIL_GET_ALL_CHATS, OK_MESSAGE, FAIL_MESSAGE } t_response_type;
 
+typedef struct s_chat {
+    int id;
+    char *name;
+    int type;
+
+} t_chat;
+
+typedef struct s_chats {
+    t_chat *chat;
+    struct s_chats *next;
+
+} t_chats;
+
 typedef struct s_user {
     int id;
     char *username;
@@ -55,10 +68,12 @@ void handle_login_request(cJSON *request, t_accepted_client *client);
 void handle_registration_request(cJSON *request, t_accepted_client *client);
 void handle_new_private_chat_request(cJSON *request, t_accepted_client *client);
 void handle_message_request(cJSON *request, t_accepted_client *client, t_server_state *state);
+void handle_all_chats_request(t_accepted_client *client);
 void generate_login_response(int response, t_accepted_client *client);
 void generate_registration_response(int response, t_accepted_client *client);
 void generate_new_private_chat_response(int response, t_accepted_client *client);
 void generate_message_response(int response, t_accepted_client *client);
+void generate_all_chats_response(int response, t_chats **chats, t_accepted_client *client);
 void send_response(cJSON *response, t_accepted_client *client);
 void send_message_to_online_chat_users(int chat_id, t_accepted_client *sender, const char *message, t_server_state *state);
 
@@ -70,4 +85,8 @@ void remove_client(t_server_state *state, t_accepted_client *client);
 t_user *create_user(void);
 void free_user(t_user *user);
 
+t_chat *create_chat(int id, char *name, int type);
+void add_chat_front(t_chats **chats, t_chat *chat);
+t_chats *create_chats(t_chat *chat);
+void free_chats(t_chats **chats);
 #endif  // SERVER_H

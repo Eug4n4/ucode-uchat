@@ -1,4 +1,5 @@
 #include "db.h"
+#include "server.h"
 
 struct sockaddr_in *create_address(int port) {
     struct sockaddr_in *address = malloc(sizeof(struct sockaddr_in));
@@ -8,11 +9,18 @@ struct sockaddr_in *create_address(int port) {
     return address;
 }
 
-void *serve_client(void *fd) {
+void *serve_client(void *args) {
+    intptr_t *arg = (intptr_t *)args;
+    int client_fd = (int)arg[0];                       // Retrieve client_fd
+    t_server_state *state = (t_server_state *)arg[1];  // Retrieve pointer to t_server_state
+
     char buffer[BUFFER_SIZE];
-    int client_fd = *(int *)fd;
     t_accepted_client *client = malloc(sizeof(t_accepted_client));
     client->client_fd = client_fd;
+    client->is_logged_in = false;
+    client->client_id = -1;
+
+    add_client(state, client);
 
     while (true) {
         memset(buffer, 0, sizeof(buffer));
@@ -35,11 +43,11 @@ void *serve_client(void *fd) {
             continue;
         }
 
-        process_request_type(request, client);
+        process_request_type(request, client, state);
         cJSON_Delete(request);
     }
 
-    free(client);
+    remove_client(state, client);
     close(client_fd);
     return NULL;
 }
@@ -51,7 +59,6 @@ int main(int argc, char **argv) {
     }
 
     int debug_mode = atoi(argv[2]);
-
     if (!debug_mode) {
         daemonize_server();
     }
@@ -81,14 +88,15 @@ int main(int argc, char **argv) {
     }
 
     if (debug_mode) {
-        printf("Server started in debug mode (PID: %d)\n", getpid());
+        printf("Server started with PID: %d\n", getpid());
     } else {
         syslog(LOG_INFO, "Server started with PID: %d", getpid());
     }
 
+    t_server_state state = { .client_list_head = NULL, .client_list_mutex = PTHREAD_MUTEX_INITIALIZER };
+    printf("Initial client_list_head: %p\n", state.client_list_head);
     while (true) {
         int client_fd = accept(server_fd, NULL, NULL);
-
         if (client_fd == -1) {
             free(server_address);
             if (debug_mode) {
@@ -98,10 +106,14 @@ int main(int argc, char **argv) {
         }
 
         pthread_t thread;
-        if (pthread_create(&thread, NULL, serve_client, &client_fd) != 0) {
+        intptr_t *args = malloc(2 * sizeof(intptr_t));  // Allocate space for two intptr_t values
+        args[0] = (intptr_t)client_fd;                  // Store client_fd as intptr_t (it will hold integer values safely)
+        args[1] = (intptr_t)&state;                     // Store the address of state as intptr_t
+
+        if (pthread_create(&thread, NULL, serve_client, args) != 0) {
+            free(args);
             break;
         }
-
         pthread_detach(thread);
     }
 

@@ -1,6 +1,5 @@
 #include "server.h"
 
-
 void daemonize_server(void) {
     pid_t pid = fork();
 
@@ -33,4 +32,3 @@ void daemonize_server(void) {
     }
     openlog(NULL, LOG_PID, LOG_DAEMON);
 }
-

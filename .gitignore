@@ -1,6 +1,8 @@
 client/client
 server/server
 *.a
+!libssl.a
+!libcrypto.a
 *.o
 test.db
 .vscode

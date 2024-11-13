@@ -18,15 +18,15 @@ all: $(BIN)
 
 
 $(BIN): $(OBJFILES) $(DB_OBJFILES)
-	$(CC) -o $@ $^ -I../$(CJSON_DIR) -I../$(SQLITE_DIR) -L../$(CJSON_DIR) -L../$(SQLITE_DIR) -l$(CJSON) -l$(SQLITE) -lpthread -ldl
+	$(CC) -o $@ $^ -I../$(CJSON_DIR) -I../$(SQLITE_DIR) -L../$(CJSON_DIR) -L../$(SQLITE_DIR) -L../libs/openssl -l$(CJSON) -l$(SQLITE) -lssl -lcrypto -lpthread -ldl
 
 $(OBJFILES): | $(OBJDIR)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -c $^ -o $@ -I$(INCDIR) -I../$(LIBDIR)/$(CJSON) -I../$(LIBDIR)/$(SQLITE)
+	$(CC) $(CFLAGS) -c $^ -o $@ -I$(INCDIR) -I../$(LIBDIR)/$(CJSON) -I../$(LIBDIR)/$(SQLITE) -I../libs/openssl/inc
 
 $(OBJDIR)/%.o: db/%.c
-	$(CC) $(CFLAGS) -c $^ -o $@ -I$(INCDIR) -I../$(LIBDIR)/$(CJSON) -I../$(LIBDIR)/$(SQLITE)
+	$(CC) $(CFLAGS) -c $^ -o $@ -I$(INCDIR) -I../$(LIBDIR)/$(CJSON) -I../$(LIBDIR)/$(SQLITE) -I../libs/openssl/inc
 
 $(OBJDIR):
 	mkdir $@

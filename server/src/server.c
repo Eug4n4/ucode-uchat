@@ -25,13 +25,13 @@ void *serve_client(void *args) {
     if (!SSL_set_fd(client->ssl, client->client_fd)) {
         printf("SSL_set_fd(client->ssl, client->client_fd) failed\n");
         free(client);
-        SSL_CTX_free(ctx);
+	    SSL_CTX_free(ctx);
         SSL_free(ssl);
         exit(1);
     }
     int ret = SSL_accept(client->ssl);
     if (ret != 1) {
-        printf("SSL_accept() failed %d\n",ret);
+        printf("SSL_accept() failed %d\n", ret);
         free(client);
         SSL_CTX_free(ctx);
         SSL_free(ssl);
@@ -70,8 +70,6 @@ void *serve_client(void *args) {
         memset(buffer, 0, sizeof(buffer));
 
     }
-    SSL_CTX_free(ctx);
-    SSL_free(ssl);
     remove_client(state, client);
     close(client_fd);
     return NULL;

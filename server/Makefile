@@ -25,7 +25,7 @@ all: $(BIN)
 
 
 $(BIN): $(OBJFILES) $(DB_OBJFILES)
-	$(CC) -o $@ $^ -I../$(CJSON_DIR) -I../$(SQLITE_DIR) -L../$(CJSON_DIR) -L../$(SQLITE_DIR) -L../$(OPENSSL_DIR) -l$(CJSON) -l$(SQLITE) -lssl -lcrypto -lpthread -ldl
+	$(CC) -o $@ $^ -I../$(CJSON_DIR) -I../$(SQLITE_DIR) -I../$(OPENSSL_INCDIR)  -L../$(CJSON_DIR) -L../$(SQLITE_DIR) -L../$(OPENSSL_DIR) -l$(CJSON) -l$(SQLITE) -lssl -lcrypto -lpthread -ldl
 
 $(OBJFILES): | $(OBJDIR)
 

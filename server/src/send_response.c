@@ -2,6 +2,10 @@
 
 void send_response(cJSON *response, t_accepted_client *client) {
     char *response_str = cJSON_Print(response);
+    int res = SSL_write(client->ssl, response_str, strlen(response_str));
 
-    write(client->client_fd, response_str, strlen(response_str));
+    if (res <= 0) {
+        printf("Error sending response\n");
+    }
+    // write(client->client_fd, response_str, strlen(response_str));
 }

@@ -1,5 +1,5 @@
-#include "db.h"
 #include "server.h"
+#include "db.h"
 
 struct sockaddr_in *create_address(int port) {
     struct sockaddr_in *address = malloc(sizeof(struct sockaddr_in));
@@ -11,22 +11,44 @@ struct sockaddr_in *create_address(int port) {
 
 void *serve_client(void *args) {
     intptr_t *arg = (intptr_t *)args;
-    int client_fd = (int)arg[0];                       // Retrieve client_fd
-    t_server_state *state = (t_server_state *)arg[1];  // Retrieve pointer to t_server_state
+    int client_fd = (int)arg[0];                      // Retrieve client_fd
+    t_server_state *state = (t_server_state *)arg[1]; // Retrieve pointer to t_server_state
+    SSL_CTX *ctx = (SSL_CTX *)arg[2];
+    SSL *ssl = SSL_new(ctx);
 
-    char buffer[BUFFER_SIZE];
+    char buffer[BUFFER_SIZE] = {0};
     t_accepted_client *client = malloc(sizeof(t_accepted_client));
     client->client_fd = client_fd;
     client->is_logged_in = false;
     client->client_id = -1;
-
+    client->ssl = ssl;
+    if (!SSL_set_fd(client->ssl, client->client_fd)) {
+        printf("SSL_set_fd(client->ssl, client->client_fd) failed\n");
+        free(client);
+        SSL_CTX_free(ctx);
+        SSL_free(ssl);
+        exit(1);
+    }
+    int ret = SSL_accept(client->ssl);
+    if (ret != 1) {
+        printf("SSL_accept() failed %d\n",ret);
+        free(client);
+        SSL_CTX_free(ctx);
+        SSL_free(ssl);
+        exit(1);
+    }
     add_client(state, client);
 
     while (true) {
-        memset(buffer, 0, sizeof(buffer));
-        ssize_t bytes_read = read(client_fd, buffer, sizeof(buffer));
+        // ssize_t bytes_read = read(client_fd, buffer, sizeof(buffer));
+        int bytes_read = SSL_read(client->ssl, buffer, sizeof(buffer));
 
         if (bytes_read <= 0) {
+            int err = SSL_get_error(client->ssl, bytes_read);
+
+            if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+                continue;
+            }
             if (bytes_read == 0) {
                 printf("Client disconnected.\n");
             } else {
@@ -45,11 +67,47 @@ void *serve_client(void *args) {
 
         process_request_type(request, client, state);
         cJSON_Delete(request);
-    }
+        memset(buffer, 0, sizeof(buffer));
 
+    }
+    SSL_CTX_free(ctx);
+    SSL_free(ssl);
     remove_client(state, client);
     close(client_fd);
     return NULL;
+}
+
+void load_cert_and_key(SSL_CTX *ctx) {
+    if (SSL_CTX_use_certificate_file(ctx, OPENSSL_CERT, SSL_FILETYPE_PEM) <= 0) {
+        printf("Error in load_cert_and_key\n");
+        return;
+    }
+
+    if (SSL_CTX_use_PrivateKey_file(ctx, OPENSSL_KEY, SSL_FILETYPE_PEM) <= 0 ) {
+        printf("Error in load_cert_and_key\n");
+        return;
+    }
+
+    if (SSL_CTX_check_private_key(ctx) != 1) {
+        printf("Error in load_cert_and_key\n");
+
+    }
+}
+
+SSL_CTX *setup_ssl_server_context(void) {
+    const SSL_METHOD *method = TLS_server_method();
+    SSL_CTX *ctx = NULL;
+
+    if (method) {
+        ctx = SSL_CTX_new(method);
+    }
+    if (method == NULL || ctx == NULL) {
+        syslog(LOG_ERR, "Failed to create SSL context");
+        // printf("error creating ssl context\n");
+        return NULL;
+    }
+    load_cert_and_key(ctx);
+    return ctx;
 }
 
 int main(int argc, char **argv) {
@@ -63,6 +121,7 @@ int main(int argc, char **argv) {
         daemonize_server();
     }
 
+    SSL_CTX *ctx = setup_ssl_server_context();
     int port = atoi(argv[1]);
     struct sockaddr_in *server_address = create_address(port);
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -93,7 +152,9 @@ int main(int argc, char **argv) {
         syslog(LOG_INFO, "Server started with PID: %d", getpid());
     }
 
-    t_server_state state = { .client_list_head = NULL, .client_list_mutex = PTHREAD_MUTEX_INITIALIZER };
+    t_server_state state = {.client_list_head = NULL,
+                            .client_list_mutex = PTHREAD_MUTEX_INITIALIZER};
+
     printf("Initial client_list_head: %p\n", state.client_list_head);
     while (true) {
         int client_fd = accept(server_fd, NULL, NULL);
@@ -106,10 +167,10 @@ int main(int argc, char **argv) {
         }
 
         pthread_t thread;
-        intptr_t *args = malloc(2 * sizeof(intptr_t));  // Allocate space for two intptr_t values
-        args[0] = (intptr_t)client_fd;                  // Store client_fd as intptr_t (it will hold integer values safely)
-        args[1] = (intptr_t)&state;                     // Store the address of state as intptr_t
-
+        intptr_t *args = malloc(3 * sizeof(intptr_t)); // Allocate space for two intptr_t values
+        args[0] = (intptr_t)client_fd; // Store client_fd as intptr_t (it will hold integer values safely)
+        args[1] = (intptr_t)&state; // Store the address of state as intptr_t
+        args[2] = (intptr_t)ctx;
         if (pthread_create(&thread, NULL, serve_client, args) != 0) {
             free(args);
             break;

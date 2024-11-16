@@ -11,5 +11,5 @@ $(OBJ): sqlite3.c sqlite3.h
 	$(CC) -c sqlite3.c -o $@
 
 clean:
-	rm -f $(OBJ)
+	@rm -f $(OBJ)
 

@@ -14,11 +14,16 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <openssl/ssl.h>
+#include <openssl/crypto.h>
+
 #include "sqlite3.h"
 #include "cJSON.h"
 #include <stdint.h>
 
 #define BUFFER_SIZE 2048
+#define OPENSSL_CERT "cert.pem"
+#define OPENSSL_KEY "privatekey.pem"
 
 typedef enum e_request_type { REGISTRATION, LOGIN, CREATE_NEW_PRIVATE_CHAT, GET_ALL_CHATS, MESSAGE } t_request_type;
 
@@ -49,6 +54,7 @@ typedef struct s_accepted_client {
     int client_fd;
     bool is_logged_in;
     int client_id;
+    SSL *ssl;
 } t_accepted_client;
 
 typedef struct s_client_node {

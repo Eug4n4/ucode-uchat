@@ -27,6 +27,9 @@
 #define h_addr h_addr_list[0]
 #define BUF_SIZE 2048
 
+typedef enum e_request_type { REGISTRATION, LOGIN, CREATE_NEW_PRIVATE_CHAT, GET_ALL_CHATS, MESSAGE } t_request_type;
+typedef enum e_response_type { OK_LOGIN, FAIL_LOGIN, OK_REGISTRATION, FAIL_REGISTRATION, OK_CREATE_NEW_PRIVATE_CHAT, FAIL_CREATE_NEW_PRIVATE_CHAT, OK_GET_ALL_CHATS, FAIL_GET_ALL_CHATS, OK_MESSAGE, FAIL_MESSAGE } t_response_type;
+
 cJSON *create_request_registration();
 cJSON *create_request_login();
 cJSON *create_request_new_private_chat();

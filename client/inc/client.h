@@ -14,6 +14,7 @@
 #include "../../libs/cjson/cJSON.h"
 #include <openssl/ssl.h>
 #include <openssl/crypto.h>
+#include "../gui/gui_structs.h"
 
 #define KEY_REQUEST_TYPE "request_type"
 #define KEY_USERNAME "username"
@@ -30,6 +31,7 @@
 cJSON *create_request_registration();
 cJSON *create_request_login();
 cJSON *create_request_new_private_chat();
+void on_login_clicked(GtkButton *button, gpointer data);
 
 #endif //CLIENT_H
 

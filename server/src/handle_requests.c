@@ -107,3 +107,22 @@ void handle_all_chats_request(t_accepted_client *client) {
 
 }
 
+void handle_get_chat_messages_request(cJSON *request, t_accepted_client *client) {
+    if (!client->is_logged_in) {
+        generate_get_chat_messages_response(FAIL_GET_CHAT_MESSAGES, NULL, client);
+        return;
+    }
+
+    cJSON *content = cJSON_GetObjectItem(request, "content");
+    int chat_id = cJSON_GetObjectItem(content, "chat_id")->valueint;
+
+    t_messages *messages = db_get_messages_for_chat(chat_id);
+
+    if (!messages || messages->count == 0) {
+        generate_get_chat_messages_response(FAIL_GET_CHAT_MESSAGES, NULL, client);
+    } else {
+        generate_get_chat_messages_response(OK_GET_CHAT_MESSAGES, messages, client);
+    }
+
+    free_messages(&messages);
+}

@@ -125,3 +125,43 @@ void generate_all_chats_response(int response, t_chats **chats, t_accepted_clien
         break;
     }
 }
+
+void generate_get_chat_messages_response(int response, t_messages *messages, t_accepted_client *client) {
+    cJSON *response_json = cJSON_CreateObject();
+    cJSON *content = cJSON_CreateObject();
+    cJSON *messages_array = cJSON_CreateArray();
+
+    switch (response) {
+    case OK_GET_CHAT_MESSAGES:
+        cJSON_AddNumberToObject(response_json, "response_type", OK_GET_CHAT_MESSAGES);
+
+        for (t_message *msg = messages->head; msg != NULL; msg = msg->next) {
+            cJSON *message_json = cJSON_CreateObject();
+            cJSON_AddNumberToObject(message_json, "id", msg->id);
+            cJSON_AddNumberToObject(message_json, "sender_id", msg->sender_id);
+            cJSON_AddStringToObject(message_json, "content", msg->content);
+            cJSON_AddNumberToObject(message_json, "timestamp", msg->timestamp);
+            cJSON_AddItemToArray(messages_array, message_json);
+        }
+
+        cJSON_AddItemToObject(content, "messages", messages_array);
+        cJSON_AddItemToObject(response_json, "content", content);
+        break;
+
+    case FAIL_GET_CHAT_MESSAGES:
+        cJSON_AddNumberToObject(response_json, "response_type", FAIL_GET_CHAT_MESSAGES);
+        cJSON_AddStringToObject(content, "message", "Failed to retrieve chat messages. Please check the chat ID or try again later.");
+        cJSON_AddItemToObject(response_json, "content", content);
+        break;
+
+    default:
+        cJSON_AddNumberToObject(response_json, "response_type", FAIL_GET_CHAT_MESSAGES);
+        cJSON_AddStringToObject(content, "message", "An unknown error occurred.");
+        cJSON_AddItemToObject(response_json, "content", content);
+        break;
+    }
+
+    send_response(response_json, client);
+
+    cJSON_Delete(response_json);
+}

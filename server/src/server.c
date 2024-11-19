@@ -11,12 +11,12 @@ struct sockaddr_in *create_address(int port) {
 
 void *serve_client(void *args) {
     intptr_t *arg = (intptr_t *)args;
-    int client_fd = (int)arg[0];                      // Retrieve client_fd
-    t_server_state *state = (t_server_state *)arg[1]; // Retrieve pointer to t_server_state
+    int client_fd = (int)arg[0];                       // Retrieve client_fd
+    t_server_state *state = (t_server_state *)arg[1];  // Retrieve pointer to t_server_state
     SSL_CTX *ctx = (SSL_CTX *)arg[2];
     SSL *ssl = SSL_new(ctx);
 
-    char buffer[BUFFER_SIZE] = {0};
+    char buffer[BUFFER_SIZE] = { 0 };
     t_accepted_client *client = malloc(sizeof(t_accepted_client));
     client->client_fd = client_fd;
     client->is_logged_in = false;
@@ -25,7 +25,7 @@ void *serve_client(void *args) {
     if (!SSL_set_fd(client->ssl, client->client_fd)) {
         printf("SSL_set_fd(client->ssl, client->client_fd) failed\n");
         free(client);
-	    SSL_CTX_free(ctx);
+        SSL_CTX_free(ctx);
         SSL_free(ssl);
         exit(1);
     }
@@ -68,7 +68,6 @@ void *serve_client(void *args) {
         process_request_type(request, client, state);
         cJSON_Delete(request);
         memset(buffer, 0, sizeof(buffer));
-
     }
     remove_client(state, client);
     close(client_fd);
@@ -81,14 +80,13 @@ void load_cert_and_key(SSL_CTX *ctx) {
         return;
     }
 
-    if (SSL_CTX_use_PrivateKey_file(ctx, OPENSSL_KEY, SSL_FILETYPE_PEM) <= 0 ) {
+    if (SSL_CTX_use_PrivateKey_file(ctx, OPENSSL_KEY, SSL_FILETYPE_PEM) <= 0) {
         printf("Error in load_cert_and_key\n");
         return;
     }
 
     if (SSL_CTX_check_private_key(ctx) != 1) {
         printf("Error in load_cert_and_key\n");
-
     }
 }
 
@@ -150,10 +148,8 @@ int main(int argc, char **argv) {
         syslog(LOG_INFO, "Server started with PID: %d", getpid());
     }
 
-    t_server_state state = {.client_list_head = NULL,
-                            .client_list_mutex = PTHREAD_MUTEX_INITIALIZER};
+    t_server_state state = { .client_list_head = NULL, .client_list_mutex = PTHREAD_MUTEX_INITIALIZER };
 
-    printf("Initial client_list_head: %p\n", state.client_list_head);
     while (true) {
         int client_fd = accept(server_fd, NULL, NULL);
         if (client_fd == -1) {
@@ -165,9 +161,9 @@ int main(int argc, char **argv) {
         }
 
         pthread_t thread;
-        intptr_t *args = malloc(3 * sizeof(intptr_t)); // Allocate space for two intptr_t values
-        args[0] = (intptr_t)client_fd; // Store client_fd as intptr_t (it will hold integer values safely)
-        args[1] = (intptr_t)&state; // Store the address of state as intptr_t
+        intptr_t *args = malloc(3 * sizeof(intptr_t));  // Allocate space for two intptr_t values
+        args[0] = (intptr_t)client_fd;                  // Store client_fd as intptr_t (it will hold integer values safely)
+        args[1] = (intptr_t)&state;                     // Store the address of state as intptr_t
         args[2] = (intptr_t)ctx;
         if (pthread_create(&thread, NULL, serve_client, args) != 0) {
             free(args);

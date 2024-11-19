@@ -19,12 +19,14 @@ SRCFILES = $(wildcard $(SRCDIR)/*.c)
 DB_SRCFILES = $(wildcard db/*.c)
 OBJFILES = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRCFILES))
 DB_OBJFILES = $(patsubst %.c, $(OBJDIR)/%.o, $(notdir $(DB_SRCFILES)))
+LOG_SRCFILES = $(wildcard logging/*.c)
+LOG_OBJFILES = $(patsubst %.c, $(OBJDIR)/%.o, $(notdir $(LOG_SRCFILES)))
 BIN = server
 
 all: $(BIN)
 
 
-$(BIN): $(OBJFILES) $(DB_OBJFILES)
+$(BIN): $(OBJFILES) $(DB_OBJFILES) $(LOG_OBJFILES)
 	$(CC) -o $@ $^ -I../$(CJSON_DIR) -I../$(SQLITE_DIR) -I../$(OPENSSL_INCDIR)  -L../$(CJSON_DIR) -L../$(SQLITE_DIR) -L../$(OPENSSL_DIR) -l$(CJSON) -l$(SQLITE) -lssl -lcrypto -lpthread -ldl
 
 $(OBJFILES): | $(OBJDIR)
@@ -33,6 +35,9 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c $^ -o $@ -I$(INCDIR) -I../$(CJSON_DIR) -I../$(SQLITE_DIR) -I../$(OPENSSL_INCDIR)
 
 $(OBJDIR)/%.o: db/%.c
+	$(CC) $(CFLAGS) -c $^ -o $@ -I$(INCDIR) -I../$(CJSON_DIR) -I../$(SQLITE_DIR) -I../$(OPENSSL_INCDIR)
+
+$(OBJDIR)/%.o: logging/%.c
 	$(CC) $(CFLAGS) -c $^ -o $@ -I$(INCDIR) -I../$(CJSON_DIR) -I../$(SQLITE_DIR) -I../$(OPENSSL_INCDIR)
 
 $(OBJDIR):

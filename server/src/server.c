@@ -23,15 +23,17 @@ void *serve_client(void *args) {
     client->client_id = -1;
     client->ssl = ssl;
     if (!SSL_set_fd(client->ssl, client->client_fd)) {
-        printf("SSL_set_fd(client->ssl, client->client_fd) failed\n");
+        // printf("SSL_set_fd(client->ssl, client->client_fd) failed\n");
+        logging_format(LOG_ERR, "SSL_set_fd(client->ssl, client->client_fd) failed\n");
         free(client);
-	    SSL_CTX_free(ctx);
+        SSL_CTX_free(ctx);
         SSL_free(ssl);
         exit(1);
     }
     int ret = SSL_accept(client->ssl);
     if (ret != 1) {
-        printf("SSL_accept() failed %d\n", ret);
+        // printf("SSL_accept() failed %d\n", ret);
+        logging_format(LOG_ERR, "SSL_accept() failed with code: %d\n", ret);
         free(client);
         SSL_CTX_free(ctx);
         SSL_free(ssl);
@@ -50,18 +52,22 @@ void *serve_client(void *args) {
                 continue;
             }
             if (bytes_read == 0) {
-                printf("Client disconnected.\n");
+                // printf("Client disconnected.\n");
+                logging_format(LOG_INFO, "Client disconnected\n");
             } else {
-                perror("Error reading from client");
+                //perror("Error reading from client");
+                logging_format(LOG_ERR, "Error reading from client\n");
             }
             break;
         }
 
-        printf("Received request: %s\n", buffer);
+        // printf("Received request: %s\n", buffer);
+        logging_format(LOG_INFO, "Received request: %s\n", buffer);
         cJSON *request = cJSON_Parse(buffer);
 
         if (request == NULL) {
-            printf("Failed to parse JSON request\n");
+            // printf("Failed to parse JSON request\n");
+            logging_format(LOG_ERR, "Failed to parse JSON request\n");
             continue;
         }
 
@@ -77,17 +83,17 @@ void *serve_client(void *args) {
 
 void load_cert_and_key(SSL_CTX *ctx) {
     if (SSL_CTX_use_certificate_file(ctx, OPENSSL_CERT, SSL_FILETYPE_PEM) <= 0) {
-        printf("Error in load_cert_and_key\n");
+        logging_format(LOG_ERR, "Error in load_cert_and_key\n");
         return;
     }
 
     if (SSL_CTX_use_PrivateKey_file(ctx, OPENSSL_KEY, SSL_FILETYPE_PEM) <= 0 ) {
-        printf("Error in load_cert_and_key\n");
+        logging_format(LOG_ERR, "Error in load_cert_and_key\n");
         return;
     }
 
     if (SSL_CTX_check_private_key(ctx) != 1) {
-        printf("Error in load_cert_and_key\n");
+        logging_format(LOG_ERR, "Error in load_cert_and_key\n");
 
     }
 }
@@ -113,7 +119,6 @@ int main(int argc, char **argv) {
         printf("Usage: %s <port> <debug>\n", argv[0]);
         exit(1);
     }
-
     int debug_mode = atoi(argv[2]);
     if (!debug_mode) {
         daemonize_server();
@@ -127,9 +132,10 @@ int main(int argc, char **argv) {
     if (bind(server_fd, (struct sockaddr *)server_address, sizeof(*server_address)) == -1) {
         free(server_address);
         if (debug_mode) {
-            perror("Error binding");
+            //perror("Error binding");
+            logging_format(LOG_ERR, "Error binding\n");
         } else {
-            syslog(LOG_ERR, "Error binding");
+            logging_format(LOG_ERR, "Error binding\n");
         }
         exit(1);
     }
@@ -137,29 +143,33 @@ int main(int argc, char **argv) {
     if (listen(server_fd, 2) == -1) {
         free(server_address);
         if (debug_mode) {
-            perror("Error listening");
+            //perror("Error listening");
+            logging_format(LOG_ERR, "Error listening\n");
         } else {
-            syslog(LOG_ERR, "Error listening");
+            logging_format(LOG_ERR, "Error listening\n");
         }
         exit(1);
     }
 
     if (debug_mode) {
-        printf("Server started with PID: %d\n", getpid());
+        // printf("Server started with PID: %d\n", getpid());
+        logging_format(LOG_INFO, "Server started with PID: %d\n", getpid());
     } else {
-        syslog(LOG_INFO, "Server started with PID: %d", getpid());
+        logging_format(LOG_INFO, "Server started with PID: %d\n", getpid());
     }
 
     t_server_state state = {.client_list_head = NULL,
                             .client_list_mutex = PTHREAD_MUTEX_INITIALIZER};
 
-    printf("Initial client_list_head: %p\n", state.client_list_head);
+    // printf("Initial client_list_head: %p\n", state.client_list_head);
+    logging_format(LOG_INFO, "Initial client_list_head: %p\n", state.client_list_head);
     while (true) {
         int client_fd = accept(server_fd, NULL, NULL);
         if (client_fd == -1) {
             free(server_address);
             if (debug_mode) {
-                perror("Error accepting connection");
+                //perror("Error accepting connection");
+                logging_format(LOG_ERR, "Error accepting connection\n");
             }
             exit(1);
         }

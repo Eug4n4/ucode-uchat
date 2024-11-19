@@ -4,6 +4,7 @@ server/server
 !libssl.a
 !libcrypto.a
 *.o
+server.log
 test.db
 .vscode
 .clang-format

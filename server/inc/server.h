@@ -24,6 +24,7 @@
 #define BUFFER_SIZE 2048
 #define OPENSSL_CERT "cert.pem"
 #define OPENSSL_KEY "privatekey.pem"
+#define LOGGING_FILE "server.log"
 
 typedef enum e_request_type { REGISTRATION, LOGIN, CREATE_NEW_PRIVATE_CHAT, GET_ALL_CHATS, MESSAGE } t_request_type;
 
@@ -95,4 +96,6 @@ t_chat *create_chat(int id, char *name, int type);
 void add_chat_front(t_chats **chats, t_chat *chat);
 t_chats *create_chats(t_chat *chat);
 void free_chats(t_chats **chats);
+
+void logging_format(int priority, const char *format, ...);
 #endif  // SERVER_H

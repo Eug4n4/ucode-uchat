@@ -1,5 +1,5 @@
-client/client
-server/server
+client/uchat
+server/uchat_server
 *.a
 !libssl.a
 !libcrypto.a

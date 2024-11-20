@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -Wall -Wextra -g
+CFLAGS = -Wall -Wextra -Wpedantic -g
 SRCDIR = src
 INCDIR = inc
 OBJDIR = obj
@@ -14,18 +14,21 @@ OPENSSL_INCDIR = $(LIBDIR)/$(OPENSSL)/$(INCDIR)
 
 SRCFILES = $(wildcard $(SRCDIR)/*.c)
 OBJFILES = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRCFILES))
-BIN = client
+INCFLAGS = -I$(INCDIR) -I../$(CJSON_DIR) -I../$(OPENSSL_INCDIR)
+LDFLAGS = -L../$(CJSON_DIR) -L../$(OPENSSL_DIR)
+LDLIBS = -l$(CJSON) -lssl -lcrypto -lpthread -ldl
+BIN = uchat
 
 all: $(BIN)
 
 $(BIN): $(OBJFILES)
-	$(CC) -o $@ $^ -I../$(CJSON_DIR) -L../$(CJSON_DIR) -L../$(OPENSSL_DIR) -l$(CJSON) -lssl -lcrypto -lpthread -ldl
+	$(CC) -o $@ $^ $(INCFLAGS) $(LDFLAGS) $(LDLIBS)
 
 
 $(OBJFILES): | $(OBJDIR)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -c $^ -o $@ -I$(INCDIR) -I../$(CJSON_DIR)  -I../$(OPENSSL_INCDIR)
+	$(CC) $(CFLAGS) -c $^ -o $@ $(INCFLAGS)
 
 $(OBJDIR):
 	@mkdir $@

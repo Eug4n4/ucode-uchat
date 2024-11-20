@@ -16,21 +16,21 @@ CJSON_DIR = $(LIBS_DIR)/$(CJSON)
 all: $(CJSON) $(SQLITE) $(SERVER) $(CLIENT)
 
 $(CJSON):
-	make --no-print-directory -C $(CJSON_DIR)
+	@make --no-print-directory -C $(CJSON_DIR)
 
 $(SQLITE):
-	make --no-print-directory -C $(SQLITE_DIR)
+	@make --no-print-directory -C $(SQLITE_DIR)
 
 
 $(CLIENT):
-	make --no-print-directory -C  $(CLIENT_DIR)
+	@make --no-print-directory -C  $(CLIENT_DIR)
 
 $(SERVER):
-	make --no-print-directory -C $(SERVER_DIR)
+	@make --no-print-directory -C $(SERVER_DIR)
 
 clean:
-	make --no-print-directory -C $(CJSON_DIR) clean
-	make --no-print-directory -C $(SQLITE_DIR) clean
-	make --no-print-directory -C $(SERVER_DIR) clean
-	make --no-print-directory -C $(CLIENT_DIR) clean
+	@make --no-print-directory -C $(CJSON_DIR) clean
+	@make --no-print-directory -C $(SQLITE_DIR) clean
+	@make --no-print-directory -C $(SERVER_DIR) clean
+	@make --no-print-directory -C $(CLIENT_DIR) clean
 

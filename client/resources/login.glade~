@@ -56,7 +56,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="btn_sign_up_small">
+              <object class="GtkButton" id="btn_sign_up_mini">
                 <property name="label" translatable="yes">Sign Up</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>

@@ -7,10 +7,9 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="resizable">False</property>
-    <property name="window_position">center-always</property>
+    <property name="window_position">center</property>
     <property name="default_width">1280</property>
     <property name="default_height">720</property>
-    <property name="gravity">center</property>
     <child type="titlebar">
       <placeholder/>
     </child>
@@ -20,54 +19,53 @@
         <property name="can_focus">False</property>
         <property name="column_homogeneous">True</property>
         <child>
-          <object class="GtkGrid" id="grid_sign_in">
+          <object class="GtkGrid" id="grid_sign_up">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">center</property>
             <property name="valign">center</property>
+            <property name="row_homogeneous">True</property>
             <property name="column_homogeneous">True</property>
             <child>
-              <object class="GtkButton" id="btn_sign_in">
+              <object class="GtkButton" id="btn_sign_in_mini">
                 <property name="label" translatable="yes">Sign In</property>
-                <property name="height_request">50</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="focus_on_click">False</property>
-                <property name="receives_default">True</property>
-                <property name="margin_bottom">20</property>
-                <signal name="clicked" handler="on_sign_in_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">2</property>
-                <property name="width">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="label_sign_up">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_end">10</property>
-                <property name="label" translatable="yes">Don't have an account?</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">3</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="btn_sign_up_small">
-                <property name="label" translatable="yes">Sign Up</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="focus_on_click">False</property>
                 <property name="receives_default">True</property>
                 <property name="border_width">10</property>
-                <signal name="clicked" handler="on_sign_up_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_sign_in_btn_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="top_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_sign_in">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_end">10</property>
+                <property name="label" translatable="yes">Already have an account?</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_error">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                  <attribute name="foreground" value="#e0e01b1b2424"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">4</property>
+                <property name="width">2</property>
               </packing>
             </child>
             <child>
@@ -87,31 +85,32 @@
               </packing>
             </child>
             <child>
+              <object class="GtkButton" id="btn_sign_up">
+                <property name="label" translatable="yes">Sign Up</property>
+                <property name="height_request">50</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="focus_on_click">False</property>
+                <property name="receives_default">True</property>
+                <property name="margin_bottom">20</property>
+                <signal name="clicked" handler="on_sign_up_btn_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">2</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkEntry" id="entry_username">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="margin_top">20</property>
-                <property name="caps_lock_warning">False</property>
                 <property name="placeholder_text" translatable="yes">Username</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
                 <property name="top_attach">0</property>
-                <property name="width">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="label_error">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                  <attribute name="foreground" value="#e0e01b1b2424"/>
-                </attributes>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">4</property>
                 <property name="width">2</property>
               </packing>
             </child>
@@ -125,6 +124,7 @@
           <object class="GtkMenuBar" id="menu_bar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="take_focus">False</property>
             <child>
               <object class="GtkMenuItem" id="menu_bar_quit">
                 <property name="visible">True</property>
@@ -208,7 +208,7 @@
           <object class="GtkLabel" id="label_title">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Sign In</property>
+            <property name="label" translatable="yes">Sign Up</property>
             <attributes>
               <attribute name="font-desc" value="Ubuntu Bold 20"/>
             </attributes>
@@ -224,7 +224,7 @@
             <property name="can_focus">False</property>
             <property name="margin_top">30</property>
             <property name="margin_bottom">20</property>
-            <property name="label" translatable="yes">Welcome back!</property>
+            <property name="label" translatable="yes">Welcome, newbie!</property>
             <attributes>
               <attribute name="font-desc" value="Ubuntu Bold 24"/>
             </attributes>
@@ -247,8 +247,5 @@
         </child>
       </object>
     </child>
-    <style>
-      <class name="login_window_style"/>
-    </style>
   </object>
 </interface>

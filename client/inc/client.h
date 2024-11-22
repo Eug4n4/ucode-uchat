@@ -1,19 +1,5 @@
 #ifndef CLIENT_H
 #define CLIENT_H
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <stdbool.h>
-#include "../../libs/cjson/cJSON.h"
-#include <openssl/ssl.h>
-#include <openssl/crypto.h>
 #include "gui.h"
 
 #define KEY_REQUEST_TYPE "request_type"
@@ -26,23 +12,8 @@
 #define KEY_MESSAGE "message"
 
 #define h_addr h_addr_list[0]
-#define BUF_SIZE 2048
 
-typedef enum e_request_type { REGISTRATION,
-                              LOGIN,
-                              CREATE_NEW_PRIVATE_CHAT,
-                              GET_ALL_CHATS,
-                              MESSAGE } t_request_type;
-typedef enum e_response_type { OK_LOGIN,
-                               FAIL_LOGIN,
-                               OK_REGISTRATION,
-                               FAIL_REGISTRATION,
-                               OK_CREATE_NEW_PRIVATE_CHAT,
-                               FAIL_CREATE_NEW_PRIVATE_CHAT,
-                               OK_GET_ALL_CHATS,
-                               FAIL_GET_ALL_CHATS,
-                               OK_MESSAGE,
-                               FAIL_MESSAGE } t_response_type;
+int do_connection(const char *host, int port);
 
 cJSON   *create_request_registration();
 cJSON   *create_request_login();

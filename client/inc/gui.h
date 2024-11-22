@@ -1,12 +1,7 @@
 #ifndef GUI_H
 #define GUI_H
-
-#include <stdio.h>
-#include <string.h>
 #include <gtk/gtk.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <netinet/in.h>
+#include "common.h"
 
 #define GLADE_LOGIN_PATH "resources/login.glade"
 #define GLADE_REGISTER_PATH "resources/registration.glade"

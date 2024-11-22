@@ -1,50 +1,12 @@
 #ifndef SERVER_H
 #define SERVER_H
-
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <pthread.h>
-#include <signal.h>
-#include <sys/syslog.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/resource.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <openssl/ssl.h>
-#include <openssl/crypto.h>
-
+#include "common.h"
 #include "sqlite3.h"
-#include "cJSON.h"
-#include <stdint.h>
 
-#define BUFFER_SIZE 2048
 #define LOGGING_FILE "server.log"
 #define OPENSSL_CERT "cert.pem"
 #define OPENSSL_KEY "privatekey.pem"
 
-typedef enum e_request_type { REGISTRATION,
-                              LOGIN,
-                              CREATE_NEW_PRIVATE_CHAT,
-                              GET_ALL_CHATS,
-                              MESSAGE,
-                              GET_CHAT_MESSAGES } t_request_type;
-
-typedef enum e_response_type { OK_LOGIN,
-                               FAIL_LOGIN,
-                               OK_REGISTRATION,
-                               FAIL_REGISTRATION,
-                               OK_CREATE_NEW_PRIVATE_CHAT,
-                               FAIL_CREATE_NEW_PRIVATE_CHAT,
-                               OK_GET_ALL_CHATS,
-                               FAIL_GET_ALL_CHATS,
-                               OK_MESSAGE,
-                               FAIL_MESSAGE,
-                               OK_GET_CHAT_MESSAGES,
-                               FAIL_GET_CHAT_MESSAGES} t_response_type;
 
 typedef struct s_chat {
     int   id;

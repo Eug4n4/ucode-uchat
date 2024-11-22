@@ -16,7 +16,7 @@ void *serve_client(void *args) {
     SSL_CTX *ctx = (SSL_CTX *)arg[2];
     SSL *ssl = SSL_new(ctx);
 
-    char buffer[BUFFER_SIZE] = { 0 };
+    char buffer[BUF_SIZE] = { 0 };
     t_accepted_client *client = malloc(sizeof(t_accepted_client));
     client->client_fd = client_fd;
     client->is_logged_in = false;
@@ -27,7 +27,7 @@ void *serve_client(void *args) {
         free(client);
         SSL_CTX_free(ctx);
         SSL_free(ssl);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     int ret = SSL_accept(client->ssl);
     if (ret != 1) {
@@ -35,7 +35,7 @@ void *serve_client(void *args) {
         free(client);
         SSL_CTX_free(ctx);
         SSL_free(ssl);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     add_client(state, client);
 
@@ -90,34 +90,20 @@ void load_cert_and_key(SSL_CTX *ctx) {
     }
 }
 
-SSL_CTX *setup_ssl_server_context(void) {
-    const SSL_METHOD *method = TLS_server_method();
-    SSL_CTX *ctx = NULL;
-
-    if (method) {
-        ctx = SSL_CTX_new(method);
-    }
-    if (method == NULL || ctx == NULL) {
-        syslog(LOG_ERR, "Failed to create SSL context");
-        // printf("error creating ssl context\n");
-        return NULL;
-    }
-    load_cert_and_key(ctx);
-    return ctx;
-}
 
 int main(int argc, char **argv) {
     if (argc != 3) {
         printf("Usage: %s <port> <debug>\n", argv[0]);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     int debug_mode = atoi(argv[2]);
     if (!debug_mode) {
         daemonize_server();
     }
-
-    SSL_CTX *ctx = setup_ssl_server_context();
+    SSL_CTX *ctx = setup_ssl_context(true);
+    load_cert_and_key(ctx);
+    
     int port = atoi(argv[1]);
     struct sockaddr_in *server_address = create_address(port);
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -127,9 +113,9 @@ int main(int argc, char **argv) {
         if (debug_mode) {
             perror("Error binding");
         } else {
-            syslog(LOG_ERR, "Error binding");
+            logging_format(LOG_ERR, "Error binding");
         }
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     if (listen(server_fd, 2) == -1) {
@@ -137,15 +123,15 @@ int main(int argc, char **argv) {
         if (debug_mode) {
             perror("Error listening");
         } else {
-            syslog(LOG_ERR, "Error listening");
+            logging_format(LOG_ERR, "Error listening");
         }
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     if (debug_mode) {
         printf("Server started with PID: %d\n", getpid());
     } else {
-        syslog(LOG_INFO, "Server started with PID: %d", getpid());
+        logging_format(LOG_INFO, "Server started with PID: %d", getpid());
     }
 
     t_server_state state = { .client_list_head = NULL, .client_list_mutex = PTHREAD_MUTEX_INITIALIZER };
@@ -157,7 +143,7 @@ int main(int argc, char **argv) {
             if (debug_mode) {
                 perror("Error accepting connection");
             }
-            exit(1);
+            exit(EXIT_FAILURE);
         }
 
         pthread_t thread;

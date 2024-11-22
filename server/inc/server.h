@@ -22,6 +22,7 @@
 #include <stdint.h>
 
 #define BUFFER_SIZE 2048
+#define LOGGING_FILE "server.log"
 #define OPENSSL_CERT "cert.pem"
 #define OPENSSL_KEY "privatekey.pem"
 
@@ -131,4 +132,7 @@ t_messages *create_message_list();
 void append_message_to_list(t_messages *messages, t_message *msg);
 void free_messages(t_messages **messages);
 
+void logging_format(int priority, const char *format, ...);
 #endif
+
+

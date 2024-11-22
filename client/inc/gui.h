@@ -1,5 +1,5 @@
-#ifndef HEADER_H
-#define HEADER_H
+#ifndef GUI_H
+#define GUI_H
 
 #include <stdio.h>
 #include <string.h>
@@ -39,4 +39,6 @@ void           init_gui(int argc, char **argv, SSL *ssl);
 t_gtk_sign_in *create_gtk_sign_in_data(void);
 void           sign_up_connect_signals(t_gtk_sign_in *gtk_sign_in, t_gtk_sign_up *gtk_sign_up);
 
-#endif  // HEADER_H
+#endif  // GUI_H
+
+

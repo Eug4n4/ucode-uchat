@@ -1,6 +1,5 @@
 #include "gui.h"
 #include "../inc/client.h"
-// clang gui.c -o gui `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0` -Igui_structs.h
 
 GtkBuilder    *builder_login;
 GtkBuilder    *builder_registration;
@@ -34,7 +33,7 @@ t_gtk_sign_up *create_gtk_sign_up_data() {
     data->entry_password = entry_password;
     data->label_error    = label_error;
 
-    gtk_widget_hide(window);
+    gtk_widget_hide(GTK_WIDGET(window));
     return data;
 }
 
@@ -83,6 +82,8 @@ void on_btn_sign_in_clicked(GtkButton *button, gpointer data) {
         gtk_label_set_text(gtk_sign_in->label_error, "Error communicating with server");
         return;
     }
+    (void)button;
+    (void)data;
 }
 
 void on_btn_sign_up_clicked(GtkButton *button, gpointer data) {
@@ -100,8 +101,9 @@ void on_btn_sign_up_clicked(GtkButton *button, gpointer data) {
         gtk_entry_set_text(gtk_sign_up->entry_username, "");
         gtk_entry_set_text(gtk_sign_up->entry_password, "");
     }
-
     g_print("Sign up button clicked\n");
+    (void)button;
+    (void)data;
 }
 
 void on_btn_sign_up_small_clicked(GtkButton *button, gpointer data) {
@@ -119,9 +121,10 @@ void on_btn_sign_up_small_clicked(GtkButton *button, gpointer data) {
             return;
         }
     }
-
     gtk_widget_show_all(GTK_WIDGET(gtk_sign_up->window));
     g_print("Sign-up button clicked\n");
+    (void)button;
+    (void)data;
 }
 
 void on_btn_sign_in_small_clicked(GtkButton *button, gpointer data) {
@@ -136,6 +139,9 @@ void on_btn_sign_in_small_clicked(GtkButton *button, gpointer data) {
     } else {
         g_print("Sign-in window is NULL\n");
     }
+    (void)button;
+    (void)data;
+
 }
 
 void init_gui(int argc, char **argv, SSL *ssl) {

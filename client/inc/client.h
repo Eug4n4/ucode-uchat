@@ -14,7 +14,7 @@
 #include "../../libs/cjson/cJSON.h"
 #include <openssl/ssl.h>
 #include <openssl/crypto.h>
-#include "../gui/gui.h"
+#include "gui.h"
 
 #define KEY_REQUEST_TYPE "request_type"
 #define KEY_USERNAME "username"

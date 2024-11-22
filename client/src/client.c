@@ -1,7 +1,6 @@
 #define _POSIX_C_SOURCE 1
 #include "../inc/client.h"
-#include "../gui/gui.h"
-#include <glib.h>
+#include "../inc/gui.h"
 #include <gtk/gtk.h>
 
 SSL_CTX *setup_ssl_client_context(void) {
@@ -20,7 +19,7 @@ SSL_CTX *setup_ssl_client_context(void) {
 
 gpointer read_from_server_thread(gpointer data) {
     SSL *ssl = (SSL *)data;
-    char buffer[1024];
+    char buffer[BUF_SIZE] = {0};
 
     while (1) {
         int bytes_read = SSL_read(ssl, buffer, sizeof(buffer) - 1);
@@ -32,7 +31,7 @@ gpointer read_from_server_thread(gpointer data) {
             }
             break;
         }
-        buffer[bytes_read] = '\0';
+        // buffer[bytes_read] = '\0';
 
         g_idle_add((GSourceFunc)update_gui_with_response, g_strdup(buffer));
     }

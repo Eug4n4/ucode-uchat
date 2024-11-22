@@ -1,4 +1,4 @@
-#include "client.h"
+#include "../inc/client.h"
 
 cJSON *create_request_registration(void) {
     cJSON *json = cJSON_CreateObject();
@@ -29,4 +29,3 @@ cJSON *create_request_new_private_chat(void) {
     cJSON_AddItemToObject(json, KEY_CONTENT, content);
     return json;
 }
-

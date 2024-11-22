@@ -14,4 +14,6 @@ int db_save_message(int sender_id, int chat_id, const char *message);
 t_client_node *db_get_online_chat_users(t_server_state *state, int chat_id);
 bool db_check_user_in_chat(int user_id, int chat_id);
 t_chats *db_get_all_user_chats(int user_id);
+t_messages *db_get_messages_for_chat(int chat_id);
+
 #endif  // DB_H

@@ -14,7 +14,7 @@ void add_client(t_server_state *state, t_accepted_client *client) {
         state->client_list_head = new_node;
     }
 
-    printf("After adding client, client_list_head: %p\n", state->client_list_head);
+   
 
     pthread_mutex_unlock(&state->client_list_mutex);
 }

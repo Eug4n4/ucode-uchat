@@ -19,6 +19,9 @@ void process_request_type(cJSON *request, t_accepted_client *client, t_server_st
     case GET_ALL_CHATS:
         handle_all_chats_request(client);
         break;
+    case GET_CHAT_MESSAGES:
+        handle_get_chat_messages_request(request, client);
+        break;
     default:
         break;
     }

@@ -4,6 +4,7 @@
 #include "sqlite3.h"
 
 #define LOGGING_FILE "server.log"
+#define HASH_SIZE 64
 #define OPENSSL_CERT "cert.pem"
 #define OPENSSL_KEY "privatekey.pem"
 
@@ -24,7 +25,7 @@ typedef struct s_chats {
 typedef struct s_user {
     int   id;
     char *username;
-    char *password;
+    unsigned char *password;
     char *display_name;
 
 } t_user;
@@ -95,6 +96,7 @@ void append_message_to_list(t_messages *messages, t_message *msg);
 void free_messages(t_messages **messages);
 
 void logging_format(int priority, const char *format, ...);
+unsigned char *hash_password(const char *password, int password_len);
 #endif
 
 

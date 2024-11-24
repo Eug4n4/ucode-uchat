@@ -6,13 +6,19 @@ gpointer read_from_server_thread(gpointer data) {
     SSL *ssl = (SSL *)data;
     char buffer[BUF_SIZE] = {0};
 
-    while (1) {
+    while (true) {
         int bytes_read = SSL_read(ssl, buffer, sizeof(buffer) - 1);
+
         if (bytes_read <= 0) {
             if (bytes_read == 0) {
                 printf("Connection closed by the server.\n");
             } else {
-                printf("SSL read error.\n");
+                int res = SSL_get_error(ssl, bytes_read);
+
+                if (res == SSL_ERROR_WANT_READ || res == SSL_ERROR_WANT_WRITE) {
+                    continue;
+                }
+                printf("SSL read error %d\n", res);
             }
             break;
         }
@@ -51,3 +57,4 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+

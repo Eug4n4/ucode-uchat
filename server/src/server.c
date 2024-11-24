@@ -87,7 +87,7 @@ int encrypt(const unsigned char *plaintext, int plaintext_len, const unsigned ch
         return -1;
     }
    
-    EVP_CIPHER *cipher = EVP_CIPHER_fetch(NULL, "BF-CBC", "provider=legacy");
+    EVP_CIPHER *cipher = EVP_CIPHER_fetch(NULL, "AES-128-CBC", NULL);
     
     if (!cipher) {
         ERR_print_errors_fp(stderr);
@@ -139,7 +139,7 @@ int decrypt(const unsigned char *ciphertext, int ciphertext_len, const unsigned 
     int plaintext_len;
 
     // Initialize decryption operation
-    if (EVP_DecryptInit_ex(ctx, EVP_bf_cbc(), NULL, key, iv) != 1) {
+    if (EVP_DecryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key, iv) != 1) {
         fprintf(stderr, "Failed to initialize decryption\n");
         EVP_CIPHER_CTX_free(ctx);
         return -1;
@@ -188,49 +188,7 @@ int main(int argc, char **argv) {
         printf("Usage: %s <port> <debug>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
-    // unsigned char key[16];
-    // unsigned char iv[8];
-
-    // // Generate random key and IV
-    // if (!RAND_bytes(key, 16) || !RAND_bytes(iv, 8)) {
-    //     fprintf(stderr, "Failed to generate random key/IV\n");
-    //     return 1;
-    // }
-
-    // const char *password = "my_secure_password";
-    // unsigned char ciphertext[128];
-    // unsigned char decryptedtext[128];
-    // OSSL_PROVIDER *provider = OSSL_PROVIDER_load(NULL, "legacy"); 
-    // if (!provider) {
-    //     ERR_print_errors_fp(stderr);
-    //     printf("1\n");
-    //     return -1;
-    // }
-    // // Encrypt the password
-    // int ciphertext_len = encrypt((unsigned char *)password, strlen(password), key, iv, ciphertext);
-    // if (ciphertext_len < 0) {
-    //     fprintf(stderr, "Encryption failed\n");
-    //     return 1;
-    // }
-
-    // // Decrypt the ciphertext
-    // int decryptedtext_len = decrypt(ciphertext, ciphertext_len, key, iv, decryptedtext);
-    // if (decryptedtext_len < 0) {
-    //     fprintf(stderr, "Decryption failed\n");
-    //     return 1;
-    // }
-
-    // // Null-terminate the decrypted text
-    // decryptedtext[decryptedtext_len] = '\0';
-
-    // printf("Original: %s\n", password);
-    // printf("Encrypted (hex): ");
-    // for (int i = 0; i < ciphertext_len; i++) {
-    //     printf("%02x", ciphertext[i]);
-    // }
-    // printf("\n");
-    // printf("Decrypted: %s\n", decryptedtext);
-    // OSSL_PROVIDER_unload(provider);
+   
     int debug_mode = atoi(argv[2]);
     if (!debug_mode) {
         daemonize_server();

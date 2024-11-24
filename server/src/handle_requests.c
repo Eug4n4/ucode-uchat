@@ -26,19 +26,23 @@ void handle_registration_request(cJSON *request, t_accepted_client *client) {
 
 void handle_login_request(cJSON *request, t_accepted_client *client) {
     cJSON *username = cJSON_GetObjectItemCaseSensitive(request, "content")->child;
-    cJSON *password = username->next;
+    char *password = username->next->valuestring;
     t_user *user = db_get_user_by_username(username->valuestring);
-
+    unsigned char *hash = hash_password(password, strlen(password));
+    
     if (user) {
-        if (strcmp(username->valuestring, user->username) == 0 && strcmp(password->valuestring, user->password) == 0) {
+        if (strcmp(username->valuestring, user->username) == 0 && memcmp(hash, user->password, HASH_SIZE) == 0) {
             client->is_logged_in = true;
             client->client_id = user->id;
             process_response_type(OK_LOGIN, client);
             free_user(user);
+            free(hash);
             return;
         }
         free_user(user);
     }
+    free(hash);
+
     client->is_logged_in = false;
     process_response_type(FAIL_LOGIN, client);
 }

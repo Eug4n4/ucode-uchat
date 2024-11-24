@@ -20,7 +20,8 @@ t_user *db_get_user_by_username(const char *username) {
         user = create_user();
         user->id = sqlite3_column_int(stmt, 0);
         user->username = strdup((char *)sqlite3_column_text(stmt, 1));
-        user->password = strdup((char *)sqlite3_column_text(stmt, 2));
+        user->password = malloc(sizeof(unsigned char) * (HASH_SIZE * 2 + 1));
+        memcpy(user->password, sqlite3_column_text(stmt, 2), HASH_SIZE * 2 + 1);
         user->display_name = strdup((char *)sqlite3_column_text(stmt, 3));
     }
 

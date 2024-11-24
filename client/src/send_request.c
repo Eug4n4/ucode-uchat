@@ -20,6 +20,7 @@ int send_registration_request(const gchar *username, const gchar *password, SSL 
     cJSON *request = create_request_registration();
     cJSON *content = cJSON_GetObjectItemCaseSensitive(request, KEY_CONTENT);
     cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_USERNAME, cJSON_CreateString(username));
+    cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_DISPLAY_NAME, cJSON_CreateString(username));
     cJSON_ReplaceItemInObjectCaseSensitive(content, KEY_PASSWORD, cJSON_CreateString(password));
 
     char *str = cJSON_PrintUnformatted(request);

@@ -8,6 +8,7 @@ void send_response(cJSON *response, t_accepted_client *client) {
        // printf("Error sending response\n");
         logging_format(LOG_ERR, "Error sending response\n");
     }
+    free(response_str);
     // write(client->client_fd, response_str, strlen(response_str));
 }
 

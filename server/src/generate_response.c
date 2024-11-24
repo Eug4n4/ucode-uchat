@@ -22,6 +22,7 @@ void generate_login_response(int response, t_accepted_client *client) {
     default:
         break;
     }
+    cJSON_Delete(login_response);
 }
 
 void generate_registration_response(int response, t_accepted_client *client) {
@@ -45,6 +46,8 @@ void generate_registration_response(int response, t_accepted_client *client) {
     default:
         break;
     }
+    cJSON_Delete(registration_response);
+
 }
 
 void generate_new_private_chat_response(int response, t_accepted_client *client) {
@@ -68,6 +71,8 @@ void generate_new_private_chat_response(int response, t_accepted_client *client)
     default:
         break;
     }
+    cJSON_Delete(new_private_chat_response);
+
 }
 
 void generate_message_response(int response, t_accepted_client *client) {
@@ -91,6 +96,8 @@ void generate_message_response(int response, t_accepted_client *client) {
     default:
         break;
     }
+    cJSON_Delete(message_response);
+
 }
 
 void generate_all_chats_response(int response, t_chats **chats, t_accepted_client *client) {
@@ -124,6 +131,8 @@ void generate_all_chats_response(int response, t_chats **chats, t_accepted_clien
     default:
         break;
     }
+    cJSON_Delete(all_chats_response);
+
 }
 
 void generate_get_chat_messages_response(int response, t_messages *messages, t_accepted_client *client) {

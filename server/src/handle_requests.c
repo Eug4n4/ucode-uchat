@@ -34,9 +34,10 @@ void handle_login_request(cJSON *request, t_accepted_client *client) {
             client->is_logged_in = true;
             client->client_id = user->id;
             process_response_type(OK_LOGIN, client);
-
+            free_user(user);
             return;
         }
+        free_user(user);
     }
     client->is_logged_in = false;
     process_response_type(FAIL_LOGIN, client);

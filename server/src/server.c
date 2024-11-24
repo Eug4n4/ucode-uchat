@@ -1,6 +1,9 @@
 #include "server.h"
 #include "db.h"
-
+#include <openssl/provider.h>
+#include <openssl/evp.h>
+#include <openssl/rand.h>
+#include <openssl/err.h>
 struct sockaddr_in *create_address(int port) {
     struct sockaddr_in *address = malloc(sizeof(struct sockaddr_in));
     address->sin_family = AF_INET;
@@ -74,6 +77,95 @@ void *serve_client(void *args) {
     return NULL;
 }
 
+
+int encrypt(const unsigned char *plaintext, int plaintext_len, const unsigned char *key,
+            const unsigned char *iv, unsigned char *ciphertext) {
+    
+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+    if (!ctx) {
+        fprintf(stderr, "Failed to create context\n");
+        return -1;
+    }
+   
+    EVP_CIPHER *cipher = EVP_CIPHER_fetch(NULL, "BF-CBC", "provider=legacy");
+    
+    if (!cipher) {
+        ERR_print_errors_fp(stderr);
+        printf("2\n");
+        
+        return -1;
+    }
+    int len = 0;
+    int ciphertext_len = 0;
+    
+    // Initialize encryption operation
+    if (EVP_EncryptInit_ex2(ctx, cipher, key, iv, NULL) != 1) {
+        fprintf(stderr, "Failed to initialize encryption\n");
+        EVP_CIPHER_CTX_free(ctx);
+        return -1;
+    }
+
+    // Encrypt data
+    if (EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, plaintext_len) != 1) {
+        fprintf(stderr, "Encryption failed\n");
+        EVP_CIPHER_CTX_free(ctx);
+        return -1;
+    }
+    ciphertext_len = len;
+
+    // Finalize encryption
+    if (EVP_EncryptFinal_ex(ctx, ciphertext + len, &len) != 1) {
+        fprintf(stderr, "Final encryption step failed\n");
+        EVP_CIPHER_CTX_free(ctx);
+        return -1;
+    }
+    ciphertext_len += len;
+    EVP_CIPHER_free(cipher);
+    EVP_CIPHER_CTX_free(ctx);
+
+    return ciphertext_len;
+}
+
+// Function to decrypt data
+int decrypt(const unsigned char *ciphertext, int ciphertext_len, const unsigned char *key,
+            const unsigned char *iv, unsigned char *plaintext) {
+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+    if (!ctx) {
+        fprintf(stderr, "Failed to create context\n");
+        return -1;
+    }
+
+    int len;
+    int plaintext_len;
+
+    // Initialize decryption operation
+    if (EVP_DecryptInit_ex(ctx, EVP_bf_cbc(), NULL, key, iv) != 1) {
+        fprintf(stderr, "Failed to initialize decryption\n");
+        EVP_CIPHER_CTX_free(ctx);
+        return -1;
+    }
+
+    // Decrypt data
+    if (EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, ciphertext_len) != 1) {
+        fprintf(stderr, "Decryption failed\n");
+        EVP_CIPHER_CTX_free(ctx);
+        return -1;
+    }
+    plaintext_len = len;
+
+    // Finalize decryption
+    if (EVP_DecryptFinal_ex(ctx, plaintext + len, &len) != 1) {
+        fprintf(stderr, "Final decryption step failed\n");
+        EVP_CIPHER_CTX_free(ctx);
+        return -1;
+    }
+    plaintext_len += len;
+
+    EVP_CIPHER_CTX_free(ctx);
+    return plaintext_len;
+}
+
+
 void load_cert_and_key(SSL_CTX *ctx) {
     if (SSL_CTX_use_certificate_file(ctx, OPENSSL_CERT, SSL_FILETYPE_PEM) <= 0) {
         printf("Error in load_cert_and_key\n");
@@ -96,7 +188,49 @@ int main(int argc, char **argv) {
         printf("Usage: %s <port> <debug>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
+    // unsigned char key[16];
+    // unsigned char iv[8];
 
+    // // Generate random key and IV
+    // if (!RAND_bytes(key, 16) || !RAND_bytes(iv, 8)) {
+    //     fprintf(stderr, "Failed to generate random key/IV\n");
+    //     return 1;
+    // }
+
+    // const char *password = "my_secure_password";
+    // unsigned char ciphertext[128];
+    // unsigned char decryptedtext[128];
+    // OSSL_PROVIDER *provider = OSSL_PROVIDER_load(NULL, "legacy"); 
+    // if (!provider) {
+    //     ERR_print_errors_fp(stderr);
+    //     printf("1\n");
+    //     return -1;
+    // }
+    // // Encrypt the password
+    // int ciphertext_len = encrypt((unsigned char *)password, strlen(password), key, iv, ciphertext);
+    // if (ciphertext_len < 0) {
+    //     fprintf(stderr, "Encryption failed\n");
+    //     return 1;
+    // }
+
+    // // Decrypt the ciphertext
+    // int decryptedtext_len = decrypt(ciphertext, ciphertext_len, key, iv, decryptedtext);
+    // if (decryptedtext_len < 0) {
+    //     fprintf(stderr, "Decryption failed\n");
+    //     return 1;
+    // }
+
+    // // Null-terminate the decrypted text
+    // decryptedtext[decryptedtext_len] = '\0';
+
+    // printf("Original: %s\n", password);
+    // printf("Encrypted (hex): ");
+    // for (int i = 0; i < ciphertext_len; i++) {
+    //     printf("%02x", ciphertext[i]);
+    // }
+    // printf("\n");
+    // printf("Decrypted: %s\n", decryptedtext);
+    // OSSL_PROVIDER_unload(provider);
     int debug_mode = atoi(argv[2]);
     if (!debug_mode) {
         daemonize_server();

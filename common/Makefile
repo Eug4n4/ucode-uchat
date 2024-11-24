@@ -1,6 +1,6 @@
 CC = clang
 CFLAGS = -Wall -Wextra -Wpedantic
-LIBDIR = libs
+LIBDIR = ../libs
 INCDIR = inc
 SRCDIR = src
 OBJDIR = obj
@@ -19,7 +19,7 @@ OPENSSL_INCDIR = $(LIBDIR)/$(OPENSSL)/$(INCDIR)
 SRCFILES = $(wildcard $(SRCDIR)/*.c)
 OBJFILES = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRCFILES))
 
-INCFLAGS = -I$(INCDIR) -I$(SERVER_INCDIR) -I../$(CJSON_DIR) -I../$(SQLITE_DIR) -I../$(OPENSSL_DIR)
+INCFLAGS = -I$(INCDIR) -I$(SERVER_INCDIR) -I$(CJSON_DIR) -I$(SQLITE_DIR) -I$(OPENSSL_INCDIR)
 
 all: $(OBJFILES)
 	
@@ -34,3 +34,4 @@ $(OBJDIR):
 
 clean:
 	@rm -rf $(OBJDIR)
+

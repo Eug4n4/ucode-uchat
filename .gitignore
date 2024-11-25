@@ -1,7 +1,6 @@
 client/uchat
 server/uchat_server
 *.a
-*.so
 !libssl.a
 !libcrypto.a
 *.o

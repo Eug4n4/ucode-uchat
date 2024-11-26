@@ -90,20 +90,34 @@ void on_btn_sign_up_clicked(GtkButton *button, gpointer data) {
     const gchar *username = gtk_entry_get_text(gtk_sign_up->entry_username);
     const gchar *password = gtk_entry_get_text(gtk_sign_up->entry_password);
 
-    if (strlen(password) == 0 || strlen(username) == 0) {
+    if (strlen(username) == 0 || strlen(password) == 0) {
         gtk_label_set_text(gtk_sign_up->label_error, "Fields cannot be empty");
     } else {
-        if (send_registration_request(username, password, gtk_sign_in->ssl) < 0) {
-            gtk_label_set_text(gtk_sign_up->label_error, "Error communicating with server");
-            return;
+        if (!check_username(username)) {
+            gtk_label_set_text(gtk_sign_up->label_error,
+                               "Username requirements:\n"
+                               "- Must be longer than 5 characters.\n"
+                               "- Only Latin letters, numbers, and underscores are allowed.");
+        } else if (!check_password(password)) {
+            gtk_label_set_text(gtk_sign_up->label_error,
+                               "Password requirements:\n"
+                               "- Must be at least 8 characters long.\n"
+                               "- Must contain at least:\n"
+                               "  - One uppercase letter\n"
+                               "  - One lowercase letter\n"
+                               "  - One digit\n"
+                               "  - One special character.");
+        } else {
+            if (send_registration_request(username, password, gtk_sign_in->ssl) < 0) {
+                gtk_label_set_text(gtk_sign_up->label_error, "Error communicating with server");
+                return;
+            }
+            gtk_entry_set_text(gtk_sign_up->entry_username, "");
+            gtk_entry_set_text(gtk_sign_up->entry_password, "");
         }
-
-        gtk_entry_set_text(gtk_sign_up->entry_username, "");
-        gtk_entry_set_text(gtk_sign_up->entry_password, "");
     }
+
     g_print("Sign up button clicked\n");
-    (void)button;
-    (void)data;
 }
 
 void on_btn_sign_up_small_clicked(GtkButton *button, gpointer data) {
@@ -141,7 +155,6 @@ void on_btn_sign_in_small_clicked(GtkButton *button, gpointer data) {
     }
     (void)button;
     (void)data;
-
 }
 
 void init_gui(int argc, char **argv, SSL *ssl) {

@@ -78,6 +78,11 @@ void on_btn_sign_in_clicked(GtkButton *button, gpointer data) {
         return;
     }
 
+    if (!check_username(username)) {
+        gtk_label_set_text(gtk_sign_in->label_error, "Invalid username format.");
+        return;
+    }
+
     if (send_login_request(username, password, gtk_sign_in->ssl) < 0) {
         gtk_label_set_text(gtk_sign_in->label_error, "Error communicating with server");
         return;
@@ -92,6 +97,8 @@ void on_btn_sign_up_clicked(GtkButton *button, gpointer data) {
 
     if (strlen(username) == 0 || strlen(password) == 0) {
         gtk_label_set_text(gtk_sign_up->label_error, "Fields cannot be empty");
+    } else if (strcmp(username, password) == 0) {  // Check if username and password are equal
+        gtk_label_set_text(gtk_sign_up->label_error, "Username and password cannot be the same.");
     } else {
         if (!check_username(username)) {
             gtk_label_set_text(gtk_sign_up->label_error,
@@ -119,6 +126,7 @@ void on_btn_sign_up_clicked(GtkButton *button, gpointer data) {
 
     g_print("Sign up button clicked\n");
 }
+
 
 void on_btn_sign_up_small_clicked(GtkButton *button, gpointer data) {
     if (gtk_sign_in && gtk_sign_in->window) {
@@ -155,6 +163,7 @@ void on_btn_sign_in_small_clicked(GtkButton *button, gpointer data) {
     }
     (void)button;
     (void)data;
+
 }
 
 void init_gui(int argc, char **argv, SSL *ssl) {

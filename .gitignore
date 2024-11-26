@@ -8,3 +8,4 @@ server.log
 test.db
 .vscode
 .clang-format
+*.glade~

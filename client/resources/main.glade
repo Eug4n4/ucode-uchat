@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.38.2 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkWindow" id="main_window">
+    <property name="can-focus">False</property>
+    <property name="title" translatable="yes">4hat</property>
+    <property name="default-width">1280</property>
+    <property name="default-height">720</property>
+    <child>
+      <!-- n-columns=3 n-rows=6 -->
+      <object class="GtkGrid" id="main_grid">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="column-homogeneous">True</property>
+        <child>
+          <!-- n-columns=4 n-rows=2 -->
+          <object class="GtkGrid" id="menu_bar_grid">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <child>
+              <object class="GtkMenuBar" id="menu_bar">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <child>
+                  <object class="GtkMenuItem">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">_Log out</property>
+                    <property name="use-underline">True</property>
+                    <child type="submenu">
+                      <object class="GtkMenu">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <object class="GtkMenuItem" id="log_out_subbtn">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="tooltip-text" translatable="yes">Click to log out from your account</property>
+                            <property name="label" translatable="yes">Log out</property>
+                            <property name="use-underline">True</property>
+                            <signal name="activate" handler="on_log_out_subbtn_activate" swapped="no"/>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
+                <property name="width">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="pixbuf">user_icon.png</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
+                <property name="width">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_display_name">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="margin-start">20</property>
+                <property name="label" translatable="yes">display name</property>
+                <property name="track-visited-links">False</property>
+                <attributes>
+                  <attribute name="font-desc" value="Ubuntu 14"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">0</property>
+            <property name="width">3</property>
+          </packing>
+        </child>
+        <child>
+          <!-- n-columns=2 n-rows=3 -->
+          <object class="GtkGrid" id="chat_list_grid">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="column-homogeneous">True</property>
+            <child>
+              <object class="GtkButton" id="btn_add_chat">
+                <property name="label" translatable="yes">Add chat</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkScrolledWindow" id="chat_list_window">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="vscrollbar-policy">always</property>
+                    <property name="shadow-type">in</property>
+                    <child>
+                      <object class="GtkViewport">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <object class="GtkTreeView" id="chats_list_view">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <child internal-child="selection">
+                              <object class="GtkTreeSelection" id="chat_selection"/>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
+                <property name="width">2</property>
+                <property name="height">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">1</property>
+            <property name="height">5</property>
+          </packing>
+        </child>
+        <child>
+          <!-- n-columns=3 n-rows=3 -->
+          <object class="GtkGrid" id="chat_grid">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="column-homogeneous">True</property>
+            <child>
+              <!-- n-columns=1 n-rows=1 -->
+              <object class="GtkGrid" id="add_member_box">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="column-homogeneous">True</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="btn_add_member">
+                        <property name="label" translatable="yes">Add member</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="pack-type">end</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
+                <property name="width">3</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=1 n-rows=1 -->
+              <object class="GtkGrid" id="chat_history_grid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="row-homogeneous">True</property>
+                <property name="column-homogeneous">True</property>
+                <child>
+                  <object class="GtkScrolledWindow" id="chat_history_window">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="vscrollbar-policy">always</property>
+                    <property name="shadow-type">in</property>
+                    <child>
+                      <object class="GtkViewport">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <object class="GtkTreeView" id="chat_history_view">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <child internal-child="selection">
+                              <object class="GtkTreeSelection" id="message_selection"/>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
+                <property name="width">3</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=3 n-rows=1 -->
+              <object class="GtkGrid" id="send_message_grid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="row-homogeneous">True</property>
+                <property name="column-homogeneous">True</property>
+                <child>
+                  <object class="GtkEntry">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                    <property name="width">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Send</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
+                <property name="width">3</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="left-attach">1</property>
+            <property name="top-attach">1</property>
+            <property name="width">2</property>
+            <property name="height">5</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

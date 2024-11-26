@@ -29,18 +29,21 @@ void handle_login_request(cJSON *request, t_accepted_client *client) {
     char *password = username->next->valuestring;
     t_user *user = db_get_user_by_username(username->valuestring);
     unsigned char *hash = hash_password(password, strlen(password));
+    char *hex_hash = hash_to_hex(hash);
     
     if (user) {
-        if (strcmp(username->valuestring, user->username) == 0 && memcmp(hash, user->password, HASH_SIZE) == 0) {
+        if (strcmp(username->valuestring, user->username) == 0 && memcmp(hex_hash, user->password, HASH_SIZE) == 0) {
             client->is_logged_in = true;
             client->client_id = user->id;
             process_response_type(OK_LOGIN, client);
             free_user(user);
+            free(hex_hash);
             free(hash);
             return;
         }
         free_user(user);
     }
+    free(hex_hash);
     free(hash);
 
     client->is_logged_in = false;

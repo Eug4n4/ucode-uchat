@@ -1,4 +1,3 @@
-// #include "gui.h"
 #include "../inc/client.h"
 
 GtkBuilder    *builder_login = NULL;
@@ -29,8 +28,7 @@ void on_btn_sign_in_clicked(GtkButton *button, gpointer data) {
     }
     gtk_entry_set_text(gtk_sign_in->entry_username, "");
     gtk_entry_set_text(gtk_sign_in->entry_password, "");
-    show_screen(MAIN_SCREEN);
-    send_all_user_chats_request(gtk_sign_in->ssl);
+    gtk_label_set_text(gtk_sign_in->label_error, "");
     
     (void)button;
     (void)data;
@@ -66,7 +64,7 @@ void on_btn_sign_up_clicked(GtkButton *button, gpointer data) {
             }
             gtk_entry_set_text(gtk_sign_up->entry_username, "");
             gtk_entry_set_text(gtk_sign_up->entry_password, "");
-            show_screen(MAIN_SCREEN);
+            gtk_label_set_text(gtk_sign_up->label_error, "");
         }
     }
     (void)button;

@@ -108,7 +108,12 @@ void generate_all_chats_response(int response, t_chats **chats, t_accepted_clien
     switch (response) {
     case OK_GET_ALL_CHATS:
         cJSON_AddNumberToObject(all_chats_response, "response_type", OK_GET_ALL_CHATS);
+        t_user *user = db_get_user_by_id(client->client_id);
         t_chats *head = *chats;
+
+        if (user) {
+            cJSON_AddStringToObject(content, "display_name", user->display_name);
+        }
         while (head->chat) {
             cJSON *chat = cJSON_CreateObject();
             cJSON_AddNumberToObject(chat, "chat_id", head->chat->id);
@@ -118,9 +123,14 @@ void generate_all_chats_response(int response, t_chats **chats, t_accepted_clien
 
             head = head->next;
         }
+       
         cJSON_AddItemToObject(content, "chats", json_chats);
         cJSON_AddItemToObject(all_chats_response, "content", content);
+        
         send_response(all_chats_response, client);
+        if (user) {
+            free_user(user);
+        }
         break;
     case FAIL_GET_ALL_CHATS:
         cJSON_AddNumberToObject(all_chats_response, "response_type", FAIL_GET_ALL_CHATS);

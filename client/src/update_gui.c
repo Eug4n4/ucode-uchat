@@ -18,20 +18,21 @@ gboolean update_gui_with_response(gpointer data) {
         return FALSE;
     }
     char *res = cJSON_Print(json_response);
+    printf("%s\n",res);
     t_response_type response_type = (t_response_type)response_type_json->valueint;
 
     switch (response_type) {
     case OK_LOGIN:
-        // gtk_label_set_text(gtk_sign_in->label_error, "Login successful!");
+        handle_login_response(OK_LOGIN);
         break;
     case FAIL_LOGIN:
-        // gtk_label_set_text(gtk_sign_in->label_error, "Login failed. Please check your credentials.");
+        handle_login_response(FAIL_LOGIN);
         break;
     case OK_REGISTRATION:
-        // gtk_label_set_text(gtk_sign_up->label_error, "Registration successful!");
+        handle_registration_response(OK_REGISTRATION);
         break;
     case FAIL_REGISTRATION:
-        // gtk_label_set_text(gtk_sign_up->label_error, "Registration failed. Try a different username.");
+        handle_registration_response(FAIL_REGISTRATION);
         break;
     case OK_CREATE_NEW_PRIVATE_CHAT:
         // gtk_label_set_text(gtk_sign_in->label_error, "Chat created successfully!");
@@ -39,13 +40,12 @@ gboolean update_gui_with_response(gpointer data) {
     case FAIL_CREATE_NEW_PRIVATE_CHAT:
         // gtk_label_set_text(gtk_sign_in->label_error, "Failed to create a new chat.");
         break;
-    case OK_GET_ALL_CHATS:
-        
-        printf("Ok\n%s\n",res);
-        // gtk_label_set_text(gtk_sign_in->label_error, "Chat list retrieved.");
+    case OK_GET_ALL_CHATS: {
+        printf("%s\n",res);
+        handle_get_all_user_chats_response(json_response);
         break;
-    case FAIL_GET_ALL_CHATS:
-        printf("Fail\n%s\n",res);
+    } 
+    case FAIL_GET_ALL_CHATS:  
         // gtk_label_set_text(gtk_sign_in->label_error, "Failed to retrieve chat list.");
         break;
     case OK_MESSAGE:

@@ -23,4 +23,9 @@ gboolean update_gui_with_response(gpointer data);
 int      send_login_request(const gchar *username, const gchar *password, SSL *ssl);
 int      send_registration_request(const gchar *username, const gchar *password, SSL *ssl);
 int      send_all_user_chats_request(SSL *ssl);
+
+void handle_login_response(int response_type);
+void handle_registration_response(int response_type);
+void handle_get_all_user_chats_response(cJSON *response);
 #endif  // CLIENT_H
+

@@ -17,39 +17,42 @@ gboolean update_gui_with_response(gpointer data) {
         g_free(data);
         return FALSE;
     }
-
+    char *res = cJSON_Print(json_response);
     t_response_type response_type = (t_response_type)response_type_json->valueint;
 
     switch (response_type) {
     case OK_LOGIN:
-        gtk_label_set_text(gtk_sign_in->label_error, "Login successful!");
+        // gtk_label_set_text(gtk_sign_in->label_error, "Login successful!");
         break;
     case FAIL_LOGIN:
-        gtk_label_set_text(gtk_sign_in->label_error, "Login failed. Please check your credentials.");
+        // gtk_label_set_text(gtk_sign_in->label_error, "Login failed. Please check your credentials.");
         break;
     case OK_REGISTRATION:
-        gtk_label_set_text(gtk_sign_up->label_error, "Registration successful!");
+        // gtk_label_set_text(gtk_sign_up->label_error, "Registration successful!");
         break;
     case FAIL_REGISTRATION:
-        gtk_label_set_text(gtk_sign_up->label_error, "Registration failed. Try a different username.");
+        // gtk_label_set_text(gtk_sign_up->label_error, "Registration failed. Try a different username.");
         break;
     case OK_CREATE_NEW_PRIVATE_CHAT:
-        gtk_label_set_text(gtk_sign_in->label_error, "Chat created successfully!");
+        // gtk_label_set_text(gtk_sign_in->label_error, "Chat created successfully!");
         break;
     case FAIL_CREATE_NEW_PRIVATE_CHAT:
-        gtk_label_set_text(gtk_sign_in->label_error, "Failed to create a new chat.");
+        // gtk_label_set_text(gtk_sign_in->label_error, "Failed to create a new chat.");
         break;
     case OK_GET_ALL_CHATS:
-        gtk_label_set_text(gtk_sign_in->label_error, "Chat list retrieved.");
+        
+        printf("Ok\n%s\n",res);
+        // gtk_label_set_text(gtk_sign_in->label_error, "Chat list retrieved.");
         break;
     case FAIL_GET_ALL_CHATS:
-        gtk_label_set_text(gtk_sign_in->label_error, "Failed to retrieve chat list.");
+        printf("Fail\n%s\n",res);
+        // gtk_label_set_text(gtk_sign_in->label_error, "Failed to retrieve chat list.");
         break;
     case OK_MESSAGE:
-        gtk_label_set_text(gtk_sign_in->label_error, "Message sent successfully.");
+        // gtk_label_set_text(gtk_sign_in->label_error, "Message sent successfully.");
         break;
     case FAIL_MESSAGE:
-        gtk_label_set_text(gtk_sign_in->label_error, "Failed to send message.");
+        // gtk_label_set_text(gtk_sign_in->label_error, "Failed to send message.");
         break;
     default:
         g_printerr("Unknown response type: %d\n", response_type);

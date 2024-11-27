@@ -32,3 +32,15 @@ int send_registration_request(const gchar *username, const gchar *password, SSL 
 
     return result;
 }
+
+int send_all_user_chats_request(SSL *ssl) {
+    cJSON *request = create_request_all_user_chats();
+    char *str = cJSON_PrintUnformatted(request);
+    int result = SSL_write(ssl, str, strlen(str));
+    
+    free(str);
+    cJSON_Delete(request);
+
+    return result;
+}
+

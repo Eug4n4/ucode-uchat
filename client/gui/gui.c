@@ -1,73 +1,13 @@
-#include "gui.h"
+// #include "gui.h"
 #include "../inc/client.h"
 
-GtkBuilder    *builder_login;
-GtkBuilder    *builder_registration;
-t_gtk_sign_in *gtk_sign_in;
-t_gtk_sign_up *gtk_sign_up;
+GtkBuilder    *builder_login = NULL;
+GtkBuilder    *builder_registration = NULL;
+t_gtk_sign_in *gtk_sign_in = NULL;
+t_gtk_sign_up *gtk_sign_up = NULL;
+t_gtk_main_window *gtk_main_window = NULL;
+GtkBuilder *builder_main_window = NULL;
 
-t_gtk_sign_up *create_gtk_sign_up_data() {
-    t_gtk_sign_up *data = malloc(sizeof(t_gtk_sign_up));
-    GtkWindow     *window;
-    GError        *error = NULL;
-    GtkEntry      *entry_username;
-    GtkEntry      *entry_password;
-    GtkLabel      *label_error;
-
-    if (!builder_registration) {
-        builder_registration = gtk_builder_new();
-    }
-
-    if (gtk_builder_add_from_file(builder_registration, GLADE_REGISTER_PATH, &error) == 0) {
-        g_print("Error loading file %s\n", error->message);
-        free(data);
-        g_error_free(error);
-        return NULL;
-    }
-    window               = GTK_WINDOW(gtk_builder_get_object(builder_registration, "window"));
-    entry_username       = GTK_ENTRY(gtk_builder_get_object(builder_registration, "entry_username"));
-    entry_password       = GTK_ENTRY(gtk_builder_get_object(builder_registration, "entry_password"));
-    label_error          = GTK_LABEL(gtk_builder_get_object(builder_registration, "label_error"));
-    data->window         = window;
-    data->entry_username = entry_username;
-    data->entry_password = entry_password;
-    data->label_error    = label_error;
-
-    gtk_widget_hide(GTK_WIDGET(window));
-    return data;
-}
-
-t_gtk_sign_in *create_gtk_sign_in_data(void) {
-    t_gtk_sign_in *data = malloc(sizeof(t_gtk_sign_in));
-    GtkWindow     *window;
-    GtkEntry      *entry_username;
-    GtkEntry      *entry_password;
-    GtkLabel      *label_error;
-    GError        *error = NULL;
-
-    if (!builder_login) {
-        builder_login = gtk_builder_new();
-    }
-
-    if (gtk_builder_add_from_file(builder_login, GLADE_LOGIN_PATH, &error) == 0) {
-        g_printerr("Error loading file: %s\n", error->message);
-        free(data);
-        g_clear_error(&error);
-        return NULL;
-    }
-
-    window         = GTK_WINDOW(gtk_builder_get_object(builder_login, "window"));
-    entry_username = GTK_ENTRY(gtk_builder_get_object(builder_login, "entry_username"));
-    entry_password = GTK_ENTRY(gtk_builder_get_object(builder_login, "entry_password"));
-    label_error    = GTK_LABEL(gtk_builder_get_object(builder_login, "label_error"));
-
-    data->window         = window;
-    data->entry_username = entry_username;
-    data->entry_password = entry_password;
-    data->label_error    = label_error;
-
-    return data;
-}
 
 void on_btn_sign_in_clicked(GtkButton *button, gpointer data) {
     const gchar *username = gtk_entry_get_text(gtk_sign_in->entry_username);
@@ -87,6 +27,11 @@ void on_btn_sign_in_clicked(GtkButton *button, gpointer data) {
         gtk_label_set_text(gtk_sign_in->label_error, "Error communicating with server");
         return;
     }
+    gtk_entry_set_text(gtk_sign_in->entry_username, "");
+    gtk_entry_set_text(gtk_sign_in->entry_password, "");
+    show_screen(MAIN_SCREEN);
+    send_all_user_chats_request(gtk_sign_in->ssl);
+    
     (void)button;
     (void)data;
 }
@@ -121,49 +66,47 @@ void on_btn_sign_up_clicked(GtkButton *button, gpointer data) {
             }
             gtk_entry_set_text(gtk_sign_up->entry_username, "");
             gtk_entry_set_text(gtk_sign_up->entry_password, "");
+            show_screen(MAIN_SCREEN);
         }
     }
-
+    (void)button;
+    (void)data;
     g_print("Sign up button clicked\n");
 }
 
 
 void on_btn_sign_up_small_clicked(GtkButton *button, gpointer data) {
-    if (gtk_sign_in && gtk_sign_in->window) {
-        gtk_widget_hide(GTK_WIDGET(gtk_sign_in->window));
+    if (gtk_sign_up && gtk_sign_up->window && gtk_sign_in && gtk_sign_in->window) {
+        gtk_entry_set_text(gtk_sign_in->entry_username, "");
+        gtk_entry_set_text(gtk_sign_in->entry_password, "");
+        gtk_label_set_text(gtk_sign_in->label_error, "");
+        show_screen(REGISTRATION_SCREEN);
     } else {
-        g_print("Sign-in window is NULL\n");
+        g_print("Error in on_btn_sign_up_small_clicked\n");
     }
-
-    if (!gtk_sign_up) {
-        gtk_sign_up = create_gtk_sign_up_data();
-        if (!gtk_sign_up) {
-            g_print("Failed to create sign-up window\n");
-            gtk_main_quit();
-            return;
-        }
-    }
-    gtk_widget_show_all(GTK_WIDGET(gtk_sign_up->window));
-    g_print("Sign-up button clicked\n");
     (void)button;
     (void)data;
 }
 
 void on_btn_sign_in_small_clicked(GtkButton *button, gpointer data) {
-    if (gtk_sign_up && gtk_sign_up->window) {
-        gtk_widget_hide(GTK_WIDGET(gtk_sign_up->window));
+    if (gtk_sign_up && gtk_sign_up->window && gtk_sign_in && gtk_sign_in->window) {
+        gtk_entry_set_text(gtk_sign_up->entry_username, "");
+        gtk_entry_set_text(gtk_sign_up->entry_password, "");
+        gtk_label_set_text(gtk_sign_up->label_error, "");
+        show_screen(LOGIN_SCREEN);
     } else {
-        g_print("Sign-up window is NULL\n");
-    }
-
-    if (gtk_sign_in && gtk_sign_in->window) {
-        gtk_widget_show_all(GTK_WIDGET(gtk_sign_in->window));
-    } else {
-        g_print("Sign-in window is NULL\n");
+        g_print("Error in on_btn_sign_in_small_clicked\n");
     }
     (void)button;
     (void)data;
 
+}
+
+void on_log_out_subbtn_activate(GtkWidget *log_out_subbtn, gpointer data) {
+    g_print("Log out button clicked\n");
+    show_screen(LOGIN_SCREEN);
+    (void)log_out_subbtn;
+    (void)data;
 }
 
 void init_gui(int argc, char **argv, SSL *ssl) {
@@ -172,11 +115,12 @@ void init_gui(int argc, char **argv, SSL *ssl) {
     gtk_sign_in = create_gtk_sign_in_data();
     if (!gtk_sign_in) {
         printf("Error initializing GUI\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     gtk_sign_in->ssl = ssl;
 
     gtk_sign_up = create_gtk_sign_up_data();
+    gtk_main_window = create_gtk_main_window_data();
 
     GtkButton *btn_sign_in       = GTK_BUTTON(gtk_builder_get_object(builder_login, "btn_sign_in"));
     GtkButton *btn_sign_up_small = GTK_BUTTON(gtk_builder_get_object(builder_login, "btn_sign_up_small"));
@@ -188,6 +132,13 @@ void init_gui(int argc, char **argv, SSL *ssl) {
     g_signal_connect(btn_sign_up, "clicked", G_CALLBACK(on_btn_sign_up_clicked), NULL);
     g_signal_connect(btn_sign_in_small, "clicked", G_CALLBACK(on_btn_sign_in_small_clicked), NULL);
 
-    g_signal_connect(gtk_sign_in->window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-    g_signal_connect(gtk_sign_up->window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    GtkWidget *log_out_btn = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "log_out_subbtn"));
+    g_signal_connect(log_out_btn, "activate", G_CALLBACK(on_log_out_subbtn_activate), NULL);
+
+    g_signal_connect(gtk_sign_in->window, "destroy", G_CALLBACK(destroy_screens), NULL);
+    g_signal_connect(gtk_sign_up->window, "destroy", G_CALLBACK(destroy_screens), NULL);
+    g_signal_connect(gtk_main_window->window, "destroy", G_CALLBACK(destroy_screens), NULL);
+
+    show_screen(LOGIN_SCREEN);
 }
+

@@ -18,7 +18,9 @@ int do_connection(const char *host, int port);
 cJSON   *create_request_registration();
 cJSON   *create_request_login();
 cJSON   *create_request_new_private_chat();
+cJSON   *create_request_all_user_chats(void);
 gboolean update_gui_with_response(gpointer data);
 int      send_login_request(const gchar *username, const gchar *password, SSL *ssl);
 int      send_registration_request(const gchar *username, const gchar *password, SSL *ssl);
+int      send_all_user_chats_request(SSL *ssl);
 #endif  // CLIENT_H

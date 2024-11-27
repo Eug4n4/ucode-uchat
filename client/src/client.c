@@ -1,6 +1,5 @@
 #define _POSIX_C_SOURCE 1
 #include "../inc/client.h"
-#include "../inc/gui.h"
 
 gpointer read_from_server_thread(gpointer data) {
     SSL *ssl = (SSL *)data;
@@ -22,7 +21,6 @@ gpointer read_from_server_thread(gpointer data) {
             }
             break;
         }
-        // buffer[bytes_read] = '\0';
 
         g_idle_add((GSourceFunc)update_gui_with_response, g_strdup(buffer));
     }

@@ -9,7 +9,7 @@ int db_add_new_user(const char *username, const char *display_name, const char *
 
     sqlite3_bind_text(stmt, 1, username, -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt, 2, display_name, -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 3, password, -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 3, (const char *)hash_password(password, strlen(password)), -1, SQLITE_STATIC);
 
     sqlite3_step(stmt);
 

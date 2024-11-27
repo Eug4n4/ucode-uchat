@@ -29,21 +29,3 @@ cJSON *create_request_new_private_chat(void) {
     cJSON_AddItemToObject(json, KEY_CONTENT, content);
     return json;
 }
-
-cJSON *create_request_get_all_chats(void) {
-    cJSON *json = cJSON_CreateObject();
-    cJSON_AddNumberToObject(json, KEY_REQUEST_TYPE, GET_ALL_CHATS);
-    cJSON *content = cJSON_CreateObject();
-    cJSON_AddItemToObject(json, KEY_CONTENT, content);
-    return json;
-}
-
-cJSON *create_request_send_message(void) {
-    cJSON *json = cJSON_CreateObject();
-    cJSON_AddNumberToObject(json, KEY_REQUEST_TYPE, MESSAGE);
-    cJSON *content = cJSON_CreateObject();
-    cJSON_AddNumberToObject(content, KEY_CHAT_ID, -1);
-    cJSON_AddStringToObject(content, KEY_MESSAGE, "");
-    cJSON_AddItemToObject(json, KEY_CONTENT, content);
-    return json;
-}

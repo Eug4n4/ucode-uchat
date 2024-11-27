@@ -20,7 +20,7 @@
           <object class="GtkImage" id="group_image">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="pixbuf">group_icon.png</property>
+            <property name="pixbuf">private_chat_icon.png</property>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -32,7 +32,8 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="margin_left">120</property>
-            <property name="label" translatable="yes">group_name</property>
+            <property name="label" translatable="yes">private_chat_name</property>
+            <property name="wrap">True</property>
           </object>
           <packing>
             <property name="left_attach">1</property>

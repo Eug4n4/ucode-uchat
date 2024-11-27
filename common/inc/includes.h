@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <openssl/ssl.h>
 #include <openssl/crypto.h>
+#include <ctype.h>
 #include "../../libs/cjson/cJSON.h"
 
 #endif //INCLUDES_H

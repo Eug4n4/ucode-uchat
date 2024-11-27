@@ -25,7 +25,7 @@ typedef struct s_chats {
 typedef struct s_user {
     int   id;
     char *username;
-    unsigned char *password;
+    char *password;
     char *display_name;
 
 } t_user;
@@ -97,6 +97,7 @@ void free_messages(t_messages **messages);
 
 void logging_format(int priority, const char *format, ...);
 unsigned char *hash_password(const char *password, int password_len);
+char *hash_to_hex(unsigned char *hash);
 #endif
 
 

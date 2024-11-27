@@ -19,6 +19,7 @@ typedef enum e_response_type { OK_LOGIN,
                                OK_MESSAGE,
                                FAIL_MESSAGE,
                                OK_GET_CHAT_MESSAGES,
-                               FAIL_GET_CHAT_MESSAGES} t_response_type;
+                               FAIL_GET_CHAT_MESSAGES,
+                               BAD_REQUEST} t_response_type;
 
 #endif //ENUMS_H

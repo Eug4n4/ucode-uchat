@@ -22,6 +22,9 @@ void process_request_type(cJSON *request, t_accepted_client *client, t_server_st
     case GET_CHAT_MESSAGES:
         handle_get_chat_messages_request(request, client);
         break;
+    case ALL_USERS_EXCLUDE:
+        handle_get_all_users_exclude_request(request, client);
+        break;
     default:
         break;
     }

@@ -170,3 +170,19 @@ void handle_get_chat_messages_request(cJSON *request, t_accepted_client *client)
 
     free_messages(&messages);
 }
+
+void handle_get_all_users_exclude_request(cJSON *request, t_accepted_client *client) {
+    t_user *user = db_get_user_by_id(client->client_id);
+
+    if (user) {
+        t_users *users = db_get_all_users_exclude_id(user->id);    
+
+        generate_all_users_exclude_response(OK_ALL_USERS_EXCLUDE, &users, client);
+        free_users(&users);
+        free_user(user);
+        return;
+    }
+    generate_all_users_exclude_response(FAIL_ALL_USERS_EXCLUDE, NULL, client);
+    (void)request;
+    
+}

@@ -184,3 +184,35 @@ void generate_get_chat_messages_response(int response, t_messages *messages, t_a
 
     cJSON_Delete(response_json);
 }
+
+
+void generate_all_users_exclude_response(int response, t_users **users, t_accepted_client *client) {
+    cJSON *all_users_response = cJSON_CreateObject();
+    cJSON *content = cJSON_CreateObject();
+    cJSON *json_users = cJSON_CreateArray();
+
+    switch (response) {
+        case OK_ALL_USERS_EXCLUDE:
+            cJSON_AddNumberToObject(all_users_response, "response_type", OK_ALL_USERS_EXCLUDE);
+            t_users *head = *users;
+
+            while (head->user) {
+                cJSON *user = cJSON_CreateObject();
+                cJSON_AddStringToObject(user, "username", head->user->username);
+                cJSON_AddItemToArray(json_users, user);
+
+                head = head->next;
+            }
+            cJSON_AddItemToObject(content, "users", json_users);
+            cJSON_AddItemToObject(all_users_response, "content", content);
+            break;
+        case FAIL_ALL_USERS_EXCLUDE:
+            cJSON_AddNumberToObject(all_users_response, "response_type", FAIL_ALL_USERS_EXCLUDE);
+            break;
+        default:
+            break;
+    }
+    send_response(all_users_response, client);
+    cJSON_Delete(all_users_response);
+}
+

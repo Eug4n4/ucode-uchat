@@ -53,7 +53,7 @@ static void destroy_screen(t_screen screen) {
 }
 
 void destroy_screens(void) {
-    for (t_screen screen = LOGIN_SCREEN; screen <= CREATE_CHAT_SCREEN; ++screen) {
+    for (t_screen screen = LOGIN_SCREEN; screen < ALL_SCREENS; ++screen) {
         destroy_screen(screen);
     }
     gtk_main_quit();

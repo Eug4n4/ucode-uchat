@@ -16,16 +16,23 @@
 
 int do_connection(const char *host, int port);
 
+t_users *create_users(t_user *user);
+t_user *create_user(void);
+void add_users_front(t_users **users, t_user *user);
+void free_users(t_users **users);
+
 cJSON   *create_request_registration();
 cJSON   *create_request_login();
 cJSON   *create_request_new_private_chat();
 cJSON   *create_request_all_user_chats(void);
 cJSON *create_request_all_users_exclude(void);
+cJSON *create_request_new_chat(void);
 gboolean update_gui_with_response(gpointer data);
 int      send_login_request(const gchar *username, const gchar *password, SSL *ssl);
 int      send_registration_request(const gchar *username, const gchar *password, SSL *ssl);
 int      send_all_user_chats_request(SSL *ssl);
 int send_all_users_exclude_request(t_connection *connection);
+int send_create_chat_request(t_app *app, const char *chat_name);
 
 void handle_login_response(int response_type);
 void handle_registration_response(int response_type);

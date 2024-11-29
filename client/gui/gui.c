@@ -110,6 +110,7 @@ void on_toggle_renderer_toggled(GtkCellRendererToggle *cell, gchar *path) {
     gtk_tree_model_get(model, &iter, 1, &state, -1);
     state = !state;
     gtk_list_store_set(gtk_create_chat->users_store, &iter, 1, state, -1);
+    g_print("%s\n",path);
     (void)cell;
 
 }
@@ -136,7 +137,42 @@ void on_log_out_subbtn_activate(GtkWidget *log_out_subbtn, gpointer data) {
     (void)data;
 }
 
-void init_gui(int argc, char **argv, t_connection *connection) {
+void on_btn_create_chat_clicked(GtkButton *button, gpointer data) {
+    t_app *app = (t_app *)data;
+    g_print("button create chat clicked\n");
+    const gchar *chat_name = gtk_entry_get_text(gtk_create_chat->entry_chat_name);
+    gboolean state;
+    gchar *username;
+
+    if (chat_name[0] == '\0') {
+        g_print("Enter chat name to create a new chat\n");
+        return;
+    }
+
+    GtkTreeModel *model = gtk_tree_view_get_model(gtk_create_chat->view_users);
+    GtkTreeIter iter;
+
+    if (gtk_tree_model_get_iter_from_string(model, &iter, "0")) {
+        if (!app->users) {
+            app->users = create_users(NULL);
+        }
+        do {
+            gtk_tree_model_get(model, &iter, 0, &username, -1);
+            gtk_tree_model_get(model, &iter, 1, &state, -1);
+            if (state) {
+                t_user *user = create_user();
+                user->username = g_strdup(username); // idk why I can't use just strdup here?
+                add_users_front(&app->users, user);
+            }
+        } while (gtk_tree_model_iter_next(model, &iter));
+        send_create_chat_request(app, chat_name);
+    }
+    gtk_entry_set_text(gtk_create_chat->entry_chat_name, "");
+    (void)button;
+    (void)data;
+}
+
+void init_gui(int argc, char **argv, t_app *app) {
     gtk_init(&argc, &argv);
 
     gtk_sign_in = create_gtk_sign_in_data();
@@ -144,7 +180,7 @@ void init_gui(int argc, char **argv, t_connection *connection) {
         printf("Error initializing GUI\n");
         exit(EXIT_FAILURE);
     }
-    gtk_sign_in->connection = connection;
+    gtk_sign_in->connection = app->connection;
 
     gtk_sign_up = create_gtk_sign_up_data();
     gtk_main_window = create_gtk_main_window_data();
@@ -163,10 +199,13 @@ void init_gui(int argc, char **argv, t_connection *connection) {
     GtkWidget *log_out_btn = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "log_out_subbtn"));
     GtkButton *btn_add_chat = GTK_BUTTON(gtk_builder_get_object(builder_main_window, "btn_add_chat"));
     g_signal_connect(log_out_btn, "activate", G_CALLBACK(on_log_out_subbtn_activate), NULL);
-    g_signal_connect(btn_add_chat, "clicked", G_CALLBACK(on_btn_add_chat_clicked), connection);
+    g_signal_connect(btn_add_chat, "clicked", G_CALLBACK(on_btn_add_chat_clicked), app->connection);
 
+    GtkButton *btn_create_chat = GTK_BUTTON(gtk_builder_get_object(builder_create_chat, "btn_create_chat"));
     g_signal_connect(gtk_create_chat->toggle_renderer, "toggled", G_CALLBACK(on_toggle_renderer_toggled), NULL);
     g_signal_connect(gtk_create_chat->selected_user, "changed", G_CALLBACK(on_selected_user_changed), NULL);
+    g_signal_connect(btn_create_chat, "clicked", G_CALLBACK(on_btn_create_chat_clicked), app);
+
 
     g_signal_connect(gtk_sign_in->window, "destroy", G_CALLBACK(destroy_screens), NULL);
     g_signal_connect(gtk_sign_up->window, "destroy", G_CALLBACK(destroy_screens), NULL);

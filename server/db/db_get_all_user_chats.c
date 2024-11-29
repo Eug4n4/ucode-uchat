@@ -20,7 +20,7 @@ t_chats *db_get_all_user_chats(int user_id) {
     t_chats *chats = create_chats(NULL);
     while (step_res == SQLITE_ROW) {
         int chat_id = sqlite3_column_int(stmt, 0);
-        char *name = strdup((char *)sqlite3_column_text(stmt, 1));
+        char *name = mx_strdup((char *)sqlite3_column_text(stmt, 1));
         int type = sqlite3_column_int(stmt, 2);
 
         t_chat *chat = create_chat(chat_id, name, type);

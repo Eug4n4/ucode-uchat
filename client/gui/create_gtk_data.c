@@ -30,6 +30,7 @@ t_gtk_create_chat *create_gtk_create_chat_data(void) {
     GError        *error = NULL;
     GtkListStore *users_store;
     GtkTreeView *view_users;
+    GtkEntry *entry_chat_name;
     GtkTreeSelection *selected_user;
     GtkTreeViewColumn *column_username;
     GtkTreeViewColumn *column_toggle;
@@ -56,6 +57,8 @@ t_gtk_create_chat *create_gtk_create_chat_data(void) {
     btn_create_chat = GTK_BUTTON(gtk_builder_get_object(builder_create_chat, "btn_create_chat"));
     text_renderer = GTK_CELL_RENDERER(gtk_builder_get_object(builder_create_chat, "text_renderer"));
     toggle_renderer = GTK_CELL_RENDERER_TOGGLE(gtk_builder_get_object(builder_create_chat, "toggle_renderer"));
+    entry_chat_name = GTK_ENTRY(gtk_builder_get_object(builder_create_chat, "entry_chat_name"));
+
     selected_user = gtk_tree_view_get_selection(view_users);
     
     data->window = window;
@@ -67,6 +70,7 @@ t_gtk_create_chat *create_gtk_create_chat_data(void) {
     data->text_renderer = text_renderer;
     data->toggle_renderer = toggle_renderer;
     data->users_store = users_store;
+    data->entry_chat_name = entry_chat_name;
     gtk_tree_view_set_model(data->view_users, GTK_TREE_MODEL(data->users_store)); 
     gtk_tree_view_column_add_attribute(column_username, text_renderer, "text", 0);
     gtk_tree_view_column_add_attribute(column_toggle, GTK_CELL_RENDERER(toggle_renderer), "active", 1);

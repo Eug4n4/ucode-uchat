@@ -44,13 +44,15 @@ int main(int argc, char *argv[]) {
         printf("SSL connection failed\n");
         exit(EXIT_FAILURE);
     }
-
+    t_app *app = malloc(sizeof(t_app));
     t_connection *connection = malloc(sizeof(t_connection));
     connection->server_fd = server_fd;
     connection->ssl = ssl;
-    connection->user = NULL; // do we really need to store user data on client side? Maybee for creating new chat request
-
-    init_gui(argc, argv, connection);
+    // connection->user = NULL; // do we really need to store user data on client side? Maybee for creating new chat request (yes)
+    app->connection = connection;
+    app->current_user = NULL;
+    app->users = NULL;
+    init_gui(argc, argv, app);
 
     g_thread_new("read-from-server", read_from_server_thread, connection);
 
@@ -58,7 +60,8 @@ int main(int argc, char *argv[]) {
 
     SSL_CTX_free(ctx);
     SSL_free(ssl);
-    free(connection);
+    free(app->connection);
+    free(app);
     close(server_fd);
 
     return 0;

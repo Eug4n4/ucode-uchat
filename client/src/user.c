@@ -1,10 +1,10 @@
-#include "server.h"
+#include "gui.h"
 
 t_user *create_user(void) {
     t_user *new_user = malloc(sizeof(t_user));
+    new_user->username = NULL;
     new_user->display_name = NULL;
     new_user->password = NULL;
-    new_user->username = NULL;
     
     if (!new_user) {
         return NULL;
@@ -12,20 +12,23 @@ t_user *create_user(void) {
     return new_user;
 }
 
-t_user *create_user_with_params(int id, char *username, char *password, char *display_name) {
+t_user *create_user_with_params(char *username, char *password, char *display_name) {
     t_user *user = create_user();
-    user->id = id;
-    user->username = mx_strdup(username);
-    user->password = mx_strdup(password);
-    user->display_name = mx_strdup(display_name);
-    
+    user->username = g_strdup(username);
+    user->password = g_strdup(password);
+    user->display_name = g_strdup(display_name);
+
     return user;
 }
 
 void free_user(t_user *user) {
     free(user->username);
-    free(user->password);
-    free(user->display_name);
+    if (user->password) {
+        free(user->password);
+    }
+    if (user->display_name) {
+        free(user->display_name);
+    }
     free(user);
 }
 

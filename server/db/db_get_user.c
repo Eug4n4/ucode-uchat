@@ -19,9 +19,9 @@ t_user *db_get_user_by_username(const char *username) {
     if (res == SQLITE_ROW) {
         user = create_user();
         user->id = sqlite3_column_int(stmt, 0);
-        user->username = strdup((char *)sqlite3_column_text(stmt, 1));
-        user->password = strdup((char *)sqlite3_column_text(stmt, 2));
-        user->display_name = strdup((char *)sqlite3_column_text(stmt, 3));
+        user->username = mx_strdup((char *)sqlite3_column_text(stmt, 1));
+        user->password = mx_strdup((char *)sqlite3_column_text(stmt, 2));
+        user->display_name = mx_strdup((char *)sqlite3_column_text(stmt, 3));
     }
 
     sqlite3_finalize(stmt);
@@ -47,9 +47,9 @@ t_user *db_get_user_by_id(int id) {
     if (res == SQLITE_ROW) {
         user = create_user();
         user->id = sqlite3_column_int(stmt, 0);
-        user->username = strdup((char *)sqlite3_column_text(stmt, 1));
-        user->password = strdup((char *)sqlite3_column_text(stmt, 2));
-        user->display_name = strdup((char *)sqlite3_column_text(stmt, 3));
+        user->username = mx_strdup((char *)sqlite3_column_text(stmt, 1));
+        user->password = mx_strdup((char *)sqlite3_column_text(stmt, 2));
+        user->display_name = mx_strdup((char *)sqlite3_column_text(stmt, 3));
     }
 
     sqlite3_finalize(stmt);

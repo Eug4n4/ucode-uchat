@@ -12,7 +12,8 @@ typedef enum e_screen {
     LOGIN_SCREEN,
     REGISTRATION_SCREEN,
     MAIN_SCREEN,
-    CREATE_CHAT_SCREEN
+    CREATE_CHAT_SCREEN,
+    ALL_SCREENS
 } t_screen;
 
 
@@ -22,17 +23,29 @@ typedef struct s_user {
     char *password;
 } t_user;
 
+typedef struct s_users {
+    t_user *user;
+    struct s_users *next;
+} t_users;
+
 typedef struct s_connection {
     SSL *ssl;
     int server_fd;
-    t_user *user;
+    // t_user *user;
     char *buffer;
 } t_connection;
+
+typedef struct s_app {
+    t_connection *connection;
+    t_user *current_user;
+    t_users *users;
+} t_app;
 
 typedef struct s_gtk_create_chat {
     GtkWindow  *window;
     GtkListStore *users_store;
     GtkTreeView *view_users;
+    GtkEntry *entry_chat_name;
     GtkTreeSelection *selected_user;
     GtkTreeViewColumn *column_username;
     GtkTreeViewColumn *column_toggle;
@@ -77,7 +90,7 @@ extern GtkBuilder *builder_main_window;
 extern t_gtk_create_chat *gtk_create_chat;
 extern GtkBuilder *builder_create_chat;
 
-void           init_gui(int argc, char **argv, t_connection *connection);
+void           init_gui(int argc, char **argv, t_app *app);
 t_gtk_sign_in *create_gtk_sign_in_data(void);
 t_gtk_sign_up *create_gtk_sign_up_data(void);
 t_gtk_main_window *create_gtk_main_window_data(void);

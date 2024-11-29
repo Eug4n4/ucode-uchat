@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -Wall -Wextra -Wpedantic
+CFLAGS = -std=c11 -Wall -Wextra -Werror -Wpedantic
 LIBDIR = ../libs
 INCDIR = inc
 SRCDIR = src

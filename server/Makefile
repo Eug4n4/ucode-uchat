@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -Wall -Wextra -Wpedantic -gdwarf-2
+CFLAGS = -std=c11 -Wall -Wextra -Wpedantic -Werror -gdwarf-2
 SRCDIR = src
 INCDIR = inc
 OBJDIR = obj

@@ -22,8 +22,7 @@ gpointer read_from_server_thread(gpointer data) {
             }
             break;
         }
-        connection->buffer = malloc(sizeof(char) * bytes_read);
-        strcpy(connection->buffer, buffer);
+        connection->buffer = mx_strdup(buffer);
         g_idle_add((GSourceFunc)update_gui_with_response, connection);
     }
 

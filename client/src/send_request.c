@@ -67,11 +67,12 @@ int send_create_chat_request(t_app *app, const char *chat_name) {
         cJSON_AddItemToArray(json_users, user_data);
     }
     cJSON_AddItemToObject(content, "users", json_users);
-    char *res = cJSON_Print(request);
-    // int result = SSL_write(app->connection->ssl, request_str, strlen(request_str)); // must do changes on server side before uncomment this
-    int d = 0;
-    printf("%s\n",res);
+    char *request_str = cJSON_PrintUnformatted(request);
+    int result = SSL_write(app->connection->ssl, request_str, strlen(request_str));
+
     free_users(&app->users);
-    return d;
+    free(request_str);
+    cJSON_Delete(request);
+    return result;
 }
 

@@ -42,7 +42,6 @@ gboolean update_gui_with_response(gpointer data) {
         // gtk_label_set_text(gtk_sign_in->label_error, "Failed to create a new chat.");
         break;
     case OK_GET_ALL_CHATS: {
-        printf("%s\n",res);
         handle_get_all_user_chats_response(json_response);
         break;
     } 

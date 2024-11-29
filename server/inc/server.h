@@ -71,6 +71,7 @@ void daemonize_server(void);
 void handle_login_request(cJSON *request, t_accepted_client *client);
 void handle_registration_request(cJSON *request, t_accepted_client *client);
 void handle_new_private_chat_request(cJSON *request, t_accepted_client *client);
+void handle_new_chat_request(cJSON *request, t_accepted_client *client);
 void handle_message_request(cJSON *request, t_accepted_client *client, t_server_state *state);
 void handle_all_chats_request(t_accepted_client *client);
 void handle_get_chat_messages_request(cJSON *request, t_accepted_client *client);

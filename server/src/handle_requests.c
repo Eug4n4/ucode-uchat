@@ -85,7 +85,7 @@ void handle_new_private_chat_request(cJSON *request, t_accepted_client *client) 
     if (client->is_logged_in) {
         cJSON *content  = cJSON_GetObjectItem(request, "content");
         cJSON *username = cJSON_GetObjectItem(content, "username");
-
+        char *chat_name = cJSON_GetObjectItem(content, "chat_name")->valuestring;
         const char *target_username    = cJSON_GetStringValue(username);
         int         requesting_user_id = client->client_id;
 
@@ -107,7 +107,7 @@ void handle_new_private_chat_request(cJSON *request, t_accepted_client *client) 
         if (existing_chat_id > 0) {
             process_response_type(FAIL_CREATE_NEW_PRIVATE_CHAT, client);
         } else {
-            int new_chat_id = db_create_chat("private_chat", 0);
+            int new_chat_id = db_create_chat(chat_name, 0);
             if (new_chat_id > 0) {
                 db_link_users_to_chat(new_chat_id, requesting_user_id);
                 db_link_users_to_chat(new_chat_id, target_user_id);
@@ -186,3 +186,30 @@ void handle_get_all_users_exclude_request(cJSON *request, t_accepted_client *cli
     (void)request;
     
 }
+
+
+void handle_new_chat_request(cJSON *request, t_accepted_client *client) {
+    cJSON *content = cJSON_GetObjectItemCaseSensitive(request, "content");
+    cJSON *users_array = cJSON_GetObjectItemCaseSensitive(content, "users");
+    char *chat_name = cJSON_GetObjectItemCaseSensitive(content, "chat_name")->valuestring;
+    int size = cJSON_GetArraySize(users_array);
+
+    if (size == 1) {
+        cJSON *json_username = cJSON_GetArrayItem(users_array, 0);
+        char *username = cJSON_GetObjectItemCaseSensitive(json_username, "username")->valuestring;
+        cJSON *private_chat_request = cJSON_CreateObject();
+        cJSON *private_chat_content = cJSON_CreateObject();
+
+        cJSON_AddStringToObject(private_chat_content, "username", username);
+        cJSON_AddStringToObject(private_chat_content, "chat_name", chat_name);
+        cJSON_AddItemToObject(private_chat_request, "content", private_chat_content);
+        handle_new_private_chat_request(private_chat_request, client);
+        cJSON_Delete(private_chat_request);
+    } else if(size > 1) {
+        // TODO handle new group chat request
+    } else {
+        // TODO Send fail response to the client?
+    }    
+
+}
+

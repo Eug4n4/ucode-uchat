@@ -48,7 +48,7 @@ cJSON *create_request_all_users_exclude(void) {
 
 cJSON *create_request_new_chat(void) {
     cJSON *json = cJSON_CreateObject();
-    cJSON_AddNumberToObject(json, KEY_REQUEST_TYPE, CREATE_NEW_PRIVATE_CHAT);
+    cJSON_AddNumberToObject(json, KEY_REQUEST_TYPE, NEW_CHAT);
     cJSON *content = cJSON_CreateObject();
     cJSON_AddItemToObject(json, KEY_CONTENT, content);
     return json;

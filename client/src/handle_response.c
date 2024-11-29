@@ -5,7 +5,7 @@ void handle_login_response(int response_type) {
     switch (response_type) {
     case OK_LOGIN:
         show_screen(MAIN_SCREEN);
-        send_all_user_chats_request(gtk_sign_in->ssl);
+        send_all_user_chats_request(&client_data->ssl);
         break;
     case FAIL_LOGIN:
         gtk_label_set_text(gtk_sign_in->label_error, "Login failed. Please check your credentials.");
@@ -19,7 +19,7 @@ void handle_registration_response(int response_type) {
     switch (response_type) {
     case OK_REGISTRATION:
         show_screen(MAIN_SCREEN);
-        send_all_user_chats_request(gtk_sign_in->ssl);
+        send_all_user_chats_request(&client_data->ssl);
         break;
     case FAIL_REGISTRATION:
         gtk_label_set_text(gtk_sign_up->label_error, "Registration failed. Try a different username.");

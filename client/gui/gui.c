@@ -1,12 +1,12 @@
 #include "../inc/client.h"
+#include "client.h"
 
-GtkBuilder    *builder_login = NULL;
-GtkBuilder    *builder_registration = NULL;
-t_gtk_sign_in *gtk_sign_in = NULL;
-t_gtk_sign_up *gtk_sign_up = NULL;
-t_gtk_main_window *gtk_main_window = NULL;
-GtkBuilder *builder_main_window = NULL;
-
+GtkBuilder        *builder_login        = NULL;
+GtkBuilder        *builder_registration = NULL;
+t_gtk_sign_in     *gtk_sign_in          = NULL;
+t_gtk_sign_up     *gtk_sign_up          = NULL;
+t_gtk_main_window *gtk_main_window      = NULL;
+GtkBuilder        *builder_main_window  = NULL;
 
 void on_btn_sign_in_clicked(GtkButton *button, gpointer data) {
     const gchar *username = gtk_entry_get_text(gtk_sign_in->entry_username);
@@ -22,14 +22,15 @@ void on_btn_sign_in_clicked(GtkButton *button, gpointer data) {
         return;
     }
 
-    if (send_login_request(username, password, gtk_sign_in->ssl) < 0) {
+    if (send_login_request(username, password, client_data->ssl) < 0) {
         gtk_label_set_text(gtk_sign_in->label_error, "Error communicating with server");
         return;
     }
+
     gtk_entry_set_text(gtk_sign_in->entry_username, "");
     gtk_entry_set_text(gtk_sign_in->entry_password, "");
     gtk_label_set_text(gtk_sign_in->label_error, "");
-    
+
     (void)button;
     (void)data;
 }
@@ -58,7 +59,7 @@ void on_btn_sign_up_clicked(GtkButton *button, gpointer data) {
                                "  - One digit\n"
                                "  - One special character.");
         } else {
-            if (send_registration_request(username, password, gtk_sign_in->ssl) < 0) {
+            if (send_registration_request(username, password, client_data->ssl) < 0) {
                 gtk_label_set_text(gtk_sign_up->label_error, "Error communicating with server");
                 return;
             }
@@ -71,7 +72,6 @@ void on_btn_sign_up_clicked(GtkButton *button, gpointer data) {
     (void)data;
     g_print("Sign up button clicked\n");
 }
-
 
 void on_btn_sign_up_small_clicked(GtkButton *button, gpointer data) {
     if (gtk_sign_up && gtk_sign_up->window && gtk_sign_in && gtk_sign_in->window) {
@@ -97,7 +97,6 @@ void on_btn_sign_in_small_clicked(GtkButton *button, gpointer data) {
     }
     (void)button;
     (void)data;
-
 }
 
 void on_log_out_subbtn_activate(GtkWidget *log_out_subbtn, gpointer data) {
@@ -107,7 +106,43 @@ void on_log_out_subbtn_activate(GtkWidget *log_out_subbtn, gpointer data) {
     (void)data;
 }
 
+void close_reconnect_popup(GtkWidget *dialog) {
+    if (GTK_IS_WIDGET(dialog)) {
+        gtk_widget_destroy(dialog);  // Close the dialog
+    }
+}
+
+// This function is called to show the reconnection popup and start retrying in the background
+void show_reconnect_popup_callback(GtkWidget *dialog) {
+    if (GTK_IS_WIDGET(dialog)) {
+    gtk_widget_show_all(dialog);  // Show the dialog in the main thread
+    }
+}
+
+GtkWidget *show_reconnect_popup(const char *host, int port, SSL **ssl, SSL_CTX *ctx) {
+    GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_sign_in->window),
+                                               GTK_DIALOG_MODAL,
+                                               GTK_MESSAGE_INFO,
+                                               GTK_BUTTONS_NONE,
+                                               "Reconnecting to the server... Please wait.");
+
+    if (!GTK_IS_WIDGET(dialog)) {
+        g_print("Error: Failed to create dialog widget\n");
+        return NULL;  // Return NULL if dialog creation failed
+    }
+
+    gtk_window_set_title(GTK_WINDOW(dialog), "Reconnection in Progress");
+
+    // Ensure the dialog is shown in the main thread
+    g_idle_add((GSourceFunc)show_reconnect_popup_callback, dialog);
+
+    return dialog;  // Return the dialog pointer
+}
+
+
 void init_gui(int argc, char **argv, SSL *ssl) {
+    printf("client_data in GUI: %p\n", (void *)client_data);
+
     gtk_init(&argc, &argv);
 
     gtk_sign_in = create_gtk_sign_in_data();
@@ -115,9 +150,8 @@ void init_gui(int argc, char **argv, SSL *ssl) {
         printf("Error initializing GUI\n");
         exit(EXIT_FAILURE);
     }
-    gtk_sign_in->ssl = ssl;
 
-    gtk_sign_up = create_gtk_sign_up_data();
+    gtk_sign_up     = create_gtk_sign_up_data();
     gtk_main_window = create_gtk_main_window_data();
 
     GtkButton *btn_sign_in       = GTK_BUTTON(gtk_builder_get_object(builder_login, "btn_sign_in"));
@@ -139,4 +173,3 @@ void init_gui(int argc, char **argv, SSL *ssl) {
 
     show_screen(LOGIN_SCREEN);
 }
-

@@ -13,6 +13,16 @@
 
 #define h_addr h_addr_list[0]
 
+typedef struct {
+    char       *host;
+    int         port;
+    SSL        *ssl;
+    SSL_CTX    *ctx;
+    int         server_fd;  // Store the server socket file descriptor
+    GMutex      data_mutex;
+} t_client_data;
+
+
 int do_connection(const char *host, int port);
 
 cJSON   *create_request_registration();
@@ -27,5 +37,12 @@ int      send_all_user_chats_request(SSL *ssl);
 void handle_login_response(int response_type);
 void handle_registration_response(int response_type);
 void handle_get_all_user_chats_response(cJSON *response);
+
+bool reconnect_to_server(t_client_data *client_data);
+
+t_client_data *create_client_data(const char *host, int port, SSL *ssl, SSL_CTX *ctx, int server_fd);
+void free_client_data(t_client_data *client_data);
+
+extern t_client_data *client_data;
 #endif  // CLIENT_H
 

@@ -38,3 +38,11 @@ cJSON *create_request_all_user_chats(void) {
     return json;
 }
 
+cJSON *create_request_all_users_exclude(void) {
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddNumberToObject(json, KEY_REQUEST_TYPE, ALL_USERS_EXCLUDE);
+    cJSON *content = cJSON_CreateObject();
+    cJSON_AddItemToObject(json, KEY_CONTENT, content);
+    return json;
+}
+

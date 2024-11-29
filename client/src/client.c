@@ -2,7 +2,8 @@
 #include "../inc/client.h"
 
 gpointer read_from_server_thread(gpointer data) {
-    SSL *ssl = (SSL *)data;
+    t_connection *connection = (t_connection *)data;
+    SSL *ssl = connection->ssl;
     char buffer[BUF_SIZE] = {0};
 
     while (true) {
@@ -21,8 +22,9 @@ gpointer read_from_server_thread(gpointer data) {
             }
             break;
         }
-
-        g_idle_add((GSourceFunc)update_gui_with_response, g_strdup(buffer));
+        connection->buffer = malloc(sizeof(char) * bytes_read);
+        strcpy(connection->buffer, buffer);
+        g_idle_add((GSourceFunc)update_gui_with_response, connection);
     }
 
     return NULL;
@@ -43,14 +45,20 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    init_gui(argc, argv, ssl);
+    t_connection *connection = malloc(sizeof(t_connection));
+    connection->server_fd = server_fd;
+    connection->ssl = ssl;
+    connection->user = NULL; // do we really need to store user data on client side? Maybee for creating new chat request
 
-    g_thread_new("read-from-server", read_from_server_thread, ssl);
+    init_gui(argc, argv, connection);
+
+    g_thread_new("read-from-server", read_from_server_thread, connection);
 
     gtk_main();
 
     SSL_CTX_free(ctx);
     SSL_free(ssl);
+    free(connection);
     close(server_fd);
 
     return 0;

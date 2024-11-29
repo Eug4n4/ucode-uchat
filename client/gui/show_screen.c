@@ -27,6 +27,9 @@ void show_screen(int screen) {
         gtk_widget_hide(GTK_WIDGET(gtk_sign_in->window));
         gtk_widget_hide(GTK_WIDGET(gtk_sign_up->window));
         break;
+    case CREATE_CHAT_SCREEN:
+        gtk_widget_show(GTK_WIDGET(gtk_create_chat->window));
+        break;
     default:
         break;
     }

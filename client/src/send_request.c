@@ -44,3 +44,15 @@ int send_all_user_chats_request(SSL *ssl) {
     return result;
 }
 
+int send_all_users_exclude_request(t_connection *connection) {
+    cJSON *request = create_request_all_users_exclude();
+    char *request_str = cJSON_PrintUnformatted(request);
+    int result = SSL_write(connection->ssl, request_str, strlen(request_str));
+
+    free(request_str);
+    cJSON_Delete(request);
+
+    return result;
+}
+
+

@@ -6,7 +6,8 @@ t_gtk_sign_in *gtk_sign_in = NULL;
 t_gtk_sign_up *gtk_sign_up = NULL;
 t_gtk_main_window *gtk_main_window = NULL;
 GtkBuilder *builder_main_window = NULL;
-
+t_gtk_create_chat *gtk_create_chat = NULL;
+GtkBuilder *builder_create_chat = NULL;
 
 void on_btn_sign_in_clicked(GtkButton *button, gpointer data) {
     const gchar *username = gtk_entry_get_text(gtk_sign_in->entry_username);
@@ -22,7 +23,7 @@ void on_btn_sign_in_clicked(GtkButton *button, gpointer data) {
         return;
     }
 
-    if (send_login_request(username, password, gtk_sign_in->ssl) < 0) {
+    if (send_login_request(username, password, gtk_sign_in->connection->ssl) < 0) {
         gtk_label_set_text(gtk_sign_in->label_error, "Error communicating with server");
         return;
     }
@@ -58,7 +59,7 @@ void on_btn_sign_up_clicked(GtkButton *button, gpointer data) {
                                "  - One digit\n"
                                "  - One special character.");
         } else {
-            if (send_registration_request(username, password, gtk_sign_in->ssl) < 0) {
+            if (send_registration_request(username, password, gtk_sign_in->connection->ssl) < 0) {
                 gtk_label_set_text(gtk_sign_up->label_error, "Error communicating with server");
                 return;
             }
@@ -100,6 +101,34 @@ void on_btn_sign_in_small_clicked(GtkButton *button, gpointer data) {
 
 }
 
+void on_toggle_renderer_toggled(GtkCellRendererToggle *cell, gchar *path) {
+    g_print("toggle renderer toggled\n");
+    gboolean state;
+    GtkTreeModel *model = gtk_tree_view_get_model(gtk_create_chat->view_users);
+    GtkTreeIter iter;
+    gtk_tree_model_get_iter_from_string(model, &iter, path);
+    gtk_tree_model_get(model, &iter, 1, &state, -1);
+    state = !state;
+    gtk_list_store_set(gtk_create_chat->users_store, &iter, 1, state, -1);
+    (void)cell;
+
+}
+
+void on_selected_user_changed(GtkTreeSelection *selection) {
+    g_print("Changed\n");
+    (void)selection;
+}
+
+void on_btn_add_chat_clicked(GtkWidget *button, gpointer data) {
+    printf("add chat button clicked\n");
+    t_connection *connection = (t_connection *)data;
+    send_all_users_exclude_request(connection);
+    show_screen(CREATE_CHAT_SCREEN);
+    gtk_list_store_clear(gtk_create_chat->users_store);
+    (void)button;
+    (void)data;
+}
+
 void on_log_out_subbtn_activate(GtkWidget *log_out_subbtn, gpointer data) {
     g_print("Log out button clicked\n");
     show_screen(LOGIN_SCREEN);
@@ -107,7 +136,7 @@ void on_log_out_subbtn_activate(GtkWidget *log_out_subbtn, gpointer data) {
     (void)data;
 }
 
-void init_gui(int argc, char **argv, SSL *ssl) {
+void init_gui(int argc, char **argv, t_connection *connection) {
     gtk_init(&argc, &argv);
 
     gtk_sign_in = create_gtk_sign_in_data();
@@ -115,10 +144,11 @@ void init_gui(int argc, char **argv, SSL *ssl) {
         printf("Error initializing GUI\n");
         exit(EXIT_FAILURE);
     }
-    gtk_sign_in->ssl = ssl;
+    gtk_sign_in->connection = connection;
 
     gtk_sign_up = create_gtk_sign_up_data();
     gtk_main_window = create_gtk_main_window_data();
+    gtk_create_chat = create_gtk_create_chat_data();
 
     GtkButton *btn_sign_in       = GTK_BUTTON(gtk_builder_get_object(builder_login, "btn_sign_in"));
     GtkButton *btn_sign_up_small = GTK_BUTTON(gtk_builder_get_object(builder_login, "btn_sign_up_small"));
@@ -131,11 +161,17 @@ void init_gui(int argc, char **argv, SSL *ssl) {
     g_signal_connect(btn_sign_in_small, "clicked", G_CALLBACK(on_btn_sign_in_small_clicked), NULL);
 
     GtkWidget *log_out_btn = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "log_out_subbtn"));
+    GtkButton *btn_add_chat = GTK_BUTTON(gtk_builder_get_object(builder_main_window, "btn_add_chat"));
     g_signal_connect(log_out_btn, "activate", G_CALLBACK(on_log_out_subbtn_activate), NULL);
+    g_signal_connect(btn_add_chat, "clicked", G_CALLBACK(on_btn_add_chat_clicked), connection);
+
+    g_signal_connect(gtk_create_chat->toggle_renderer, "toggled", G_CALLBACK(on_toggle_renderer_toggled), NULL);
+    g_signal_connect(gtk_create_chat->selected_user, "changed", G_CALLBACK(on_selected_user_changed), NULL);
 
     g_signal_connect(gtk_sign_in->window, "destroy", G_CALLBACK(destroy_screens), NULL);
     g_signal_connect(gtk_sign_up->window, "destroy", G_CALLBACK(destroy_screens), NULL);
     g_signal_connect(gtk_main_window->window, "destroy", G_CALLBACK(destroy_screens), NULL);
+    g_signal_connect(gtk_create_chat->window, "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
 
     show_screen(LOGIN_SCREEN);
 }

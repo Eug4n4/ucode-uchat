@@ -1,7 +1,8 @@
 #include "../inc/client.h"
 
 gboolean update_gui_with_response(gpointer data) {
-    const gchar *response = (const gchar *)data;
+    t_connection *connection = (t_connection *)data;
+    const gchar *response = (const gchar *)connection->buffer;
 
     cJSON *json_response = cJSON_Parse(response);
     if (!json_response) {
@@ -54,13 +55,16 @@ gboolean update_gui_with_response(gpointer data) {
     case FAIL_MESSAGE:
         // gtk_label_set_text(gtk_sign_in->label_error, "Failed to send message.");
         break;
+    case OK_ALL_USERS_EXCLUDE:
+        handle_all_users_exclude_response(json_response);
+        break;
     default:
         g_printerr("Unknown response type: %d\n", response_type);
         break;
     }
 
     cJSON_Delete(json_response);
-    g_free(data);
+    free(connection->buffer);
 
     return FALSE;
 }

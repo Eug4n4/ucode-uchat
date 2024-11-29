@@ -24,6 +24,56 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     return data;
 }
 
+t_gtk_create_chat *create_gtk_create_chat_data(void) {
+    t_gtk_create_chat *data = malloc(sizeof(t_gtk_create_chat));
+    GtkWindow  *window;
+    GError        *error = NULL;
+    GtkListStore *users_store;
+    GtkTreeView *view_users;
+    GtkTreeSelection *selected_user;
+    GtkTreeViewColumn *column_username;
+    GtkTreeViewColumn *column_toggle;
+    GtkButton *btn_create_chat;
+    GtkCellRenderer *text_renderer;
+    GtkCellRendererToggle *toggle_renderer;
+
+
+    if (!builder_create_chat) {
+        builder_create_chat = gtk_builder_new();
+    }
+    if (gtk_builder_add_from_file(builder_create_chat, GLADE_CREATE_CHAT_PATH, &error) == 0) {
+        g_print("Error loading file %s\n", error->message);
+        free(data);
+        g_error_free(error);
+        return NULL;
+    }
+    window = GTK_WINDOW(gtk_builder_get_object(builder_create_chat, "window"));
+    users_store = GTK_LIST_STORE(gtk_builder_get_object(builder_create_chat, "users_store"));
+    view_users = GTK_TREE_VIEW(gtk_builder_get_object(builder_create_chat, "tv_users"));
+    selected_user = GTK_TREE_SELECTION(gtk_builder_get_object(builder_create_chat, "selected_user"));
+    column_username = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder_create_chat, "column_username"));
+    column_toggle = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder_create_chat, "column_toggle"));
+    btn_create_chat = GTK_BUTTON(gtk_builder_get_object(builder_create_chat, "btn_create_chat"));
+    text_renderer = GTK_CELL_RENDERER(gtk_builder_get_object(builder_create_chat, "text_renderer"));
+    toggle_renderer = GTK_CELL_RENDERER_TOGGLE(gtk_builder_get_object(builder_create_chat, "toggle_renderer"));
+    selected_user = gtk_tree_view_get_selection(view_users);
+    
+    data->window = window;
+    data->view_users = view_users;
+    data->selected_user = selected_user;
+    data->column_username = column_username;
+    data->column_toggle = column_toggle;
+    data->btn_create_chat = btn_create_chat;
+    data->text_renderer = text_renderer;
+    data->toggle_renderer = toggle_renderer;
+    data->users_store = users_store;
+    gtk_tree_view_set_model(data->view_users, GTK_TREE_MODEL(data->users_store)); 
+    gtk_tree_view_column_add_attribute(column_username, text_renderer, "text", 0);
+    gtk_tree_view_column_add_attribute(column_toggle, GTK_CELL_RENDERER(toggle_renderer), "active", 1);
+
+    return data;
+}
+
 t_gtk_sign_up *create_gtk_sign_up_data(void) {
     t_gtk_sign_up *data = malloc(sizeof(t_gtk_sign_up));
     GtkWindow     *window;

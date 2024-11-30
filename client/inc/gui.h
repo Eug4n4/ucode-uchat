@@ -54,7 +54,7 @@ void           sign_up_connect_signals(t_gtk_sign_in *gtk_sign_in, t_gtk_sign_up
 t_gtk_main_window *create_gtk_main_window_data(void);
 
 void show_screen(int screen);
-void destroy_screens(void);
+void destroy_screens(GtkWidget *widget, gpointer data);
 
 GtkWidget* show_reconnect_popup(const char *host, int port, SSL **ssl, SSL_CTX *ctx);
 void close_reconnect_popup(GtkWidget *dialog);

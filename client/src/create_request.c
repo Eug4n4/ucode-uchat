@@ -37,4 +37,3 @@ cJSON *create_request_all_user_chats(void) {
     cJSON_AddItemToObject(json, KEY_CONTENT, content);
     return json;
 }
-

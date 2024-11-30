@@ -1,6 +1,5 @@
 #include "client.h"
 
-
 void handle_login_response(int response_type) {
     switch (response_type) {
     case OK_LOGIN:
@@ -30,12 +29,9 @@ void handle_registration_response(int response_type) {
 }
 
 void handle_get_all_user_chats_response(cJSON *response) {
-    cJSON *content = cJSON_GetObjectItem(response, "content");
-    char *display_name = cJSON_GetObjectItemCaseSensitive(content, "display_name")->valuestring;
+    cJSON    *content            = cJSON_GetObjectItem(response, "content");
+    char     *display_name       = cJSON_GetObjectItemCaseSensitive(content, "display_name")->valuestring;
     GtkLabel *label_display_name = GTK_LABEL(gtk_builder_get_object(builder_main_window, "label_display_name"));
-    
+
     gtk_label_set_text(label_display_name, display_name);
-
 }
-
-

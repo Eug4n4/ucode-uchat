@@ -13,15 +13,15 @@
 
 #define h_addr h_addr_list[0]
 
-typedef struct {
-    char       *host;
-    int         port;
-    SSL        *ssl;
-    SSL_CTX    *ctx;
-    int         server_fd;  // Store the server socket file descriptor
-    GMutex      data_mutex;
+typedef struct s_client_data {
+    char    *host;
+    int      port;
+    SSL     *ssl;
+    SSL_CTX *ctx;
+    int      server_fd;
+    GMutex   data_mutex;  // Existing mutex for thread safety
+    bool     is_running;  // New flag to signal thread shutdown
 } t_client_data;
-
 
 int do_connection(const char *host, int port);
 
@@ -38,11 +38,12 @@ void handle_login_response(int response_type);
 void handle_registration_response(int response_type);
 void handle_get_all_user_chats_response(cJSON *response);
 
-bool reconnect_to_server(t_client_data *client_data);
+bool reconnect_to_server(t_client_data *client_data, GtkWidget *dialog);
 
 t_client_data *create_client_data(const char *host, int port, SSL *ssl, SSL_CTX *ctx, int server_fd);
-void free_client_data(t_client_data *client_data);
+void           free_client_data(t_client_data *client_data);
+void           shutdown_client(t_client_data *client_data);
 
 extern t_client_data *client_data;
+extern GThread       *read_thread;
 #endif  // CLIENT_H
-

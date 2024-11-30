@@ -41,7 +41,7 @@ void on_btn_sign_up_clicked(GtkButton *button, gpointer data) {
 
     if (strlen(username) == 0 || strlen(password) == 0) {
         gtk_label_set_text(gtk_sign_up->label_error, "Fields cannot be empty");
-    } else if (strcmp(username, password) == 0) {  // Check if username and password are equal
+    } else if (strcmp(username, password) == 0) {
         gtk_label_set_text(gtk_sign_up->label_error, "Username and password cannot be the same.");
     } else {
         if (!check_username(username)) {
@@ -108,14 +108,13 @@ void on_log_out_subbtn_activate(GtkWidget *log_out_subbtn, gpointer data) {
 
 void close_reconnect_popup(GtkWidget *dialog) {
     if (GTK_IS_WIDGET(dialog)) {
-        gtk_widget_destroy(dialog);  // Close the dialog
+        gtk_widget_destroy(dialog);
     }
 }
 
-// This function is called to show the reconnection popup and start retrying in the background
 void show_reconnect_popup_callback(GtkWidget *dialog) {
     if (GTK_IS_WIDGET(dialog)) {
-    gtk_widget_show_all(dialog);  // Show the dialog in the main thread
+        gtk_widget_show_all(dialog);
     }
 }
 
@@ -125,24 +124,25 @@ GtkWidget *show_reconnect_popup(const char *host, int port, SSL **ssl, SSL_CTX *
                                                GTK_MESSAGE_INFO,
                                                GTK_BUTTONS_NONE,
                                                "Reconnecting to the server... Please wait.");
-
     if (!GTK_IS_WIDGET(dialog)) {
         g_print("Error: Failed to create dialog widget\n");
-        return NULL;  // Return NULL if dialog creation failed
+        return NULL;
     }
 
     gtk_window_set_title(GTK_WINDOW(dialog), "Reconnection in Progress");
 
-    // Ensure the dialog is shown in the main thread
-    g_idle_add((GSourceFunc)show_reconnect_popup_callback, dialog);
+    GtkWidget *close_button = gtk_button_new_with_label("Close 4hat");
+    g_signal_connect(close_button, "clicked", G_CALLBACK(destroy_screens), NULL);  // Terminate the application
 
-    return dialog;  // Return the dialog pointer
+    GtkWidget *content_area = gtk_message_dialog_get_message_area(GTK_MESSAGE_DIALOG(dialog));
+    gtk_box_pack_end(GTK_BOX(content_area), close_button, FALSE, FALSE, 0);
+
+    gtk_widget_show_all(dialog);
+
+    return dialog;
 }
 
-
 void init_gui(int argc, char **argv, SSL *ssl) {
-    printf("client_data in GUI: %p\n", (void *)client_data);
-
     gtk_init(&argc, &argv);
 
     gtk_sign_in = create_gtk_sign_in_data();

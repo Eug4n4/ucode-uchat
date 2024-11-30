@@ -20,6 +20,8 @@
 #include <openssl/crypto.h>
 #include <ctype.h>
 #include "../../libs/cjson/cJSON.h"
+#include <X11/Xlib.h>
+#include <math.h>
 
 #endif //INCLUDES_H
 

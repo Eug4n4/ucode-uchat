@@ -18,7 +18,7 @@ gboolean update_gui_with_response(gpointer data) {
         return FALSE;
     }
     char *res = cJSON_Print(json_response);
-    printf("%s\n",res);
+    printf("%s\n", res);
     t_response_type response_type = (t_response_type)response_type_json->valueint;
 
     switch (response_type) {
@@ -41,11 +41,11 @@ gboolean update_gui_with_response(gpointer data) {
         // gtk_label_set_text(gtk_sign_in->label_error, "Failed to create a new chat.");
         break;
     case OK_GET_ALL_CHATS: {
-        printf("%s\n",res);
+        printf("%s\n", res);
         handle_get_all_user_chats_response(json_response);
         break;
-    } 
-    case FAIL_GET_ALL_CHATS:  
+    }
+    case FAIL_GET_ALL_CHATS:
         // gtk_label_set_text(gtk_sign_in->label_error, "Failed to retrieve chat list.");
         break;
     case OK_MESSAGE:

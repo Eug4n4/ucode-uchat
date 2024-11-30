@@ -2,8 +2,8 @@
 
 t_gtk_main_window *create_gtk_main_window_data(void) {
     t_gtk_main_window *data = malloc(sizeof(t_gtk_main_window));
-    GtkWindow     *window;
-    GError        *error = NULL;
+    GtkWindow         *window;
+    GError            *error = NULL;
     // GtkWidget     *log_out_subbtn = NULL;;
 
     if (!builder_main_window) {
@@ -15,10 +15,10 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
             return NULL;
         }
     }
-    
-    window         = GTK_WINDOW(gtk_builder_get_object(builder_main_window, "main_window"));
+
+    window = GTK_WINDOW(gtk_builder_get_object(builder_main_window, "main_window"));
     // log_out_subbtn = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "log_out_subbtn"));
-    data->window = window;
+    data->window  = window;
     data->builder = builder_main_window;
 
     return data;
@@ -85,5 +85,3 @@ t_gtk_sign_in *create_gtk_sign_in_data(void) {
 
     return data;
 }
-
-

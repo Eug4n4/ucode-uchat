@@ -26,6 +26,7 @@ void remove_client(t_server_state *state, t_accepted_client *client) {
         if ((*curr)->client == client) {
             t_client_node *temp = *curr;
             *curr = (*curr)->next;
+            SSL_shutdown(temp->client->ssl);		
             SSL_free(temp->client->ssl);
             free(temp->client);
             free(temp);

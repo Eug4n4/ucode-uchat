@@ -7,6 +7,8 @@
 #define GLADE_REGISTER_PATH "resources/registration.glade"
 #define GLADE_MAIN_WINDOW_PATH "resources/main.glade"
 #define GLADE_CREATE_CHAT_PATH "resources/create_chat.glade"
+#define PRIVATE_CHAT_IMAGE_PATH "resources/private_chat_icon.png"
+#define GROUP_CHAT_IMAGE_PATH "resources/group_icon.png"
 
 typedef enum e_screen {
     LOGIN_SCREEN,
@@ -48,7 +50,11 @@ typedef struct s_gtk_create_chat {
 
 typedef struct s_gtk_main_window {
     GtkWindow  *window;
-    GtkBuilder *builder;
+    GtkListStore          *chat_store;
+    GtkTreeView *chats_list_view;
+    GtkTreeSelection *chat_selection;
+    GdkPixbuf *private_chat_image;
+    GdkPixbuf *group_chat_image;
 
 } t_gtk_main_window;
 

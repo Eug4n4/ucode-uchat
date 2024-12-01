@@ -35,7 +35,7 @@ gboolean update_gui_with_response(gpointer data) {
         handle_registration_response(FAIL_REGISTRATION);
         break;
     case OK_CREATE_NEW_PRIVATE_CHAT:
-        // gtk_label_set_text(gtk_sign_in->label_error, "Chat created successfully!");
+        handle_private_chat_response();
         break;
     case FAIL_CREATE_NEW_PRIVATE_CHAT:
         // gtk_label_set_text(gtk_sign_in->label_error, "Failed to create a new chat.");

@@ -1,4 +1,3 @@
-#include "gui.h"
 #include "client.h"
 
 static void sign_up_window_quit(void) {
@@ -17,7 +16,11 @@ static void sign_in_window_quit(void) {
 
 static void main_window_quit(void) {
     g_print("main window quit\n");
+    g_object_unref(gtk_main_window->private_chat_image);
+    g_object_unref(gtk_main_window->group_chat_image);
     g_object_unref(builder_main_window);
+    gtk_main_window->private_chat_image = NULL;
+    gtk_main_window->group_chat_image = NULL;
     free(gtk_main_window);
     gtk_main_window = NULL;
 }

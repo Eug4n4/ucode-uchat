@@ -4,6 +4,7 @@ void handle_login_response(int response_type) {
     switch (response_type) {
     case OK_LOGIN:
         show_screen(MAIN_SCREEN);
+        gtk_list_store_clear(gtk_main_window->chat_store);
         send_all_user_chats_request(client_data->ssl);
         g_mutex_lock(&client_data->data_mutex);
         client_data->is_logged_in = true;
@@ -21,6 +22,7 @@ void handle_registration_response(int response_type) {
     switch (response_type) {
     case OK_REGISTRATION:
         show_screen(MAIN_SCREEN);
+        gtk_list_store_clear(gtk_main_window->chat_store);
         send_all_user_chats_request(client_data->ssl);
         g_mutex_lock(&client_data->data_mutex);
         client_data->is_logged_in = true;
@@ -37,9 +39,31 @@ void handle_registration_response(int response_type) {
 void handle_get_all_user_chats_response(cJSON *response) {
     cJSON    *content            = cJSON_GetObjectItem(response, "content");
     char     *display_name       = cJSON_GetObjectItemCaseSensitive(content, "display_name")->valuestring;
+    cJSON    *chats              = cJSON_GetObjectItemCaseSensitive(content, "chats");
+    cJSON    *chat               = NULL;
     GtkLabel *label_display_name = GTK_LABEL(gtk_builder_get_object(builder_main_window, "label_display_name"));
+    GtkTreeModel *model   = gtk_tree_view_get_model(gtk_main_window->chats_list_view);
 
     gtk_label_set_text(label_display_name, display_name);
+    if (!model) {
+        printf("no model\n");
+        return;
+    }
+    GtkTreeIter iter;
+
+    cJSON_ArrayForEach(chat, chats) {
+        cJSON *chat_type = cJSON_GetObjectItemCaseSensitive(chat, "chat_type");
+        cJSON *chat_name = cJSON_GetObjectItemCaseSensitive(chat, "chat_name");
+        
+        gtk_list_store_append(GTK_LIST_STORE(model), &iter);
+        if (chat_type->valueint == 0) {
+            gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, gtk_main_window->private_chat_image, -1);
+        } else {
+            gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, gtk_main_window->group_chat_image, -1);
+        }
+        gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, chat_name->valuestring, -1);
+
+    }
 }
 
 void handle_all_users_exclude_response(cJSON *response) {
@@ -62,3 +86,9 @@ void handle_all_users_exclude_response(cJSON *response) {
         }
     }
 }
+
+void handle_private_chat_response(void) {
+    gtk_list_store_clear(gtk_main_window->chat_store);
+    send_all_user_chats_request(client_data->ssl);
+}
+

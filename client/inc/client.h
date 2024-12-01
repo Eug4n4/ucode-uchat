@@ -19,7 +19,7 @@ typedef struct s_client_data {
     SSL     *ssl;
     SSL_CTX *ctx;
     int      server_fd;
-    GMutex   data_mutex;  // Existing mutex for thread safety
+    GMutex   data_mutex;
     bool     is_running;  // New flag to signal thread shutdown
     bool     is_connected;
     bool     is_logged_in;
@@ -50,6 +50,7 @@ void handle_login_response(int response_type);
 void handle_registration_response(int response_type);
 void handle_get_all_user_chats_response(cJSON *response);
 void handle_all_users_exclude_response(cJSON *response);
+void handle_private_chat_response();
 
 bool reconnect_to_server(t_client_data *client_data);
 

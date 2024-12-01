@@ -3,9 +3,22 @@
 t_gtk_main_window *create_gtk_main_window_data(void) {
     t_gtk_main_window *data = malloc(sizeof(t_gtk_main_window));
     GtkWindow         *window;
+    GtkListStore          *chat_store;
+    GtkTreeView *chats_list_view;
+    GtkTreeSelection *chat_selection;
     GError            *error = NULL;
-    // GtkWidget     *log_out_subbtn = NULL;;
-
+    GdkPixbuf *private_chat = gdk_pixbuf_new_from_file(PRIVATE_CHAT_IMAGE_PATH, &error);
+    
+    if (!private_chat) {
+        g_print("Error loading image %s\n", error->message);
+        g_error_free(error);
+    }
+    GdkPixbuf *group_chat = gdk_pixbuf_new_from_file(GROUP_CHAT_IMAGE_PATH, &error);
+    
+    if (!group_chat) {
+        g_print("Error loading image %s\n", error->message);
+        g_error_free(error);
+    }
     if (!builder_main_window) {
         builder_main_window = gtk_builder_new();
         if (gtk_builder_add_from_file(builder_main_window, GLADE_MAIN_WINDOW_PATH, &error) == 0) {
@@ -17,10 +30,18 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     }
 
     window = GTK_WINDOW(gtk_builder_get_object(builder_main_window, "main_window"));
-    // log_out_subbtn = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "log_out_subbtn"));
-    data->window  = window;
-    data->builder = builder_main_window;
+    chat_store = GTK_LIST_STORE(gtk_builder_get_object(builder_main_window, "chat_store"));
+    chats_list_view = GTK_TREE_VIEW(gtk_builder_get_object(builder_main_window, "chats_list_view"));
+    chat_selection = GTK_TREE_SELECTION(gtk_builder_get_object(builder_main_window, "chat_selection"));
+    chat_selection = gtk_tree_view_get_selection(chats_list_view);
 
+    data->window  = window;
+    data->chat_store = chat_store;
+    data->group_chat_image = group_chat;
+    data->private_chat_image = private_chat;
+    data->chats_list_view = chats_list_view;
+    data->chat_selection = chat_selection;
+    gtk_tree_view_set_headers_visible(data->chats_list_view, FALSE);
     return data;
 }
 
@@ -37,7 +58,6 @@ t_gtk_create_chat *create_gtk_create_chat_data(void) {
     GtkButton *btn_create_chat;
     GtkCellRenderer *text_renderer;
     GtkCellRendererToggle *toggle_renderer;
-
 
     if (!builder_create_chat) {
         builder_create_chat = gtk_builder_new();

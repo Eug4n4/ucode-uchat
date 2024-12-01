@@ -35,19 +35,19 @@ int send_registration_request(const gchar *username, const gchar *password, SSL 
 
 int send_all_user_chats_request(SSL *ssl) {
     cJSON *request = create_request_all_user_chats();
-    char *str = cJSON_PrintUnformatted(request);
-    int result = SSL_write(ssl, str, strlen(str));
-    
+    char  *str     = cJSON_PrintUnformatted(request);
+    int    result  = SSL_write(ssl, str, strlen(str));
+
     free(str);
     cJSON_Delete(request);
 
     return result;
 }
 
-int send_all_users_exclude_request(t_connection *connection) {
+int send_all_users_exclude_request(t_client_data *client_data) {
     cJSON *request = create_request_all_users_exclude();
     char *request_str = cJSON_PrintUnformatted(request);
-    int result = SSL_write(connection->ssl, request_str, strlen(request_str));
+    int result = SSL_write(client_data->ssl, request_str, strlen(request_str));
 
     free(request_str);
     cJSON_Delete(request);
@@ -68,7 +68,7 @@ int send_create_chat_request(t_app *app, const char *chat_name) {
     }
     cJSON_AddItemToObject(content, "users", json_users);
     char *request_str = cJSON_PrintUnformatted(request);
-    int result = SSL_write(app->connection->ssl, request_str, strlen(request_str));
+    int result = SSL_write(client_data->ssl, request_str, strlen(request_str));
 
     free_users(&app->users);
     free(request_str);

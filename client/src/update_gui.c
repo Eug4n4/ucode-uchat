@@ -1,8 +1,7 @@
 #include "../inc/client.h"
 
 gboolean update_gui_with_response(gpointer data) {
-    t_connection *connection = (t_connection *)data;
-    const gchar *response = (const gchar *)connection->buffer;
+    const gchar *response = (const gchar *)data;
 
     cJSON *json_response = cJSON_Parse(response);
     if (!json_response) {
@@ -19,7 +18,7 @@ gboolean update_gui_with_response(gpointer data) {
         return FALSE;
     }
     char *res = cJSON_Print(json_response);
-    printf("%s\n",res);
+    printf("%s\n", res);
     t_response_type response_type = (t_response_type)response_type_json->valueint;
 
     switch (response_type) {
@@ -44,8 +43,8 @@ gboolean update_gui_with_response(gpointer data) {
     case OK_GET_ALL_CHATS: {
         handle_get_all_user_chats_response(json_response);
         break;
-    } 
-    case FAIL_GET_ALL_CHATS:  
+    }
+    case FAIL_GET_ALL_CHATS:
         // gtk_label_set_text(gtk_sign_in->label_error, "Failed to retrieve chat list.");
         break;
     case OK_MESSAGE:
@@ -63,7 +62,7 @@ gboolean update_gui_with_response(gpointer data) {
     }
 
     cJSON_Delete(json_response);
-    free(connection->buffer);
+    g_free(data);
 
     return FALSE;
 }

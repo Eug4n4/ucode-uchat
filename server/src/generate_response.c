@@ -2,7 +2,7 @@
 
 void generate_login_response(int response, t_accepted_client *client) {
     cJSON *login_response = cJSON_CreateObject();
-    cJSON *content = cJSON_CreateObject();
+    cJSON *content        = cJSON_CreateObject();
 
     switch (response) {
     case OK_LOGIN:
@@ -27,7 +27,7 @@ void generate_login_response(int response, t_accepted_client *client) {
 
 void generate_registration_response(int response, t_accepted_client *client) {
     cJSON *registration_response = cJSON_CreateObject();
-    cJSON *content = cJSON_CreateObject();
+    cJSON *content               = cJSON_CreateObject();
 
     switch (response) {
     case OK_REGISTRATION:
@@ -47,24 +47,23 @@ void generate_registration_response(int response, t_accepted_client *client) {
         break;
     }
     cJSON_Delete(registration_response);
-
 }
 
 void generate_new_private_chat_response(int response, t_accepted_client *client) {
     cJSON *new_private_chat_response = cJSON_CreateObject();
-    cJSON *content = cJSON_CreateObject();
+    cJSON *content                   = cJSON_CreateObject();
 
     switch (response) {
     case OK_CREATE_NEW_PRIVATE_CHAT:
         cJSON_AddNumberToObject(new_private_chat_response, "response_type", OK_CREATE_NEW_PRIVATE_CHAT);
-        cJSON_AddStringToObject(content, "message", "New private chat is created");
+        cJSON_AddStringToObject(content, "message", "New chat is created");
         cJSON_AddItemToObject(new_private_chat_response, "content", content);
         send_response(new_private_chat_response, client);
         break;
 
     case FAIL_CREATE_NEW_PRIVATE_CHAT:
         cJSON_AddNumberToObject(new_private_chat_response, "response_type", FAIL_CREATE_NEW_PRIVATE_CHAT);
-        cJSON_AddStringToObject(content, "message", "Failed to create new private chat");
+        cJSON_AddStringToObject(content, "message", "Failed to create new chat");
         cJSON_AddItemToObject(new_private_chat_response, "content", content);
         send_response(new_private_chat_response, client);
         break;
@@ -72,12 +71,38 @@ void generate_new_private_chat_response(int response, t_accepted_client *client)
         break;
     }
     cJSON_Delete(new_private_chat_response);
+}
 
+void generate_new_group_chat_response(int response, t_accepted_client *client) {
+    cJSON *new_group_chat_response = cJSON_CreateObject();
+    cJSON *content                 = cJSON_CreateObject();
+
+    switch (response) {
+    case OK_CREATE_NEW_GROUP_CHAT:
+        cJSON_AddNumberToObject(new_group_chat_response, "response_type", OK_CREATE_NEW_GROUP_CHAT);
+        cJSON_AddStringToObject(content, "message", "New group chat created successfully");
+        cJSON_AddItemToObject(new_group_chat_response, "content", content);
+        send_response(new_group_chat_response, client);
+        break;
+
+    case FAIL_CREATE_NEW_GROUP_CHAT:
+        cJSON_AddNumberToObject(new_group_chat_response, "response_type", FAIL_CREATE_NEW_GROUP_CHAT);
+        cJSON_AddStringToObject(content, "message", "Failed to create new group chat");
+        cJSON_AddItemToObject(new_group_chat_response, "content", content);
+        send_response(new_group_chat_response, client);
+        break;
+
+    default:
+        logging_format(LOG_ERR, "Failed to send new group chat response.\n");
+        break;
+    }
+
+    cJSON_Delete(new_group_chat_response);
 }
 
 void generate_message_response(int response, t_accepted_client *client) {
     cJSON *message_response = cJSON_CreateObject();
-    cJSON *content = cJSON_CreateObject();
+    cJSON *content          = cJSON_CreateObject();
 
     switch (response) {
     case OK_MESSAGE:
@@ -97,18 +122,17 @@ void generate_message_response(int response, t_accepted_client *client) {
         break;
     }
     cJSON_Delete(message_response);
-
 }
 
 void generate_all_chats_response(int response, t_chats **chats, t_accepted_client *client) {
     cJSON *all_chats_response = cJSON_CreateObject();
-    cJSON *content = cJSON_CreateObject();
-    cJSON *json_chats = cJSON_CreateArray();
+    cJSON *content            = cJSON_CreateObject();
+    cJSON *json_chats         = cJSON_CreateArray();
 
     switch (response) {
     case OK_GET_ALL_CHATS:
         cJSON_AddNumberToObject(all_chats_response, "response_type", OK_GET_ALL_CHATS);
-        t_user *user = db_get_user_by_id(client->client_id);
+        t_user  *user = db_get_user_by_id(client->client_id);
         t_chats *head = *chats;
 
         if (user) {
@@ -123,10 +147,10 @@ void generate_all_chats_response(int response, t_chats **chats, t_accepted_clien
 
             head = head->next;
         }
-       
+
         cJSON_AddItemToObject(content, "chats", json_chats);
         cJSON_AddItemToObject(all_chats_response, "content", content);
-        
+
         send_response(all_chats_response, client);
         if (user) {
             free_user(user);
@@ -142,12 +166,11 @@ void generate_all_chats_response(int response, t_chats **chats, t_accepted_clien
         break;
     }
     cJSON_Delete(all_chats_response);
-
 }
 
 void generate_get_chat_messages_response(int response, t_messages *messages, t_accepted_client *client) {
-    cJSON *response_json = cJSON_CreateObject();
-    cJSON *content = cJSON_CreateObject();
+    cJSON *response_json  = cJSON_CreateObject();
+    cJSON *content        = cJSON_CreateObject();
     cJSON *messages_array = cJSON_CreateArray();
 
     switch (response) {
@@ -185,34 +208,32 @@ void generate_get_chat_messages_response(int response, t_messages *messages, t_a
     cJSON_Delete(response_json);
 }
 
-
 void generate_all_users_exclude_response(int response, t_users **users, t_accepted_client *client) {
     cJSON *all_users_response = cJSON_CreateObject();
-    cJSON *content = cJSON_CreateObject();
-    cJSON *json_users = cJSON_CreateArray();
+    cJSON *content            = cJSON_CreateObject();
+    cJSON *json_users         = cJSON_CreateArray();
 
     switch (response) {
-        case OK_ALL_USERS_EXCLUDE:
-            cJSON_AddNumberToObject(all_users_response, "response_type", OK_ALL_USERS_EXCLUDE);
-            t_users *head = *users;
+    case OK_ALL_USERS_EXCLUDE:
+        cJSON_AddNumberToObject(all_users_response, "response_type", OK_ALL_USERS_EXCLUDE);
+        t_users *head = *users;
 
-            while (head->user) {
-                cJSON *user = cJSON_CreateObject();
-                cJSON_AddStringToObject(user, "username", head->user->username);
-                cJSON_AddItemToArray(json_users, user);
+        while (head->user) {
+            cJSON *user = cJSON_CreateObject();
+            cJSON_AddStringToObject(user, "username", head->user->username);
+            cJSON_AddItemToArray(json_users, user);
 
-                head = head->next;
-            }
-            cJSON_AddItemToObject(content, "users", json_users);
-            cJSON_AddItemToObject(all_users_response, "content", content);
-            break;
-        case FAIL_ALL_USERS_EXCLUDE:
-            cJSON_AddNumberToObject(all_users_response, "response_type", FAIL_ALL_USERS_EXCLUDE);
-            break;
-        default:
-            break;
+            head = head->next;
+        }
+        cJSON_AddItemToObject(content, "users", json_users);
+        cJSON_AddItemToObject(all_users_response, "content", content);
+        break;
+    case FAIL_ALL_USERS_EXCLUDE:
+        cJSON_AddNumberToObject(all_users_response, "response_type", FAIL_ALL_USERS_EXCLUDE);
+        break;
+    default:
+        break;
     }
     send_response(all_users_response, client);
     cJSON_Delete(all_users_response);
 }
-

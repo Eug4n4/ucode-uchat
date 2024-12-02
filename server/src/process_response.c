@@ -29,6 +29,12 @@ void process_response_type(int response_type, t_accepted_client *client) {
     case FAIL_GET_ALL_CHATS:
         generate_all_chats_response(FAIL_GET_ALL_CHATS, NULL, client);
         break;
+    case OK_CREATE_NEW_GROUP_CHAT:
+        generate_new_group_chat_response(OK_CREATE_NEW_GROUP_CHAT, client);
+        break;
+    case FAIL_CREATE_NEW_GROUP_CHAT:
+        generate_new_group_chat_response(FAIL_CREATE_NEW_GROUP_CHAT, client);
+        break;
     default:
         break;
     }

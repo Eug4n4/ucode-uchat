@@ -64,8 +64,8 @@ void handle_login_request(cJSON *request, t_accepted_client *client) {
         return;
     }
 
-    t_user        *user = db_get_user_by_username(username->valuestring);
-    unsigned char *hash = hash_password(password->valuestring, strlen(password->valuestring));
+    t_user        *user     = db_get_user_by_username(username->valuestring);
+    unsigned char *hash     = hash_password(password->valuestring, strlen(password->valuestring));
     char          *hex_hash = hash_to_hex(hash);
 
     if (user && strcmp(username->valuestring, user->username) == 0 && memcmp(hex_hash, user->password, HASH_SIZE) == 0) {
@@ -83,9 +83,9 @@ void handle_login_request(cJSON *request, t_accepted_client *client) {
 
 void handle_new_private_chat_request(cJSON *request, t_accepted_client *client) {
     if (client->is_logged_in) {
-        cJSON *content  = cJSON_GetObjectItem(request, "content");
-        cJSON *username = cJSON_GetObjectItem(content, "username");
-        char *chat_name = cJSON_GetObjectItem(content, "chat_name")->valuestring;
+        cJSON      *content            = cJSON_GetObjectItem(request, "content");
+        cJSON      *username           = cJSON_GetObjectItem(content, "username");
+        char       *chat_name          = cJSON_GetObjectItem(content, "chat_name")->valuestring;
         const char *target_username    = cJSON_GetStringValue(username);
         int         requesting_user_id = client->client_id;
 
@@ -120,6 +120,40 @@ void handle_new_private_chat_request(cJSON *request, t_accepted_client *client) 
 
         free_user(target_user);
     }
+}
+
+void handle_new_group_chat_request(cJSON *request, t_accepted_client *client) {
+    cJSON *content     = cJSON_GetObjectItemCaseSensitive(request, "content");
+    cJSON *users_array = cJSON_GetObjectItemCaseSensitive(content, "users");
+    char  *chat_name   = cJSON_GetObjectItemCaseSensitive(content, "chat_name")->valuestring;
+
+    int chat_id = db_create_chat(chat_name, 1);
+    if (chat_id < 0) {
+        process_response_type(FAIL_CREATE_NEW_GROUP_CHAT, client);
+        logging_format(LOG_ERR, "Failed to create new group chat. DB failed to create new chat\n");
+        return;
+    }
+
+    int size = cJSON_GetArraySize(users_array);
+    for (int i = 0; i < size; i++) {
+        cJSON *json_username = cJSON_GetArrayItem(users_array, i);
+        char  *username      = cJSON_GetObjectItemCaseSensitive(json_username, "username")->valuestring;
+
+        t_user *user = db_get_user_by_username(username);
+        if (user == NULL) {
+            process_response_type(FAIL_CREATE_NEW_GROUP_CHAT, client);
+            logging_format(LOG_ERR, "Failed to create new group chat. User not found.\n");
+            continue;
+        }
+
+        if (!db_link_users_to_chat(chat_id, user->id)) {
+            process_response_type(FAIL_CREATE_NEW_GROUP_CHAT, client);
+            syslog(LOG_ERR, "DB. Failed to link user %s to group chat %d", username, chat_id);
+        }
+
+        free_user(user);
+    }
+    process_response_type(OK_CREATE_NEW_GROUP_CHAT, client);
 }
 
 void handle_message_request(cJSON *request, t_accepted_client *client, t_server_state *state) {
@@ -175,7 +209,7 @@ void handle_get_all_users_exclude_request(cJSON *request, t_accepted_client *cli
     t_user *user = db_get_user_by_id(client->client_id);
 
     if (user) {
-        t_users *users = db_get_all_users_exclude_id(user->id);    
+        t_users *users = db_get_all_users_exclude_id(user->id);
 
         generate_all_users_exclude_response(OK_ALL_USERS_EXCLUDE, &users, client);
         free_users(&users);
@@ -184,19 +218,17 @@ void handle_get_all_users_exclude_request(cJSON *request, t_accepted_client *cli
     }
     generate_all_users_exclude_response(FAIL_ALL_USERS_EXCLUDE, NULL, client);
     (void)request;
-    
 }
 
-
 void handle_new_chat_request(cJSON *request, t_accepted_client *client) {
-    cJSON *content = cJSON_GetObjectItemCaseSensitive(request, "content");
+    cJSON *content     = cJSON_GetObjectItemCaseSensitive(request, "content");
     cJSON *users_array = cJSON_GetObjectItemCaseSensitive(content, "users");
-    char *chat_name = cJSON_GetObjectItemCaseSensitive(content, "chat_name")->valuestring;
-    int size = cJSON_GetArraySize(users_array);
+    char  *chat_name   = cJSON_GetObjectItemCaseSensitive(content, "chat_name")->valuestring;
+    int    size        = cJSON_GetArraySize(users_array);
 
     if (size == 1) {
-        cJSON *json_username = cJSON_GetArrayItem(users_array, 0);
-        char *username = cJSON_GetObjectItemCaseSensitive(json_username, "username")->valuestring;
+        cJSON *json_username        = cJSON_GetArrayItem(users_array, 0);
+        char  *username             = cJSON_GetObjectItemCaseSensitive(json_username, "username")->valuestring;
         cJSON *private_chat_request = cJSON_CreateObject();
         cJSON *private_chat_content = cJSON_CreateObject();
 
@@ -205,11 +237,9 @@ void handle_new_chat_request(cJSON *request, t_accepted_client *client) {
         cJSON_AddItemToObject(private_chat_request, "content", private_chat_content);
         handle_new_private_chat_request(private_chat_request, client);
         cJSON_Delete(private_chat_request);
-    } else if(size > 1) {
-        // TODO handle new group chat request
+    } else if (size > 1) {
+        handle_new_group_chat_request(request, client);
     } else {
-        // TODO Send fail response to the client?
-    }    
-
+        process_response_type(FAIL_CREATE_NEW_PRIVATE_CHAT, client);
+    }
 }
-

@@ -135,6 +135,12 @@ void handle_new_group_chat_request(cJSON *request, t_accepted_client *client) {
     }
 
     int size = cJSON_GetArraySize(users_array);
+
+    if (!db_link_users_to_chat(chat_id, client->client_id)) {
+        process_response_type(FAIL_CREATE_NEW_GROUP_CHAT, client);
+        syslog(LOG_ERR, "DB. Failed to link request sender to group chat %d", chat_id);
+    }
+
     for (int i = 0; i < size; i++) {
         cJSON *json_username = cJSON_GetArrayItem(users_array, i);
         char  *username      = cJSON_GetObjectItemCaseSensitive(json_username, "username")->valuestring;

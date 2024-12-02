@@ -13,7 +13,6 @@
   <object class="GtkWindow" id="main_window">
     <property name="can-focus">False</property>
     <property name="title" translatable="yes">4hat</property>
-    <property name="resizable">False</property>
     <property name="default-width">1280</property>
     <property name="default-height">720</property>
     <child>
@@ -104,12 +103,12 @@
             <property name="can-focus">False</property>
             <property name="column-homogeneous">True</property>
             <child>
-              <object class="GtkButton" id="btn_add_chat">
-                <property name="label" translatable="yes">Add chat</property>
+              <object class="GtkButton" id="btn_create_chat_main">
+                <property name="label" translatable="yes">Create chat</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <signal name="clicked" handler="on_btn_add_chat_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_btn_create_chat_main_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left-attach">0</property>
@@ -140,7 +139,9 @@
                             <property name="can-focus">True</property>
                             <property name="model">chat_store</property>
                             <child internal-child="selection">
-                              <object class="GtkTreeSelection" id="chat_selection"/>
+                              <object class="GtkTreeSelection" id="chat_selection">
+                                <signal name="changed" handler="on_chat_selection_changed" swapped="no"/>
+                              </object>
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="column_chat_image">
@@ -206,24 +207,33 @@
                   <object class="GtkBox">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <property name="orientation">vertical</property>
                     <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="btn_add_member">
-                        <property name="label" translatable="yes">Add member</property>
+                      <object class="GtkLabel" id="label_chat_name">
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="receives-default">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Chat name</property>
+                        <attributes>
+                          <attribute name="font-desc" value="Ubuntu 12"/>
+                        </attributes>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="pack-type">end</property>
-                        <property name="position">2</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label_members_count">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Members:</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">1</property>
                       </packing>
                     </child>
                   </object>
@@ -253,7 +263,6 @@
                     <property name="can-focus">True</property>
                     <property name="vexpand">True</property>
                     <property name="hscrollbar-policy">never</property>
-                    <property name="vscrollbar-policy">always</property>
                     <property name="shadow-type">in</property>
                     <child>
                       <object class="GtkViewport">
@@ -294,6 +303,7 @@
                   <object class="GtkEntry" id="entry_send">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="placeholder-text" translatable="yes">Message:</property>
                   </object>
                   <packing>
                     <property name="left-attach">0</property>

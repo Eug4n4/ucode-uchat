@@ -33,6 +33,10 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     chat_store = GTK_LIST_STORE(gtk_builder_get_object(builder_main_window, "chat_store"));
     chats_list_view = GTK_TREE_VIEW(gtk_builder_get_object(builder_main_window, "chats_list_view"));
     chat_selection = GTK_TREE_SELECTION(gtk_builder_get_object(builder_main_window, "chat_selection"));
+    GtkLabel *label_chat_name =    GTK_LABEL(gtk_builder_get_object(builder_main_window, "label_chat_name"));     
+    GtkLabel *label_members_count =    GTK_LABEL(gtk_builder_get_object(builder_main_window, "label_members_count"));         
+    GtkEntry *entry_send_message = GTK_ENTRY(gtk_builder_get_object(builder_main_window, "entry_send"));
+    GtkButton *btn_send_message = GTK_BUTTON(gtk_builder_get_object(builder_main_window, "btn_send"));
     chat_selection = gtk_tree_view_get_selection(chats_list_view);
 
     data->window  = window;
@@ -41,6 +45,11 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     data->private_chat_image = private_chat;
     data->chats_list_view = chats_list_view;
     data->chat_selection = chat_selection;
+    data->label_chat_name = label_chat_name;
+    data->label_members_count = label_members_count;
+    data->entry_send_message = entry_send_message;
+    data->btn_send_message = btn_send_message;
+
     gtk_tree_view_set_headers_visible(data->chats_list_view, FALSE);
     return data;
 }

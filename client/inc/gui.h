@@ -55,7 +55,11 @@ typedef struct s_gtk_main_window {
     GtkTreeSelection *chat_selection;
     GdkPixbuf *private_chat_image;
     GdkPixbuf *group_chat_image;
-
+    GtkLabel *label_chat_name;
+    GtkLabel *label_members_count;
+    GtkEntry *entry_send_message;
+    GtkButton *btn_send_message;
+    
 } t_gtk_main_window;
 
 typedef struct s_gtk_sign_up {

@@ -85,7 +85,25 @@ void handle_all_users_exclude_response(cJSON *response) {
     }
 }
 
-void handle_private_chat_response(void) {
+// void handle_private_chat_response(void) {
+//     gtk_list_store_clear(gtk_main_window->chat_store);
+//     send_all_user_chats_request(client_data->ssl);
+//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_chat_name));
+//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_members_count));
+//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->entry_send_message));
+//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->btn_send_message));
+// }
+
+// void handle_group_chat_response(void) {
+//     gtk_list_store_clear(gtk_main_window->chat_store);
+//     send_all_user_chats_request(client_data->ssl);
+//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_chat_name));
+//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_members_count));
+//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->entry_send_message));
+//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->btn_send_message));
+// }
+
+void handle_new_chat_response(void) {
     gtk_list_store_clear(gtk_main_window->chat_store);
     send_all_user_chats_request(client_data->ssl);
     gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_chat_name));

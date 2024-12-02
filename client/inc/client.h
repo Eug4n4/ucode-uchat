@@ -50,7 +50,7 @@ void handle_login_response(int response_type);
 void handle_registration_response(int response_type);
 void handle_get_all_user_chats_response(cJSON *response);
 void handle_all_users_exclude_response(cJSON *response);
-void handle_private_chat_response();
+void handle_new_chat_response(void);
 
 bool reconnect_to_server(t_client_data *client_data);
 

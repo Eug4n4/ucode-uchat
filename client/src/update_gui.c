@@ -56,6 +56,12 @@ gboolean update_gui_with_response(gpointer data) {
     case OK_ALL_USERS_EXCLUDE:
         handle_all_users_exclude_response(json_response);
         break;
+    case OK_CREATE_NEW_GROUP_CHAT:
+        // gtk_label_set_text(gtk_sign_in->label_error, "Chat created successfully!");
+        break;
+    case FAIL_CREATE_NEW_GROUP_CHAT:
+        // gtk_label_set_text(gtk_sign_in->label_error, "Failed to create a new chat.");
+        break;
     default:
         g_printerr("Unknown response type: %d\n", response_type);
         break;

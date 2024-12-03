@@ -28,6 +28,7 @@ void on_btn_sign_in_clicked(GtkButton *button, gpointer data) {
         return;
     }
     g_mutex_lock(&client_data->data_mutex);
+    free_user_data(client_data->current_user);
     client_data->current_user->username = g_strdup(username);
     client_data->current_user->password = g_strdup(password);
     g_mutex_unlock(&client_data->data_mutex);
@@ -69,6 +70,7 @@ void on_btn_sign_up_clicked(GtkButton *button, gpointer data) {
                 return;
             }
             g_mutex_lock(&client_data->data_mutex);
+            free_user_data(client_data->current_user);
             client_data->current_user->username = g_strdup(username);
             client_data->current_user->password = g_strdup(password);
             g_mutex_unlock(&client_data->data_mutex);
@@ -138,7 +140,6 @@ void on_btn_create_chat_main_clicked(GtkWidget *button, gpointer data) {
 void on_log_out_subbtn_activate(GtkWidget *log_out_subbtn, gpointer data) {
     g_print("Log out button clicked\n");
     g_mutex_lock(&client_data->data_mutex);
-    gtk_list_store_clear(gtk_main_window->chat_store);
     gtk_entry_set_text(gtk_main_window->entry_send_message, "");
     client_data->is_logged_in = false;
     g_mutex_unlock(&client_data->data_mutex);
@@ -174,6 +175,7 @@ void on_btn_create_chat_clicked(GtkButton *button, gpointer data) {
                 user->username = g_strdup(username);
                 add_users_front(&app->users, user);
             }
+            g_free(username);
         } while (gtk_tree_model_iter_next(model, &iter));
         send_create_chat_request(app, chat_name);
     }
@@ -184,9 +186,19 @@ void on_btn_create_chat_clicked(GtkButton *button, gpointer data) {
 
 void on_chat_selection_changed(GtkTreeSelection *selection) {
     printf("changed\n");
-    const gchar *chat_name;
+    gchar *chat_name;
+    gint chat_members;
     GtkTreeIter iter;
     GtkTreeModel *model = gtk_tree_view_get_model(gtk_main_window->chats_list_view);
+
+    if (!gtk_tree_model_get_iter_first(model, &iter)) {
+        printf("Empty\n");
+        gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_chat_name));
+        gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_members_count));
+        gtk_widget_hide(GTK_WIDGET(gtk_main_window->entry_send_message));
+        gtk_widget_hide(GTK_WIDGET(gtk_main_window->btn_send_message));
+        return;
+    }
 
     if (!gtk_widget_is_visible(GTK_WIDGET(gtk_main_window->label_chat_name))) {
         gtk_widget_show(GTK_WIDGET(gtk_main_window->label_chat_name));
@@ -205,7 +217,13 @@ void on_chat_selection_changed(GtkTreeSelection *selection) {
 
     if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
         gtk_tree_model_get(model, &iter, 1, &chat_name, -1);
+        gtk_tree_model_get(model, &iter, 2, &chat_members, -1);
+        gchar *str_members_count = g_strdup_printf("Members: %d", chat_members);
         gtk_label_set_text(gtk_main_window->label_chat_name, chat_name);
+        gtk_label_set_text(gtk_main_window->label_members_count, str_members_count);
+        g_free(str_members_count);
+        g_free(chat_name);
+        
     }
    
     

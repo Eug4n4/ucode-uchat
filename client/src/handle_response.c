@@ -4,6 +4,7 @@ void handle_login_response(int response_type) {
     switch (response_type) {
     case OK_LOGIN:
         show_screen(MAIN_SCREEN);
+        gtk_list_store_clear(gtk_main_window->chat_store);
         send_all_user_chats_request(client_data->ssl);
         g_mutex_lock(&client_data->data_mutex);
         client_data->is_logged_in = true;
@@ -21,6 +22,7 @@ void handle_registration_response(int response_type) {
     switch (response_type) {
     case OK_REGISTRATION:
         show_screen(MAIN_SCREEN);
+        gtk_list_store_clear(gtk_main_window->chat_store);
         send_all_user_chats_request(client_data->ssl);
         g_mutex_lock(&client_data->data_mutex);
         client_data->is_logged_in = true;
@@ -52,7 +54,8 @@ void handle_get_all_user_chats_response(cJSON *response) {
     cJSON_ArrayForEach(chat, chats) {
         cJSON *chat_type = cJSON_GetObjectItemCaseSensitive(chat, "chat_type");
         cJSON *chat_name = cJSON_GetObjectItemCaseSensitive(chat, "chat_name");
-        
+        int chat_members             = cJSON_GetObjectItemCaseSensitive(chat, "chat_members")->valueint;
+
         gtk_list_store_append(GTK_LIST_STORE(model), &iter);
         if (chat_type->valueint == 0) {
             gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, gtk_main_window->private_chat_image, -1);
@@ -60,6 +63,7 @@ void handle_get_all_user_chats_response(cJSON *response) {
             gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, gtk_main_window->group_chat_image, -1);
         }
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, chat_name->valuestring, -1);
+        gtk_list_store_set(GTK_LIST_STORE(model), &iter, 2, chat_members, -1);
 
     }
 }

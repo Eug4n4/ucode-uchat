@@ -140,9 +140,12 @@ void generate_all_chats_response(int response, t_chats **chats, t_accepted_clien
         }
         while (head->chat) {
             cJSON *chat = cJSON_CreateObject();
+            int chat_members = db_get_chat_members_count(head->chat->id);
             cJSON_AddNumberToObject(chat, "chat_id", head->chat->id);
             cJSON_AddNumberToObject(chat, "chat_type", head->chat->type);
             cJSON_AddStringToObject(chat, "chat_name", head->chat->name);
+            cJSON_AddNumberToObject(chat, "chat_members", chat_members);
+
             cJSON_AddItemToArray(json_chats, chat);
 
             head = head->next;

@@ -32,6 +32,8 @@ t_users *create_users(t_user *user);
 t_user  *create_user(void);
 void     add_users_front(t_users **users, t_user *user);
 void     free_users(t_users **users);
+void free_user(t_user *user);
+void free_user_data(t_user *user);
 
 cJSON   *create_request_registration();
 cJSON   *create_request_login();

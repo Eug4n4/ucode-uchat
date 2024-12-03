@@ -37,28 +37,11 @@ void free_client_data(t_client_data *client_data) {
     client_data->ssl       = NULL;
     client_data->server_fd = -1;
 
-    if (client_data->current_user) {
-
-        if (client_data->current_user->username) {
-        free(client_data->current_user->username);
-    }
-
-    if (client_data->current_user->password) {
-        free(client_data->current_user->password);
-    }
-
-    if (client_data->current_user->display_name) {
-        free(client_data->current_user->display_name);
-    }
-    free(client_data->current_user);
-    }
-
-    
-
+    free_user(client_data->current_user);
     g_mutex_unlock(&client_data->data_mutex);
-
     g_mutex_clear(&client_data->data_mutex);
     free(client_data);
+    client_data = NULL;
 }
 
 

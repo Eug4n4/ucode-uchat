@@ -26,7 +26,6 @@ typedef struct s_client_data {
     t_user  *current_user;
 } t_client_data;
 
-int do_connection(const char *host, int port);
 
 t_users *create_users(t_user *user);
 t_user  *create_user(void);
@@ -58,8 +57,6 @@ bool reconnect_to_server(t_client_data *client_data);
 
 t_client_data *create_client_data(const char *host, int port, SSL *ssl, SSL_CTX *ctx, int server_fd);
 void           free_client_data(t_client_data *client_data);
-void           free_client_data_disconnected(t_client_data *client_data);
-void           shutdown_client(t_client_data *client_data);
 
 extern t_client_data *client_data;
 extern GThread       *read_thread;

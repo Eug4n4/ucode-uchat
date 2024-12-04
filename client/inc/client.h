@@ -26,13 +26,12 @@ typedef struct s_client_data {
     t_user  *current_user;
 } t_client_data;
 
-
 t_users *create_users(t_user *user);
 t_user  *create_user(void);
 void     add_users_front(t_users **users, t_user *user);
 void     free_users(t_users **users);
-void free_user(t_user *user);
-void free_user_data(t_user *user);
+void     free_user(t_user *user);
+void     free_user_data(t_user *user);
 
 cJSON   *create_request_registration();
 cJSON   *create_request_login();
@@ -47,11 +46,11 @@ int      send_all_user_chats_request(SSL *ssl);
 int      send_all_users_exclude_request(t_client_data *client_data);
 int      send_create_chat_request(t_app *app, const char *chat_name);
 
-void handle_login_response(int response_type);
-void handle_registration_response(int response_type);
+void handle_login_response(int response_type, cJSON *json_response);
+void handle_registration_response(int response_type, cJSON *json_response);
 void handle_get_all_user_chats_response(cJSON *response);
 void handle_all_users_exclude_response(cJSON *response);
-void handle_new_chat_response(void);
+void handle_new_chat_response(cJSON *json_response);
 
 bool reconnect_to_server(t_client_data *client_data);
 

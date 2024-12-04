@@ -76,10 +76,10 @@ void handle_message_request(cJSON *request, t_accepted_client *client, t_server_
 void handle_all_chats_request(t_accepted_client *client);
 void handle_get_chat_messages_request(cJSON *request, t_accepted_client *client);
 void handle_get_all_users_exclude_request(cJSON *request, t_accepted_client *client);
-void generate_login_response(int response, t_accepted_client *client);
-void generate_registration_response(int response, t_accepted_client *client);
-void generate_new_private_chat_response(int response, t_accepted_client *client);
-void generate_new_group_chat_response(int response, t_accepted_client *client);
+void generate_login_response(int response, const char *response_message, t_accepted_client *client);
+void generate_registration_response(int response, const char *response_message, t_accepted_client *client);
+void generate_new_private_chat_response(int response, const char *response_message, t_accepted_client *client);
+void generate_new_group_chat_response(int response, const char *response_message, t_accepted_client *client);
 void generate_message_response(int response, t_accepted_client *client);
 void generate_all_chats_response(int response, t_chats **chats, t_accepted_client *client);
 void generate_get_chat_messages_response(int response, t_messages *messages, t_accepted_client *client);
@@ -88,7 +88,7 @@ void send_response(cJSON *response, t_accepted_client *client);
 void send_message_to_online_chat_users(int chat_id, t_accepted_client *sender, const char *message, t_server_state *state);
 
 void process_request_type(cJSON *request, t_accepted_client *client, t_server_state *state);
-void process_response_type(int response_type, t_accepted_client *client);
+void process_response_type(int response_type, const char *response_message, t_accepted_client *client);
 
 void    add_client(t_server_state *state, t_accepted_client *client);
 void    remove_client(t_server_state *state, t_accepted_client *client);

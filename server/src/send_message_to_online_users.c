@@ -6,13 +6,15 @@ void send_message_to_online_chat_users(int chat_id, t_accepted_client *sender, c
 
     t_client_node *current = state->client_list_head;
     while (current != NULL) {
-        t_accepted_client *client = current->client;  // seg fault
+        t_accepted_client *client = current->client;
 
         if (client->is_logged_in && client->client_id != sender->client_id && db_check_user_in_chat(client->client_id, chat_id)) {
             cJSON *response = cJSON_CreateObject();
+            cJSON *content  = cJSON_CreateObject();
+            cJSON_AddItemToObject(response, "content", content);
             cJSON_AddNumberToObject(response, "response_type", MESSAGE);
-            cJSON_AddNumberToObject(response, "sender_id", sender->client_id);
-            cJSON_AddStringToObject(response, "message", message);
+            cJSON_AddStringToObject(content, "sender_username", db_get_user_by_id(sender->client_id)->username);
+            cJSON_AddStringToObject(content, "message", message);
 
             send_response(response, client);
             cJSON_Delete(response);

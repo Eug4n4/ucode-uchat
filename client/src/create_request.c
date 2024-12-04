@@ -54,3 +54,11 @@ cJSON *create_request_new_chat(void) {
     return json;
 }
 
+cJSON *create_get_chat_messages_request(void) {
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddNumberToObject(json, KEY_REQUEST_TYPE, GET_CHAT_MESSAGES);
+    cJSON *content = cJSON_CreateObject();
+    cJSON_AddItemToObject(json, KEY_CONTENT, content);
+    return json;
+}
+

@@ -207,6 +207,7 @@ void on_chat_selection_changed(GtkTreeSelection *selection) {
     printf("changed\n");
     gchar        *chat_name;
     gint          chat_members;
+    gint          chat_id;
     GtkTreeIter   iter;
     GtkTreeModel *model = gtk_tree_view_get_model(gtk_main_window->chats_list_view);
 
@@ -232,9 +233,13 @@ void on_chat_selection_changed(GtkTreeSelection *selection) {
         gtk_widget_show(GTK_WIDGET(gtk_main_window->btn_send_message));
     }
 
-    if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
+    if (client_data->is_logged_in && gtk_tree_selection_get_selected(selection, &model, &iter)) {
         gtk_tree_model_get(model, &iter, 1, &chat_name, -1);
         gtk_tree_model_get(model, &iter, 2, &chat_members, -1);
+        gtk_tree_model_get(model, &iter, 3, &chat_id, -1);
+
+        send_get_chat_messages_request(chat_id);
+        
         gchar *str_members_count = g_strdup_printf("Members: %d", chat_members);
         gtk_label_set_text(gtk_main_window->label_chat_name, chat_name);
         gtk_label_set_text(gtk_main_window->label_members_count, str_members_count);

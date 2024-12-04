@@ -76,3 +76,16 @@ int send_create_chat_request(t_app *app, const char *chat_name) {
     return result;
 }
 
+int send_get_chat_messages_request(int chat_id) {
+    cJSON *request = create_get_chat_messages_request();
+    cJSON *content = cJSON_GetObjectItemCaseSensitive(request, "content");
+    
+    cJSON_AddNumberToObject(content, "chat_id", chat_id);
+    char *request_str = cJSON_PrintUnformatted(request);
+    int result = SSL_write(client_data->ssl, request_str, strlen(request_str));
+    
+    free(request_str);
+    cJSON_Delete(request);
+    return result;
+}
+

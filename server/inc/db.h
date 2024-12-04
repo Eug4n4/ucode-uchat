@@ -18,5 +18,5 @@ bool           db_check_user_in_chat(int user_id, int chat_id);
 t_chats       *db_get_all_user_chats(int user_id);
 t_messages    *db_get_messages_for_chat(int chat_id);
 int            db_get_chat_members_count(int chat_id);
-int            db_change_display_name(sqlite3 *db, int user_id, const char *new_display_name);
+int            db_change_display_name(int user_id, const char *new_display_name);
 #endif  // DB_H

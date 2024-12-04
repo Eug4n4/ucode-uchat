@@ -23,22 +23,22 @@ gboolean update_gui_with_response(gpointer data) {
 
     switch (response_type) {
     case OK_LOGIN:
-        handle_login_response(OK_LOGIN);
+        handle_login_response(OK_LOGIN, json_response);
         break;
     case FAIL_LOGIN:
-        handle_login_response(FAIL_LOGIN);
+        handle_login_response(FAIL_LOGIN, json_response);
         break;
     case OK_REGISTRATION:
-        handle_registration_response(OK_REGISTRATION);
+        handle_registration_response(OK_REGISTRATION, json_response);
         break;
     case FAIL_REGISTRATION:
-        handle_registration_response(FAIL_REGISTRATION);
+        handle_registration_response(FAIL_REGISTRATION, json_response);
         break;
     case OK_CREATE_NEW_PRIVATE_CHAT:
-        handle_new_chat_response();
+        handle_new_chat_response(json_response);
         break;
     case FAIL_CREATE_NEW_PRIVATE_CHAT:
-        // gtk_label_set_text(gtk_sign_in->label_error, "Failed to create a new chat.");
+        handle_new_chat_response(json_response);
         break;
     case OK_GET_ALL_CHATS: {
         handle_get_all_user_chats_response(json_response);
@@ -57,10 +57,10 @@ gboolean update_gui_with_response(gpointer data) {
         handle_all_users_exclude_response(json_response);
         break;
     case OK_CREATE_NEW_GROUP_CHAT:
-        handle_new_chat_response();
+        handle_new_chat_response(json_response);
         break;
     case FAIL_CREATE_NEW_GROUP_CHAT:
-        // gtk_label_set_text(gtk_sign_in->label_error, "Failed to create a new chat.");
+        handle_new_chat_response(json_response);
         break;
     default:
         g_printerr("Unknown response type: %d\n", response_type);

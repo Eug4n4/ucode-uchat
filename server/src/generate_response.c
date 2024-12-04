@@ -1,20 +1,20 @@
 #include "db.h"
 
-void generate_login_response(int response, t_accepted_client *client) {
+void generate_login_response(int response, const char *response_message, t_accepted_client *client) {
     cJSON *login_response = cJSON_CreateObject();
     cJSON *content        = cJSON_CreateObject();
 
     switch (response) {
     case OK_LOGIN:
         cJSON_AddNumberToObject(login_response, "response_type", OK_LOGIN);
-        cJSON_AddStringToObject(content, "message", "Login success");
+        cJSON_AddStringToObject(content, "message", response_message);
         cJSON_AddItemToObject(login_response, "content", content);
         send_response(login_response, client);
 
         break;
     case FAIL_LOGIN:
         cJSON_AddNumberToObject(login_response, "response_type", FAIL_LOGIN);
-        cJSON_AddStringToObject(content, "message", "Login failed");
+        cJSON_AddStringToObject(content, "message", response_message);
         cJSON_AddItemToObject(login_response, "content", content);
         send_response(login_response, client);
 
@@ -25,21 +25,21 @@ void generate_login_response(int response, t_accepted_client *client) {
     cJSON_Delete(login_response);
 }
 
-void generate_registration_response(int response, t_accepted_client *client) {
+void generate_registration_response(int response, const char *response_message, t_accepted_client *client) {
     cJSON *registration_response = cJSON_CreateObject();
     cJSON *content               = cJSON_CreateObject();
 
     switch (response) {
     case OK_REGISTRATION:
         cJSON_AddNumberToObject(registration_response, "response_type", OK_REGISTRATION);
-        cJSON_AddStringToObject(content, "message", "Registration success");
+        cJSON_AddStringToObject(content, "message", response_message);
         cJSON_AddItemToObject(registration_response, "content", content);
         send_response(registration_response, client);
         break;
 
     case FAIL_REGISTRATION:
         cJSON_AddNumberToObject(registration_response, "response_type", FAIL_REGISTRATION);
-        cJSON_AddStringToObject(content, "message", "Registration failed");
+        cJSON_AddStringToObject(content, "message", response_message);
         cJSON_AddItemToObject(registration_response, "content", content);
         send_response(registration_response, client);
         break;
@@ -49,21 +49,21 @@ void generate_registration_response(int response, t_accepted_client *client) {
     cJSON_Delete(registration_response);
 }
 
-void generate_new_private_chat_response(int response, t_accepted_client *client) {
+void generate_new_private_chat_response(int response, const char *response_message, t_accepted_client *client) {
     cJSON *new_private_chat_response = cJSON_CreateObject();
     cJSON *content                   = cJSON_CreateObject();
 
     switch (response) {
     case OK_CREATE_NEW_PRIVATE_CHAT:
         cJSON_AddNumberToObject(new_private_chat_response, "response_type", OK_CREATE_NEW_PRIVATE_CHAT);
-        cJSON_AddStringToObject(content, "message", "New chat is created");
+        cJSON_AddStringToObject(content, "message", response_message);
         cJSON_AddItemToObject(new_private_chat_response, "content", content);
         send_response(new_private_chat_response, client);
         break;
 
     case FAIL_CREATE_NEW_PRIVATE_CHAT:
         cJSON_AddNumberToObject(new_private_chat_response, "response_type", FAIL_CREATE_NEW_PRIVATE_CHAT);
-        cJSON_AddStringToObject(content, "message", "Failed to create new chat");
+        cJSON_AddStringToObject(content, "message", response_message);
         cJSON_AddItemToObject(new_private_chat_response, "content", content);
         send_response(new_private_chat_response, client);
         break;
@@ -73,21 +73,21 @@ void generate_new_private_chat_response(int response, t_accepted_client *client)
     cJSON_Delete(new_private_chat_response);
 }
 
-void generate_new_group_chat_response(int response, t_accepted_client *client) {
+void generate_new_group_chat_response(int response, const char *response_message, t_accepted_client *client) {
     cJSON *new_group_chat_response = cJSON_CreateObject();
     cJSON *content                 = cJSON_CreateObject();
 
     switch (response) {
     case OK_CREATE_NEW_GROUP_CHAT:
         cJSON_AddNumberToObject(new_group_chat_response, "response_type", OK_CREATE_NEW_GROUP_CHAT);
-        cJSON_AddStringToObject(content, "message", "New group chat created successfully");
+        cJSON_AddStringToObject(content, "message", response_message);
         cJSON_AddItemToObject(new_group_chat_response, "content", content);
         send_response(new_group_chat_response, client);
         break;
 
     case FAIL_CREATE_NEW_GROUP_CHAT:
         cJSON_AddNumberToObject(new_group_chat_response, "response_type", FAIL_CREATE_NEW_GROUP_CHAT);
-        cJSON_AddStringToObject(content, "message", "Failed to create new group chat");
+        cJSON_AddStringToObject(content, "message", response_message);
         cJSON_AddItemToObject(new_group_chat_response, "content", content);
         send_response(new_group_chat_response, client);
         break;
@@ -139,8 +139,8 @@ void generate_all_chats_response(int response, t_chats **chats, t_accepted_clien
             cJSON_AddStringToObject(content, "display_name", user->display_name);
         }
         while (head->chat) {
-            cJSON *chat = cJSON_CreateObject();
-            int chat_members = db_get_chat_members_count(head->chat->id);
+            cJSON *chat         = cJSON_CreateObject();
+            int    chat_members = db_get_chat_members_count(head->chat->id);
             cJSON_AddNumberToObject(chat, "chat_id", head->chat->id);
             cJSON_AddNumberToObject(chat, "chat_type", head->chat->type);
             cJSON_AddStringToObject(chat, "chat_name", head->chat->name);

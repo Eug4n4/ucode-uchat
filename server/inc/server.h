@@ -69,9 +69,9 @@ void daemonize_server(void);
 
 void handle_login_request(cJSON *request, t_accepted_client *client);
 void handle_registration_request(cJSON *request, t_accepted_client *client);
-void handle_new_private_chat_request(cJSON *request, t_accepted_client *client);
-void handle_new_group_chat_request(cJSON *request, t_accepted_client *client);
-void handle_new_chat_request(cJSON *request, t_accepted_client *client);
+void handle_new_private_chat_request(t_server_state *state, cJSON *request, t_accepted_client *client);
+void handle_new_group_chat_request(t_server_state *state, cJSON *request, t_accepted_client *client);
+void handle_new_chat_request(t_server_state *state, cJSON *request, t_accepted_client *client);
 void handle_message_request(cJSON *request, t_accepted_client *client, t_server_state *state);
 void handle_all_chats_request(t_accepted_client *client);
 void handle_get_chat_messages_request(cJSON *request, t_accepted_client *client);
@@ -89,6 +89,8 @@ void send_message_to_online_chat_users(int chat_id, t_accepted_client *sender, c
 
 void process_request_type(cJSON *request, t_accepted_client *client, t_server_state *state);
 void process_response_type(int response_type, t_accepted_client *client);
+
+void notify_new_chat_creation(t_server_state *state, t_accepted_client *client, int chat_id);
 
 void    add_client(t_server_state *state, t_accepted_client *client);
 void    remove_client(t_server_state *state, t_accepted_client *client);

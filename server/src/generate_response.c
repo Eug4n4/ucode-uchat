@@ -183,7 +183,7 @@ void generate_get_chat_messages_response(int response, t_messages *messages, t_a
         for (t_message *msg = messages->head; msg != NULL; msg = msg->next) {
             cJSON *message_json = cJSON_CreateObject();
             cJSON_AddNumberToObject(message_json, "id", msg->id);
-            cJSON_AddNumberToObject(message_json, "sender_id", msg->sender_id);
+            cJSON_AddStringToObject(message_json, "sender_username", msg->sender_username);
             cJSON_AddStringToObject(message_json, "content", msg->content);
             cJSON_AddNumberToObject(message_json, "timestamp", msg->timestamp);
             cJSON_AddItemToArray(messages_array, message_json);

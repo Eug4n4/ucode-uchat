@@ -53,7 +53,7 @@ typedef struct s_server_state {
 
 typedef struct s_message {
     int               id;
-    int               sender_id;
+    char             *sender_username;
     char             *content;
     int64_t           timestamp;
     struct s_message *next;

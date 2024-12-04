@@ -189,6 +189,20 @@ void on_btn_create_chat_clicked(GtkButton *button, gpointer data) {
     (void)data;
 }
 
+void on_btn_send_message_clicked(GtkButton *button, gpointer data) {
+    gint chat_id;
+    GtkTreeIter   iter;
+    GtkTreeModel *model = gtk_tree_view_get_model(gtk_main_window->chats_list_view);
+    
+    if (gtk_tree_selection_get_selected(gtk_main_window->chat_selection, &model, &iter)) {
+        gtk_tree_model_get(model, &iter, 3, &chat_id, -1);
+        printf("%d\n",chat_id);
+    }
+    (void)button;
+    (void)data;
+
+}
+
 void on_chat_selection_changed(GtkTreeSelection *selection) {
     printf("changed\n");
     gchar        *chat_name;
@@ -305,6 +319,7 @@ void init_gui(int argc, char **argv, t_app *app) {
     g_signal_connect(gtk_sign_up->window, "destroy", G_CALLBACK(destroy_screens), NULL);
     g_signal_connect(gtk_main_window->window, "destroy", G_CALLBACK(destroy_screens), NULL);
     g_signal_connect(gtk_create_chat->window, "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
-
+    g_signal_connect(gtk_main_window->btn_send_message, "clicked", G_CALLBACK(on_btn_send_message_clicked), NULL);
+    
     show_screen(LOGIN_SCREEN);
 }

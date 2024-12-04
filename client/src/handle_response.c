@@ -72,6 +72,7 @@ void handle_get_all_user_chats_response(cJSON *response) {
         cJSON *chat_type    = cJSON_GetObjectItemCaseSensitive(chat, "chat_type");
         cJSON *chat_name    = cJSON_GetObjectItemCaseSensitive(chat, "chat_name");
         int    chat_members = cJSON_GetObjectItemCaseSensitive(chat, "chat_members")->valueint;
+        int chat_id = cJSON_GetObjectItemCaseSensitive(chat, "chat_id")->valueint;
 
         gtk_list_store_append(GTK_LIST_STORE(model), &iter);
         if (chat_type->valueint == 0) {
@@ -81,6 +82,8 @@ void handle_get_all_user_chats_response(cJSON *response) {
         }
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, chat_name->valuestring, -1);
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, 2, chat_members, -1);
+        gtk_list_store_set(GTK_LIST_STORE(model), &iter, 3, chat_id, -1);
+
     }
 }
 

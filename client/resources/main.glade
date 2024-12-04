@@ -10,6 +10,8 @@
       <column type="gchararray"/>
       <!-- column-name chat_members -->
       <column type="gint"/>
+      <!-- column-name chat_id -->
+      <column type="gint"/>
     </columns>
   </object>
   <object class="GtkWindow" id="main_window">

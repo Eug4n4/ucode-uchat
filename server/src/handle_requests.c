@@ -16,7 +16,7 @@ void handle_registration_request(cJSON *request, t_accepted_client *client) {
     char  *required_fields[] = { "username", "display_name", "password" };
 
     if (!are_fields_valid(content, required_fields, 3)) {
-        process_response_type(BAD_REQUEST, client);
+        process_response_type(BAD_REQUEST, "Fields are not valid for registration request", client);
         return;
     }
 
@@ -25,24 +25,24 @@ void handle_registration_request(cJSON *request, t_accepted_client *client) {
     cJSON *password     = cJSON_GetObjectItemCaseSensitive(content, "password");
 
     if (!check_username(username->valuestring) || !check_password(password->valuestring)) {
-        process_response_type(FAIL_REGISTRATION, client);
+        process_response_type(FAIL_REGISTRATION, "Username and password are not in correct format", client);
         return;
     }
 
     t_user *user = db_get_user_by_username(username->valuestring);
 
     if (user) {
-        process_response_type(FAIL_REGISTRATION, client);
+        process_response_type(FAIL_REGISTRATION, "Registration failed. User already exists", client);
         free_user(user);
     } else {
         int new_user_id = -2;
         if (db_add_new_user(username->valuestring, display_name->valuestring, password->valuestring, &new_user_id) == 0) {
             client->is_logged_in = true;
             client->client_id    = new_user_id;
-            process_response_type(OK_REGISTRATION, client);
+            process_response_type(OK_REGISTRATION, "Successful registration", client);
         } else {
             client->is_logged_in = false;
-            process_response_type(FAIL_REGISTRATION, client);
+            process_response_type(FAIL_REGISTRATION, "Data base error. Registration failed", client);
         }
     }
 }
@@ -52,7 +52,7 @@ void handle_login_request(cJSON *request, t_accepted_client *client) {
     char  *required_fields[] = { "username", "password" };
 
     if (!are_fields_valid(content, required_fields, 2)) {
-        process_response_type(BAD_REQUEST, client);
+        process_response_type(BAD_REQUEST, "Fields are not valid for login request", client);
         return;
     }
 
@@ -60,7 +60,7 @@ void handle_login_request(cJSON *request, t_accepted_client *client) {
     cJSON *password = cJSON_GetObjectItemCaseSensitive(content, "password");
 
     if (!check_username(username->valuestring) || !check_password(password->valuestring)) {
-        process_response_type(FAIL_LOGIN, client);
+        process_response_type(FAIL_LOGIN, "Username and password are not in correct format", client);
         return;
     }
 
@@ -71,11 +71,11 @@ void handle_login_request(cJSON *request, t_accepted_client *client) {
     if (user && strcmp(username->valuestring, user->username) == 0 && memcmp(hex_hash, user->password, HASH_SIZE) == 0) {
         client->is_logged_in = true;
         client->client_id    = user->id;
-        process_response_type(OK_LOGIN, client);
+        process_response_type(OK_LOGIN, "Logged in successfully", client);
         free_user(user);
     } else {
         client->is_logged_in = false;
-        process_response_type(FAIL_LOGIN, client);
+        process_response_type(FAIL_LOGIN, "Incorrect username or password", client);
     }
     free(hex_hash);
     free(hash);
@@ -91,13 +91,13 @@ void handle_new_private_chat_request(t_server_state *state, cJSON *request, t_ac
 
         char *required_fields[] = { "username" };
         if (!are_fields_valid(content, required_fields, 1)) {
-            process_response_type(BAD_REQUEST, client);
+            process_response_type(BAD_REQUEST, "Fields are not valid for new private chat request", client);
             return;
         }
 
         t_user *target_user = db_get_user_by_username(target_username);
         if (!target_user) {
-            process_response_type(FAIL_CREATE_NEW_PRIVATE_CHAT, client);
+            process_response_type(FAIL_CREATE_NEW_PRIVATE_CHAT, "Failed to create new private chat. User does not exist", client);
             return;
         }
 
@@ -105,17 +105,17 @@ void handle_new_private_chat_request(t_server_state *state, cJSON *request, t_ac
 
         int existing_chat_id = db_check_existing_chat(requesting_user_id, target_user_id);
         if (existing_chat_id > 0) {
-            process_response_type(FAIL_CREATE_NEW_PRIVATE_CHAT, client);
+            process_response_type(FAIL_CREATE_NEW_PRIVATE_CHAT, "Failed to create new private chat. Chat already exists", client);
         } else {
             int new_chat_id = db_create_chat(chat_name, 0);
             if (new_chat_id > 0) {
                 db_link_users_to_chat(new_chat_id, requesting_user_id);
                 db_link_users_to_chat(new_chat_id, target_user_id);
 
-                process_response_type(OK_CREATE_NEW_PRIVATE_CHAT, client);
+                process_response_type(OK_CREATE_NEW_PRIVATE_CHAT, "A new private chat has been successfully created", client);
                 notify_new_chat_creation(state, client, new_chat_id);
             } else {
-                process_response_type(FAIL_CREATE_NEW_PRIVATE_CHAT, client);
+                process_response_type(FAIL_CREATE_NEW_PRIVATE_CHAT, "Database error. Failed to create new private chat", client);
             }
         }
 
@@ -130,7 +130,7 @@ void handle_new_group_chat_request(t_server_state *state, cJSON *request, t_acce
 
     int chat_id = db_create_chat(chat_name, 1);
     if (chat_id < 0) {
-        process_response_type(FAIL_CREATE_NEW_GROUP_CHAT, client);
+        process_response_type(FAIL_CREATE_NEW_GROUP_CHAT, "Database error. Failed to create new group chat", client);
         logging_format(LOG_ERR, "Failed to create new group chat. DB failed to create new chat\n");
         return;
     }
@@ -138,7 +138,7 @@ void handle_new_group_chat_request(t_server_state *state, cJSON *request, t_acce
     int size = cJSON_GetArraySize(users_array);
 
     if (!db_link_users_to_chat(chat_id, client->client_id)) {
-        process_response_type(FAIL_CREATE_NEW_GROUP_CHAT, client);
+        process_response_type(FAIL_CREATE_NEW_GROUP_CHAT, "Database error. Failed to create new group chat", client);
         logging_format(LOG_ERR, "DB. Failed to link request sender to group chat %d", chat_id);
     }
 
@@ -148,20 +148,24 @@ void handle_new_group_chat_request(t_server_state *state, cJSON *request, t_acce
 
         t_user *user = db_get_user_by_username(username);
         if (user == NULL) {
-            process_response_type(FAIL_CREATE_NEW_GROUP_CHAT, client);
+            char error_message[256];
+            snprintf(error_message, sizeof(error_message), "Failed to create new group chat. User '%s' does not exist", username);
+
+            process_response_type(FAIL_CREATE_NEW_GROUP_CHAT, error_message, client);
             logging_format(LOG_ERR, "Failed to create new group chat. User not found.\n");
             continue;
         }
 
         if (!db_link_users_to_chat(chat_id, user->id)) {
-            process_response_type(FAIL_CREATE_NEW_GROUP_CHAT, client);
+            process_response_type(FAIL_CREATE_NEW_GROUP_CHAT, "Database error. Failed to create new group chat", client);
             logging_format(LOG_ERR, "DB. Failed to link user %s to group chat %d", username, chat_id);
         }
 
         free_user(user);
     }
-    process_response_type(OK_CREATE_NEW_GROUP_CHAT, client);
+    process_response_type(OK_CREATE_NEW_GROUP_CHAT, "A new group chat has been successfully created", client);
     notify_new_chat_creation(state, client, chat_id);
+
 }
 
 void handle_message_request(cJSON *request, t_accepted_client *client, t_server_state *state) {
@@ -175,12 +179,12 @@ void handle_message_request(cJSON *request, t_accepted_client *client, t_server_
 
     if (db_save_message(client->client_id, chat_id, message) == -1) {
         logging_format(LOG_ERR, "Error saving message to database");
-        process_response_type(FAIL_MESSAGE, client);
+        process_response_type(FAIL_MESSAGE, "", client);
         return;
     }
 
     send_message_to_online_chat_users(chat_id, client, message, state);
-    process_response_type(OK_MESSAGE, client);
+    process_response_type(OK_MESSAGE, "", client);
 }
 
 void handle_all_chats_request(t_accepted_client *client) {
@@ -189,7 +193,7 @@ void handle_all_chats_request(t_accepted_client *client) {
         generate_all_chats_response(OK_GET_ALL_CHATS, &chats, client);
         free_chats(&chats);
     } else {
-        process_response_type(FAIL_GET_ALL_CHATS, client);
+        process_response_type(FAIL_GET_ALL_CHATS, "", client);
     }
 }
 
@@ -248,6 +252,6 @@ void handle_new_chat_request(t_server_state *state, cJSON *request, t_accepted_c
     } else if (size > 1) {
         handle_new_group_chat_request(state, request, client);
     } else {
-        process_response_type(FAIL_CREATE_NEW_PRIVATE_CHAT, client);
+        process_response_type(FAIL_CREATE_NEW_PRIVATE_CHAT, "Failed to create new chat. List of users is empty", client);
     }
 }

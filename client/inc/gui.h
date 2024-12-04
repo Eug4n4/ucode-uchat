@@ -45,21 +45,22 @@ typedef struct s_gtk_create_chat {
     GtkButton             *btn_create_chat;
     GtkCellRenderer       *text_renderer;
     GtkCellRendererToggle *toggle_renderer;
+    GtkLabel              *label_status;
 
 } t_gtk_create_chat;
 
 typedef struct s_gtk_main_window {
-    GtkWindow  *window;
-    GtkListStore          *chat_store;
-    GtkTreeView *chats_list_view;
+    GtkWindow        *window;
+    GtkListStore     *chat_store;
+    GtkTreeView      *chats_list_view;
     GtkTreeSelection *chat_selection;
-    GdkPixbuf *private_chat_image;
-    GdkPixbuf *group_chat_image;
-    GtkLabel *label_chat_name;
-    GtkLabel *label_members_count;
-    GtkEntry *entry_send_message;
-    GtkButton *btn_send_message;
-    
+    GdkPixbuf        *private_chat_image;
+    GdkPixbuf        *group_chat_image;
+    GtkLabel         *label_chat_name;
+    GtkLabel         *label_members_count;
+    GtkEntry         *entry_send_message;
+    GtkButton        *btn_send_message;
+
 } t_gtk_main_window;
 
 typedef struct s_gtk_sign_up {

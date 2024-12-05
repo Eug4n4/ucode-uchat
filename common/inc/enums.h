@@ -26,6 +26,7 @@ typedef enum e_response_type { OK_LOGIN,
                                FAIL_ALL_USERS_EXCLUDE,
                                OK_CREATE_NEW_GROUP_CHAT,
                                FAIL_CREATE_NEW_GROUP_CHAT,
-                               BAD_REQUEST} t_response_type;
+                               BAD_REQUEST,
+                               NEW_MESSAGE} t_response_type;
 
 #endif //ENUMS_H

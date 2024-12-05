@@ -191,17 +191,25 @@ void on_btn_create_chat_clicked(GtkButton *button, gpointer data) {
 }
 
 void on_btn_send_message_clicked(GtkButton *button, gpointer data) {
-    gint chat_id;
+    const gchar *message_text = gtk_entry_get_text(gtk_main_window->entry_send_message);
+    if (message_text == NULL || strlen(message_text) == 0) {
+        return;
+    }
+
+    gint          chat_id;
     GtkTreeIter   iter;
     GtkTreeModel *model = gtk_tree_view_get_model(gtk_main_window->chats_list_view);
-    
+
     if (gtk_tree_selection_get_selected(gtk_main_window->chat_selection, &model, &iter)) {
         gtk_tree_model_get(model, &iter, 3, &chat_id, -1);
-        printf("%d\n",chat_id);
+        printf("%d\n", chat_id);
+        if (send_message_request(chat_id, message_text, client_data->ssl) < 0) {
+            return;
+        }
     }
+
     (void)button;
     (void)data;
-
 }
 
 void on_chat_selection_changed(GtkTreeSelection *selection) {
@@ -327,6 +335,6 @@ void init_gui(int argc, char **argv, t_app *app) {
     g_signal_connect(gtk_main_window->window, "destroy", G_CALLBACK(destroy_screens), NULL);
     g_signal_connect(gtk_create_chat->window, "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
     g_signal_connect(gtk_main_window->btn_send_message, "clicked", G_CALLBACK(on_btn_send_message_clicked), NULL);
-    
+
     show_screen(LOGIN_SCREEN);
 }

@@ -85,8 +85,7 @@ void generate_all_chats_response(int response, t_chats **chats, t_accepted_clien
 void generate_get_chat_messages_response(int response, t_messages *messages, t_accepted_client *client);
 void generate_all_users_exclude_response(int response, t_users **users, t_accepted_client *client);
 void send_response(cJSON *response, t_accepted_client *client);
-void send_message_to_online_chat_users(int chat_id, t_accepted_client *sender, const char *message, t_server_state *state);
-
+void send_message_to_online_chat_users(int chat_id, t_accepted_client *sender, const char *message, int64_t timestamp, t_server_state *state);
 void process_request_type(cJSON *request, t_accepted_client *client, t_server_state *state);
 void process_response_type(int response_type, const char *response_message, t_accepted_client *client);
 

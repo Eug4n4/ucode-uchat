@@ -58,6 +58,7 @@ void handle_get_all_user_chats_response(cJSON *response);
 void handle_all_users_exclude_response(cJSON *response);
 void handle_new_chat_response(cJSON *json_response);
 void handle_get_chat_messages_response(cJSON *response);
+void handle_new_message_response(cJSON *response);
 
 bool reconnect_to_server(t_client_data *client_data);
 

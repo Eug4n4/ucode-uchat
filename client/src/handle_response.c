@@ -140,3 +140,18 @@ void handle_get_chat_messages_response(cJSON *response) {
     }
 }
 
+void handle_new_message_response(cJSON *response) {
+    cJSON *content = cJSON_GetObjectItemCaseSensitive(response, "content");
+    int chat_id = cJSON_GetObjectItemCaseSensitive(content, "chat_id")->valueint;
+    int current_chat_id;
+    GtkTreeIter iter;
+    GtkTreeModel *model = gtk_tree_view_get_model(gtk_main_window->chats_list_view);
+
+    if (gtk_tree_selection_get_selected(gtk_main_window->chat_selection, &model, &iter)) {
+        gtk_tree_model_get(model, &iter, 3, &current_chat_id, -1);
+        if (current_chat_id == chat_id) {
+            show_msg_in_chat_history(content);
+        }
+    }
+}
+

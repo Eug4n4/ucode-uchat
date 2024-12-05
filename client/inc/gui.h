@@ -1,7 +1,8 @@
 #ifndef GUI_H
 #define GUI_H
-#include <gtk/gtk.h>
 #include "../../common/inc/common.h"
+#include <gtk/gtk.h>
+
 
 #define GLADE_LOGIN_PATH "resources/login.glade"
 #define GLADE_REGISTER_PATH "resources/registration.glade"

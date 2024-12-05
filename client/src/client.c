@@ -1,4 +1,3 @@
-#define _POSIX_C_SOURCE 1
 #include "../inc/client.h"
 
 GThread       *read_thread = NULL;
@@ -46,8 +45,9 @@ gpointer read_from_server_thread(gpointer data) {
         }
         if (client_data->is_running && client_data->is_connected) {
             int bytes_read = SSL_read(client_data->ssl, buffer, sizeof(buffer) - 1);
+            int res = 0;
             if (bytes_read <= 0) {
-                int res = SSL_get_error(client_data->ssl, bytes_read);
+                res = SSL_get_error(client_data->ssl, bytes_read);
 
                 if (res != SSL_ERROR_WANT_READ && res != SSL_ERROR_WANT_WRITE && client_data->is_running == true) {
                     if (!reconnecting) {
@@ -92,6 +92,8 @@ gpointer read_from_server_thread(gpointer data) {
                         reconnecting = false;
                     }
                 }
+            } else if ((res == SSL_ERROR_WANT_READ || res == SSL_ERROR_WANT_WRITE) && client_data->is_running) {
+                continue;
             }
 
             buffer[bytes_read] = '\0';

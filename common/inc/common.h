@@ -1,5 +1,6 @@
 #ifndef COMMON_H
 #define COMMON_H
+#define _GNU_SOURCE
 #include "includes.h"
 #include "defines.h"
 #include "enums.h"

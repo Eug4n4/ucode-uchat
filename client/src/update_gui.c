@@ -65,6 +65,9 @@ gboolean update_gui_with_response(gpointer data) {
     case FAIL_CREATE_NEW_GROUP_CHAT:
         handle_new_chat_response(json_response);
         break;
+    case NEW_MESSAGE:
+        handle_new_message_response(json_response);
+        break;
     default:
         g_printerr("Unknown response type: %d\n", response_type);
         break;

@@ -184,7 +184,6 @@ void handle_message_request(cJSON *request, t_accepted_client *client, t_server_
     }
 
     send_message_to_online_chat_users(chat_id, client, message, timestamp, state);
-    process_response_type(OK_MESSAGE, "", client);
 }
 
 void handle_all_chats_request(t_accepted_client *client) {

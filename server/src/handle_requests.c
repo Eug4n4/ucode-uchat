@@ -165,7 +165,6 @@ void handle_new_group_chat_request(t_server_state *state, cJSON *request, t_acce
     }
     process_response_type(OK_CREATE_NEW_GROUP_CHAT, "A new group chat has been successfully created", client);
     notify_new_chat_creation(state, client, chat_id);
-
 }
 
 void handle_message_request(cJSON *request, t_accepted_client *client, t_server_state *state) {
@@ -177,13 +176,14 @@ void handle_message_request(cJSON *request, t_accepted_client *client, t_server_
     int         chat_id = cJSON_GetObjectItem(content, "chat_id")->valueint;
     const char *message = cJSON_GetObjectItem(content, "message")->valuestring;
 
-    if (db_save_message(client->client_id, chat_id, message) == -1) {
+    int64_t timestamp = 0;
+    if (db_save_message(client->client_id, chat_id, message, &timestamp) == -1) {
         logging_format(LOG_ERR, "Error saving message to database");
         process_response_type(FAIL_MESSAGE, "", client);
         return;
     }
 
-    send_message_to_online_chat_users(chat_id, client, message, state);
+    send_message_to_online_chat_users(chat_id, client, message, timestamp, state);
     process_response_type(OK_MESSAGE, "", client);
 }
 

@@ -53,6 +53,9 @@ gboolean update_gui_with_response(gpointer data) {
     case FAIL_MESSAGE:
         // gtk_label_set_text(gtk_sign_in->label_error, "Failed to send message.");
         break;
+    case OK_GET_CHAT_MESSAGES:
+        handle_get_chat_messages_response(json_response);
+        break;
     case OK_ALL_USERS_EXCLUDE:
         handle_all_users_exclude_response(json_response);
         break;

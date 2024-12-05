@@ -246,10 +246,8 @@ void on_chat_selection_changed(GtkTreeSelection *selection) {
         gtk_tree_model_get(model, &iter, 1, &chat_name, -1);
         gtk_tree_model_get(model, &iter, 2, &chat_members, -1);
         gtk_tree_model_get(model, &iter, 3, &chat_id, -1);
-
-        send_get_chat_messages_request(chat_id);
         clear_chat_history();
-        show_chat_history();
+        send_get_chat_messages_request(chat_id);
         gchar *str_members_count = g_strdup_printf("Members: %d", chat_members);
         gtk_label_set_text(gtk_main_window->label_chat_name, chat_name);
         gtk_label_set_text(gtk_main_window->label_members_count, str_members_count);

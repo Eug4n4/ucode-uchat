@@ -103,6 +103,6 @@ void destroy_screens(GtkWidget *widget, gpointer data);
 GtkWidget *show_reconnect_popup(void);
 gboolean   close_reconnect_popup(GtkWidget *dialog);
 
-void show_chat_history(void);
+void show_msg_in_chat_history(cJSON *json_message);
 void clear_chat_history(void);
 #endif  // GUI_H

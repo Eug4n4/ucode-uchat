@@ -129,3 +129,14 @@ void handle_new_chat_response(cJSON *json_response) {
         }
     }
 }
+
+void handle_get_chat_messages_response(cJSON *response) {
+    cJSON *content = cJSON_GetObjectItemCaseSensitive(response, "content");
+    cJSON *messages_array = cJSON_GetObjectItemCaseSensitive(content, "messages");
+    cJSON *message = NULL;
+
+    cJSON_ArrayForEach(message, messages_array) {
+        show_msg_in_chat_history(message);
+    }
+}
+

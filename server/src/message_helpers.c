@@ -32,6 +32,7 @@ void free_messages(t_messages **messages) {
     while (current) {
         t_message *next = current->next;
         free(current->content);
+        free(current->sender_username);
         free(current);
         current = next;
     }

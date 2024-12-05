@@ -249,6 +249,12 @@ GtkWidget *show_reconnect_popup(void) {
     return dialog;
 }
 
+void css_set(GtkCssProvider *css_provider, GtkWidget *widget) {
+    GtkStyleContext *context = gtk_widget_get_style_context(widget);
+
+    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+}
+
 void init_gui(int argc, char **argv, t_app *app) {
     gtk_init(&argc, &argv);
 
@@ -288,5 +294,19 @@ void init_gui(int argc, char **argv, t_app *app) {
     g_signal_connect(gtk_main_window->window, "destroy", G_CALLBACK(destroy_screens), NULL);
     g_signal_connect(gtk_create_chat->window, "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
 
+    GtkCssProvider *css_provider;
+    css_provider = gtk_css_provider_new();
+    gtk_css_provider_load_from_path(css_provider, "./resources/css_styles.css", NULL);
+    css_set(css_provider, (GtkWidget*)gtk_main_window->window);
+    css_set(css_provider, (GtkWidget*)btn_create_chat_main);
+    css_set(css_provider, (GtkWidget*)btn_create_chat);
+    css_set(css_provider, (GtkWidget*)log_out_btn);
+
+    css_set(css_provider, (GtkWidget*)gtk_main_window->chats_list_view);
+    // css_set(css_provider, (GtkWidget*)gtk_main_window->chats_list_view);
+    // css_set(css_provider, (GtkWidget*)gtk_main_window->chat_selection);
+
     show_screen(LOGIN_SCREEN);
 }
+
+//gtk_main_window();

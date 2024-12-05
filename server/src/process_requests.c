@@ -11,7 +11,7 @@ void process_request_type(cJSON *request, t_accepted_client *client, t_server_st
         handle_login_request(request, client);
         break;
     case NEW_CHAT:
-        handle_new_chat_request(request, client);
+        handle_new_chat_request(state, request, client);
         break;
     case MESSAGE:
         handle_message_request(request, client, state);

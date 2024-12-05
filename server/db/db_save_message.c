@@ -1,6 +1,8 @@
 #include "db.h"
 
-int db_save_message(int sender_id, int chat_id, const char *message) {
+#include "db.h"
+
+int db_save_message(int sender_id, int chat_id, const char *message, int64_t *timestamp) {
     sqlite3 *db = db_open("test.db");
     if (db == NULL) {
         return -1;
@@ -13,9 +15,10 @@ int db_save_message(int sender_id, int chat_id, const char *message) {
     }
 
     sqlite3_stmt *stmt;
-    const char *sql = "INSERT INTO messages (sender_id, receiver_id, message, timestamp) "
-                      "VALUES (?, ?, ?, strftime('%s', 'now'));";
-    int success = -1;
+    const char   *sql               = "INSERT INTO messages (sender_id, receiver_id, message, timestamp) "
+                                      "VALUES (?, ?, ?, strftime('%s', 'now'));";
+    const char   *sql_get_timestamp = "SELECT strftime('%s', 'now');";
+    int           success           = -1;
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
         sqlite3_bind_int(stmt, 1, sender_id);
@@ -24,6 +27,14 @@ int db_save_message(int sender_id, int chat_id, const char *message) {
 
         if (sqlite3_step(stmt) == SQLITE_DONE) {
             success = 0;
+
+            sqlite3_stmt *ts_stmt;
+            if (sqlite3_prepare_v2(db, sql_get_timestamp, -1, &ts_stmt, NULL) == SQLITE_OK) {
+                if (sqlite3_step(ts_stmt) == SQLITE_ROW) {
+                    *timestamp = sqlite3_column_int64(ts_stmt, 0);
+                }
+                sqlite3_finalize(ts_stmt);
+            }
         }
         sqlite3_finalize(stmt);
     } else {

@@ -21,15 +21,28 @@ t_user *create_user_with_params(char *username, char *password, char *display_na
     return user;
 }
 
-void free_user(t_user *user) {
-    free(user->username);
+void free_user_data(t_user *user) {
+    if (user->username) {
+        free(user->username);
+        user->username = NULL;
+    }
     if (user->password) {
         free(user->password);
+        user->password = NULL;
     }
     if (user->display_name) {
         free(user->display_name);
+        user->display_name = NULL;
     }
-    free(user);
+}
+
+void free_user(t_user *user) {
+    if (user) {
+        free_user_data(user);
+        free(user);
+        user = NULL;
+    }
+    
 }
 
 t_users *create_users(t_user *user) {

@@ -1,4 +1,3 @@
-#define _POSIX_C_SOURCE 1
 #include "../inc/client.h"
 
 GThread       *read_thread = NULL;
@@ -32,7 +31,7 @@ bool reconnect_to_server(t_client_data *client_data) {
     return false;
 }
 
-// client.c
+
 gpointer read_from_server_thread(gpointer data) {
     char buffer[BUF_SIZE]  = { 0 };
     bool reconnecting      = false;
@@ -46,8 +45,9 @@ gpointer read_from_server_thread(gpointer data) {
         }
         if (client_data->is_running && client_data->is_connected) {
             int bytes_read = SSL_read(client_data->ssl, buffer, sizeof(buffer) - 1);
+            int res = 0;
             if (bytes_read <= 0) {
-                int res = SSL_get_error(client_data->ssl, bytes_read);
+                res = SSL_get_error(client_data->ssl, bytes_read);
 
                 if (res != SSL_ERROR_WANT_READ && res != SSL_ERROR_WANT_WRITE && client_data->is_running == true) {
                     if (!reconnecting) {
@@ -68,14 +68,14 @@ gpointer read_from_server_thread(gpointer data) {
                             client_data->is_connected = false;
                             g_mutex_unlock(&client_data->data_mutex);
                             reconnect_attempt++;
-                            int delay = (int)pow(2, reconnect_attempt);  // Exponential backoff
+                            int delay = (int)pow(2, reconnect_attempt);
 
                             // Update the dialog with the current attempt
                             char message[256];
                             snprintf(message, sizeof(message), "Reconnection attempt #%d failed. Retrying in %d seconds...", reconnect_attempt, delay);
                             gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(popup), message);
 
-                            g_usleep(delay * 1000000);  // Sleep for `delay` seconds
+                            g_usleep(delay * 1000000);
                         }
 
                         printf("Reconnected successfully!\n");
@@ -87,11 +87,13 @@ gpointer read_from_server_thread(gpointer data) {
                                 gtk_label_set_text(gtk_sign_in->label_error, "Error communicating with server");
                             }
                         }
-                        reconnect_attempt = 0;  // Reset counter on success
+                        reconnect_attempt = 0;
                         g_idle_add((GSourceFunc)close_reconnect_popup, popup);
                         reconnecting = false;
                     }
                 }
+            } else if ((res == SSL_ERROR_WANT_READ || res == SSL_ERROR_WANT_WRITE) && client_data->is_running) {
+                continue;
             }
 
             buffer[bytes_read] = '\0';
@@ -144,6 +146,6 @@ int main(int argc, char *argv[]) {
     gtk_main();
 
     SSL_CTX_free(ctx);
-
+    free(app);
     return 0;
 }

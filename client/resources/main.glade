@@ -11,6 +11,10 @@
       <column type="GdkPixbuf"/>
       <!-- column-name chat_name -->
       <column type="gchararray"/>
+      <!-- column-name chat_members -->
+      <column type="gint"/>
+      <!-- column-name chat_id -->
+      <column type="gint"/>
     </columns>
   </object>
   <object class="GtkWindow" id="main_window">
@@ -168,6 +172,18 @@
                                 </child>
                               </object>
                             </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="chat_members">
+                                <property name="visible">False</property>
+                                <property name="title" translatable="yes">Chat Members</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="chat_members_count"/>
+                                  <attributes>
+                                    <attribute name="text">2</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
@@ -272,11 +288,13 @@
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <child>
-                          <object class="GtkTreeView" id="chat_history_view">
+                          <object class="GtkBox" id="messages">
                             <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <child internal-child="selection">
-                              <object class="GtkTreeSelection" id="message_selection"/>
+                            <property name="can-focus">False</property>
+                            <property name="valign">end</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <placeholder/>
                             </child>
                           </object>
                         </child>
@@ -320,6 +338,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
+                    <signal name="clicked" handler="on_btn_send_message_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left-attach">2</property>

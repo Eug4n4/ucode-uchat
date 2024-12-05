@@ -3,18 +3,20 @@
 t_gtk_main_window *create_gtk_main_window_data(void) {
     t_gtk_main_window *data = malloc(sizeof(t_gtk_main_window));
     GtkWindow         *window;
-    GtkListStore          *chat_store;
-    GtkTreeView *chats_list_view;
-    GtkTreeSelection *chat_selection;
-    GError            *error = NULL;
-    GdkPixbuf *private_chat = gdk_pixbuf_new_from_file(PRIVATE_CHAT_IMAGE_PATH, &error);
-    
+    GtkListStore      *chat_store;
+    GtkTreeView       *chats_list_view;
+    GtkTreeSelection  *chat_selection;
+    GError            *error        = NULL;
+    GtkScrolledWindow *chat_history_window;
+    GtkWidget *messages;
+    GdkPixbuf         *private_chat = gdk_pixbuf_new_from_file(PRIVATE_CHAT_IMAGE_PATH, &error);
+
     if (!private_chat) {
         g_print("Error loading image %s\n", error->message);
         g_error_free(error);
     }
     GdkPixbuf *group_chat = gdk_pixbuf_new_from_file(GROUP_CHAT_IMAGE_PATH, &error);
-    
+
     if (!group_chat) {
         g_print("Error loading image %s\n", error->message);
         g_error_free(error);
@@ -29,44 +31,47 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
         }
     }
 
-    window = GTK_WINDOW(gtk_builder_get_object(builder_main_window, "main_window"));
-    chat_store = GTK_LIST_STORE(gtk_builder_get_object(builder_main_window, "chat_store"));
-    chats_list_view = GTK_TREE_VIEW(gtk_builder_get_object(builder_main_window, "chats_list_view"));
-    chat_selection = GTK_TREE_SELECTION(gtk_builder_get_object(builder_main_window, "chat_selection"));
-    GtkLabel *label_chat_name =    GTK_LABEL(gtk_builder_get_object(builder_main_window, "label_chat_name"));     
-    GtkLabel *label_members_count =    GTK_LABEL(gtk_builder_get_object(builder_main_window, "label_members_count"));         
-    GtkEntry *entry_send_message = GTK_ENTRY(gtk_builder_get_object(builder_main_window, "entry_send"));
-    GtkButton *btn_send_message = GTK_BUTTON(gtk_builder_get_object(builder_main_window, "btn_send"));
-    chat_selection = gtk_tree_view_get_selection(chats_list_view);
+    window                         = GTK_WINDOW(gtk_builder_get_object(builder_main_window, "main_window"));
+    chat_store                     = GTK_LIST_STORE(gtk_builder_get_object(builder_main_window, "chat_store"));
+    chats_list_view                = GTK_TREE_VIEW(gtk_builder_get_object(builder_main_window, "chats_list_view"));
+    chat_selection                 = GTK_TREE_SELECTION(gtk_builder_get_object(builder_main_window, "chat_selection"));
+    GtkLabel  *label_chat_name     = GTK_LABEL(gtk_builder_get_object(builder_main_window, "label_chat_name"));
+    GtkLabel  *label_members_count = GTK_LABEL(gtk_builder_get_object(builder_main_window, "label_members_count"));
+    GtkEntry  *entry_send_message  = GTK_ENTRY(gtk_builder_get_object(builder_main_window, "entry_send"));
+    GtkButton *btn_send_message    = GTK_BUTTON(gtk_builder_get_object(builder_main_window, "btn_send"));
+    chat_history_window = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder_main_window, "chat_history_window"));
+    messages              = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "messages"));
 
-    data->window  = window;
-    data->chat_store = chat_store;
-    data->group_chat_image = group_chat;
-    data->private_chat_image = private_chat;
-    data->chats_list_view = chats_list_view;
-    data->chat_selection = chat_selection;
-    data->label_chat_name = label_chat_name;
+    data->window              = window;
+    data->chat_store          = chat_store;
+    data->group_chat_image    = group_chat;
+    data->private_chat_image  = private_chat;
+    data->chats_list_view     = chats_list_view;
+    data->chat_selection      = chat_selection;
+    data->label_chat_name     = label_chat_name;
     data->label_members_count = label_members_count;
-    data->entry_send_message = entry_send_message;
-    data->btn_send_message = btn_send_message;
-
+    data->entry_send_message  = entry_send_message;
+    data->btn_send_message    = btn_send_message;
+    data->chat_history_window = chat_history_window;
+    data->messages   = messages;
     gtk_tree_view_set_headers_visible(data->chats_list_view, FALSE);
     return data;
 }
 
 t_gtk_create_chat *create_gtk_create_chat_data(void) {
-    t_gtk_create_chat *data = malloc(sizeof(t_gtk_create_chat));
-    GtkWindow  *window;
-    GError        *error = NULL;
-    GtkListStore *users_store;
-    GtkTreeView *view_users;
-    GtkEntry *entry_chat_name;
-    GtkTreeSelection *selected_user;
-    GtkTreeViewColumn *column_username;
-    GtkTreeViewColumn *column_toggle;
-    GtkButton *btn_create_chat;
-    GtkCellRenderer *text_renderer;
+    t_gtk_create_chat     *data = malloc(sizeof(t_gtk_create_chat));
+    GtkWindow             *window;
+    GError                *error = NULL;
+    GtkListStore          *users_store;
+    GtkTreeView           *view_users;
+    GtkEntry              *entry_chat_name;
+    GtkTreeSelection      *selected_user;
+    GtkTreeViewColumn     *column_username;
+    GtkTreeViewColumn     *column_toggle;
+    GtkButton             *btn_create_chat;
+    GtkCellRenderer       *text_renderer;
     GtkCellRendererToggle *toggle_renderer;
+    GtkLabel              *label_status;
 
     if (!builder_create_chat) {
         builder_create_chat = gtk_builder_new();
@@ -77,30 +82,30 @@ t_gtk_create_chat *create_gtk_create_chat_data(void) {
         g_error_free(error);
         return NULL;
     }
-    window = GTK_WINDOW(gtk_builder_get_object(builder_create_chat, "window"));
-    users_store = GTK_LIST_STORE(gtk_builder_get_object(builder_create_chat, "users_store"));
-    view_users = GTK_TREE_VIEW(gtk_builder_get_object(builder_create_chat, "tv_users"));
-    selected_user = GTK_TREE_SELECTION(gtk_builder_get_object(builder_create_chat, "selected_user"));
+    window          = GTK_WINDOW(gtk_builder_get_object(builder_create_chat, "window"));
+    users_store     = GTK_LIST_STORE(gtk_builder_get_object(builder_create_chat, "users_store"));
+    view_users      = GTK_TREE_VIEW(gtk_builder_get_object(builder_create_chat, "tv_users"));
+    selected_user   = GTK_TREE_SELECTION(gtk_builder_get_object(builder_create_chat, "selected_user"));
     column_username = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder_create_chat, "column_username"));
-    column_toggle = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder_create_chat, "column_toggle"));
+    column_toggle   = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder_create_chat, "column_toggle"));
     btn_create_chat = GTK_BUTTON(gtk_builder_get_object(builder_create_chat, "btn_create_chat"));
-    text_renderer = GTK_CELL_RENDERER(gtk_builder_get_object(builder_create_chat, "text_renderer"));
+    text_renderer   = GTK_CELL_RENDERER(gtk_builder_get_object(builder_create_chat, "text_renderer"));
     toggle_renderer = GTK_CELL_RENDERER_TOGGLE(gtk_builder_get_object(builder_create_chat, "toggle_renderer"));
     entry_chat_name = GTK_ENTRY(gtk_builder_get_object(builder_create_chat, "entry_chat_name"));
+    label_status    = GTK_LABEL(gtk_builder_get_object(builder_create_chat, "label_status"));
 
-    selected_user = gtk_tree_view_get_selection(view_users);
-    
-    data->window = window;
-    data->view_users = view_users;
-    data->selected_user = selected_user;
+    data->window          = window;
+    data->view_users      = view_users;
+    data->selected_user   = selected_user;
     data->column_username = column_username;
-    data->column_toggle = column_toggle;
+    data->column_toggle   = column_toggle;
     data->btn_create_chat = btn_create_chat;
-    data->text_renderer = text_renderer;
+    data->text_renderer   = text_renderer;
     data->toggle_renderer = toggle_renderer;
-    data->users_store = users_store;
+    data->users_store     = users_store;
     data->entry_chat_name = entry_chat_name;
-    gtk_tree_view_set_model(data->view_users, GTK_TREE_MODEL(data->users_store)); 
+    data->label_status    = label_status;
+    gtk_tree_view_set_model(data->view_users, GTK_TREE_MODEL(data->users_store));
     gtk_tree_view_column_add_attribute(column_username, text_renderer, "text", 0);
     gtk_tree_view_column_add_attribute(column_toggle, GTK_CELL_RENDERER(toggle_renderer), "active", 1);
 

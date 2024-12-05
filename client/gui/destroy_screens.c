@@ -27,6 +27,7 @@ static void main_window_quit(void) {
 
 static void create_chat_window_quit(void) {
     g_print("create chat window quit\n");
+    gtk_widget_destroy(GTK_WIDGET(gtk_create_chat->window));
     g_object_unref(builder_create_chat);
     free(gtk_create_chat);
     gtk_create_chat = NULL;

@@ -1,7 +1,8 @@
 #ifndef GUI_H
 #define GUI_H
-#include <gtk/gtk.h>
 #include "../../common/inc/common.h"
+#include <gtk/gtk.h>
+
 
 #define GLADE_LOGIN_PATH "resources/login.glade"
 #define GLADE_REGISTER_PATH "resources/registration.glade"
@@ -45,21 +46,24 @@ typedef struct s_gtk_create_chat {
     GtkButton             *btn_create_chat;
     GtkCellRenderer       *text_renderer;
     GtkCellRendererToggle *toggle_renderer;
+    GtkLabel              *label_status;
 
 } t_gtk_create_chat;
 
 typedef struct s_gtk_main_window {
-    GtkWindow  *window;
-    GtkListStore          *chat_store;
-    GtkTreeView *chats_list_view;
+    GtkWindow        *window;
+    GtkScrolledWindow *chat_history_window;
+    GtkListStore     *chat_store;
+    GtkTreeView      *chats_list_view;
     GtkTreeSelection *chat_selection;
-    GdkPixbuf *private_chat_image;
-    GdkPixbuf *group_chat_image;
-    GtkLabel *label_chat_name;
-    GtkLabel *label_members_count;
-    GtkEntry *entry_send_message;
-    GtkButton *btn_send_message;
-    
+    GdkPixbuf        *private_chat_image;
+    GdkPixbuf        *group_chat_image;
+    GtkLabel         *label_chat_name;
+    GtkLabel         *label_members_count;
+    GtkEntry         *entry_send_message;
+    GtkButton        *btn_send_message;
+    GtkWidget        *messages;
+
 } t_gtk_main_window;
 
 typedef struct s_gtk_sign_up {
@@ -100,4 +104,8 @@ void destroy_screens(GtkWidget *widget, gpointer data);
 
 GtkWidget *show_reconnect_popup(void);
 gboolean   close_reconnect_popup(GtkWidget *dialog);
+
+void show_msg_in_chat_history(cJSON *json_message);
+gboolean new_incomming_message(gpointer data);
+void clear_chat_history(void);
 #endif  // GUI_H

@@ -12,12 +12,18 @@ int db_check_existing_chat(int user1_id, int user2_id) {
                       "AND c.type = 0";
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
-        sqlite3_bind_int(stmt, 1, user1_id);
-        sqlite3_bind_int(stmt, 2, user2_id);
+        if (sqlite3_bind_int(stmt, 1, user1_id) != SQLITE_OK) {
+            logging_format(LOG_ERR, "Cannot bind int 1 in existing chat\n");
+        }
+        if (sqlite3_bind_int(stmt, 2, user2_id) != SQLITE_OK) {
+            logging_format(LOG_ERR, "Cannot bind int 2 in existing chat\n");
+
+        }
         if (sqlite3_step(stmt) == SQLITE_ROW) {
             chat_id = sqlite3_column_int(stmt, 0);
         }
         sqlite3_finalize(stmt);
     }
+    db_close(db);
     return chat_id;
 }

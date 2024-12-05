@@ -1,13 +1,5 @@
 #include "server.h"
-#include "db.h"
 
-struct sockaddr_in *create_address(int port) {
-    struct sockaddr_in *address = malloc(sizeof(struct sockaddr_in));
-    address->sin_family = AF_INET;
-    address->sin_port = htons(port);
-    address->sin_addr.s_addr = INADDR_ANY;
-    return address;
-}
 
 void *serve_client(void *args) {
     intptr_t *arg = (intptr_t *)args;
@@ -40,7 +32,6 @@ void *serve_client(void *args) {
     add_client(state, client);
 
     while (true) {
-        // ssize_t bytes_read = read(client_fd, buffer, sizeof(buffer));
         int bytes_read = SSL_read(client->ssl, buffer, sizeof(buffer));
 
         if (bytes_read <= 0) {
@@ -97,8 +88,8 @@ int main(int argc, char **argv) {
         printf("Usage: %s <port> <debug>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
-   
     int debug_mode = atoi(argv[2]);
+
     if (!debug_mode) {
         daemonize_server();
     }
@@ -106,28 +97,7 @@ int main(int argc, char **argv) {
     load_cert_and_key(ctx);
     
     int port = atoi(argv[1]);
-    struct sockaddr_in *server_address = create_address(port);
-    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
-
-    if (bind(server_fd, (struct sockaddr *)server_address, sizeof(*server_address)) == -1) {
-        free(server_address);
-        if (debug_mode) {
-            perror("Error binding");
-        } else {
-            logging_format(LOG_ERR, "Error binding");
-        }
-        exit(EXIT_FAILURE);
-    }
-
-    if (listen(server_fd, 2) == -1) {
-        free(server_address);
-        if (debug_mode) {
-            perror("Error listening");
-        } else {
-            logging_format(LOG_ERR, "Error listening");
-        }
-        exit(EXIT_FAILURE);
-    }
+    int server_fd = do_connection(NULL, port);
 
     if (debug_mode) {
         printf("Server started with PID: %d\n", getpid());
@@ -140,7 +110,7 @@ int main(int argc, char **argv) {
     while (true) {
         int client_fd = accept(server_fd, NULL, NULL);
         if (client_fd == -1) {
-            free(server_address);
+            SSL_CTX_free(ctx);
             if (debug_mode) {
                 perror("Error accepting connection");
             }
@@ -159,7 +129,6 @@ int main(int argc, char **argv) {
         pthread_detach(thread);
     }
 
-    free(server_address);
     close(server_fd);
     return 0;
 }

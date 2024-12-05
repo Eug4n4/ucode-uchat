@@ -52,6 +52,7 @@ typedef struct s_gtk_create_chat {
 
 typedef struct s_gtk_main_window {
     GtkWindow        *window;
+    GtkScrolledWindow *chat_history_window;
     GtkListStore     *chat_store;
     GtkTreeView      *chats_list_view;
     GtkTreeSelection *chat_selection;
@@ -105,5 +106,6 @@ GtkWidget *show_reconnect_popup(void);
 gboolean   close_reconnect_popup(GtkWidget *dialog);
 
 void show_msg_in_chat_history(cJSON *json_message);
+gboolean new_incomming_message(gpointer data);
 void clear_chat_history(void);
 #endif  // GUI_H

@@ -138,6 +138,7 @@ void handle_get_chat_messages_response(cJSON *response) {
     cJSON_ArrayForEach(message, messages_array) {
         show_msg_in_chat_history(message);
     }
+    g_timeout_add(500, new_incomming_message, NULL);
 }
 
 void handle_new_message_response(cJSON *response) {

@@ -7,6 +7,7 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     GtkTreeView       *chats_list_view;
     GtkTreeSelection  *chat_selection;
     GError            *error        = NULL;
+    GtkScrolledWindow *chat_history_window;
     GtkWidget *messages;
     GdkPixbuf         *private_chat = gdk_pixbuf_new_from_file(PRIVATE_CHAT_IMAGE_PATH, &error);
 
@@ -38,6 +39,7 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     GtkLabel  *label_members_count = GTK_LABEL(gtk_builder_get_object(builder_main_window, "label_members_count"));
     GtkEntry  *entry_send_message  = GTK_ENTRY(gtk_builder_get_object(builder_main_window, "entry_send"));
     GtkButton *btn_send_message    = GTK_BUTTON(gtk_builder_get_object(builder_main_window, "btn_send"));
+    chat_history_window = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder_main_window, "chat_history_window"));
     messages              = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "messages"));
 
     data->window              = window;
@@ -50,6 +52,7 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     data->label_members_count = label_members_count;
     data->entry_send_message  = entry_send_message;
     data->btn_send_message    = btn_send_message;
+    data->chat_history_window = chat_history_window;
     data->messages   = messages;
     gtk_tree_view_set_headers_visible(data->chats_list_view, FALSE);
     return data;

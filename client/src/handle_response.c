@@ -1,5 +1,17 @@
 #include "client.h"
 
+void add_chat_to_list(GtkTreeIter *iter, int chat_type, char *chat_name, int chat_members, int chat_id) {
+    if (chat_type == 0) {
+        gtk_list_store_set(gtk_main_window->chat_store, iter, 0, gtk_main_window->private_chat_image, -1);
+    } else {
+        gtk_list_store_set(gtk_main_window->chat_store, iter, 0, gtk_main_window->group_chat_image, -1);
+    }
+    gtk_list_store_set(gtk_main_window->chat_store, iter, 1, chat_name, -1);
+    gtk_list_store_set(gtk_main_window->chat_store, iter, 2, chat_members, -1);
+    gtk_list_store_set(gtk_main_window->chat_store, iter, 3, chat_id, -1);
+
+}
+
 void handle_login_response(int response_type, cJSON *json_response) {
     switch (response_type) {
     case OK_LOGIN:
@@ -59,13 +71,9 @@ void handle_get_all_user_chats_response(cJSON *response) {
     cJSON        *chats              = cJSON_GetObjectItemCaseSensitive(content, "chats");
     cJSON        *chat               = NULL;
     GtkLabel     *label_display_name = GTK_LABEL(gtk_builder_get_object(builder_main_window, "label_display_name"));
-    GtkTreeModel *model              = gtk_tree_view_get_model(gtk_main_window->chats_list_view);
 
     gtk_label_set_text(label_display_name, display_name);
-    if (!model) {
-        printf("no model\n");
-        return;
-    }
+    
     GtkTreeIter iter;
 
     cJSON_ArrayForEach(chat, chats) {
@@ -74,15 +82,8 @@ void handle_get_all_user_chats_response(cJSON *response) {
         int    chat_members = cJSON_GetObjectItemCaseSensitive(chat, "chat_members")->valueint;
         int chat_id = cJSON_GetObjectItemCaseSensitive(chat, "chat_id")->valueint;
 
-        gtk_list_store_append(GTK_LIST_STORE(model), &iter);
-        if (chat_type->valueint == 0) {
-            gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, gtk_main_window->private_chat_image, -1);
-        } else {
-            gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, gtk_main_window->group_chat_image, -1);
-        }
-        gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, chat_name->valuestring, -1);
-        gtk_list_store_set(GTK_LIST_STORE(model), &iter, 2, chat_members, -1);
-        gtk_list_store_set(GTK_LIST_STORE(model), &iter, 3, chat_id, -1);
+        gtk_list_store_append(gtk_main_window->chat_store, &iter);
+        add_chat_to_list(&iter, chat_type->valueint, chat_name->valuestring, chat_members, chat_id);
 
     }
 }
@@ -108,32 +109,18 @@ void handle_all_users_exclude_response(cJSON *response) {
     }
 }
 
-// void handle_private_chat_response(void) {
-//     gtk_list_store_clear(gtk_main_window->chat_store);
-//     send_all_user_chats_request(client_data->ssl);
-//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_chat_name));
-//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_members_count));
-//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->entry_send_message));
-//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->btn_send_message));
-// }
-
-// void handle_group_chat_response(void) {
-//     gtk_list_store_clear(gtk_main_window->chat_store);
-//     send_all_user_chats_request(client_data->ssl);
-//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_chat_name));
-//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_members_count));
-//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->entry_send_message));
-//     gtk_widget_hide(GTK_WIDGET(gtk_main_window->btn_send_message));
-// }
 
 void handle_new_chat_response(cJSON *json_response) {
-    gtk_list_store_clear(gtk_main_window->chat_store);
-    send_all_user_chats_request(client_data->ssl);
-    gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_chat_name));
-    gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_members_count));
-    gtk_widget_hide(GTK_WIDGET(gtk_main_window->entry_send_message));
-    gtk_widget_hide(GTK_WIDGET(gtk_main_window->btn_send_message));
     cJSON *content_json = cJSON_GetObjectItemCaseSensitive(json_response, "content");
+    char *chat_name = cJSON_GetObjectItemCaseSensitive(content_json, "chat_name")->valuestring;
+    int chat_type = cJSON_GetObjectItemCaseSensitive(content_json, "chat_type")->valueint;
+    int chat_members = cJSON_GetObjectItemCaseSensitive(content_json, "chat_members")->valueint;
+    int chat_id = cJSON_GetObjectItemCaseSensitive(content_json, "chat_id")->valueint;
+    GtkTreeIter iter;
+
+    gtk_list_store_insert(gtk_main_window->chat_store, &iter, 0);
+    add_chat_to_list(&iter, chat_type, chat_name, chat_members, chat_id);
+
     if (content_json) {
         cJSON *message_json = cJSON_GetObjectItemCaseSensitive(content_json, "message");
         if (cJSON_IsString(message_json)) {

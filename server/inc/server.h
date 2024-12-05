@@ -99,6 +99,7 @@ t_user *create_user_with_params(int id, char *username, char *password, char *di
 void    free_user(t_user *user);
 
 t_chat  *create_chat(int id, char *name, int type);
+void     free_chat(t_chat *chat);
 void     add_chat_front(t_chats **chats, t_chat *chat);
 t_chats *create_chats(t_chat *chat);
 void     free_chats(t_chats **chats);

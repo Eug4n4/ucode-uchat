@@ -60,6 +60,7 @@ typedef struct s_gtk_main_window {
     GtkLabel         *label_members_count;
     GtkEntry         *entry_send_message;
     GtkButton        *btn_send_message;
+    GtkWidget        *messages;
 
 } t_gtk_main_window;
 
@@ -101,4 +102,7 @@ void destroy_screens(GtkWidget *widget, gpointer data);
 
 GtkWidget *show_reconnect_popup(void);
 gboolean   close_reconnect_popup(GtkWidget *dialog);
+
+void show_chat_history(void);
+void clear_chat_history(void);
 #endif  // GUI_H

@@ -54,12 +54,22 @@ void generate_new_private_chat_response(int response, const char *response_messa
     cJSON *content                   = cJSON_CreateObject();
 
     switch (response) {
-    case OK_CREATE_NEW_PRIVATE_CHAT:
+    case OK_CREATE_NEW_PRIVATE_CHAT: {
+        t_chat *chat = db_get_last_created_chat();
+        int chat_members = db_get_chat_members_count(chat->id);
+
         cJSON_AddNumberToObject(new_private_chat_response, "response_type", OK_CREATE_NEW_PRIVATE_CHAT);
         cJSON_AddStringToObject(content, "message", response_message);
+        cJSON_AddNumberToObject(content, "chat_id", chat->id);
+        cJSON_AddNumberToObject(content, "chat_type", chat->type);
+        cJSON_AddStringToObject(content, "chat_name", chat->name);
+        cJSON_AddNumberToObject(content, "chat_members", chat_members);
         cJSON_AddItemToObject(new_private_chat_response, "content", content);
         send_response(new_private_chat_response, client);
+        free_chat(chat);
         break;
+
+    }
 
     case FAIL_CREATE_NEW_PRIVATE_CHAT:
         cJSON_AddNumberToObject(new_private_chat_response, "response_type", FAIL_CREATE_NEW_PRIVATE_CHAT);
@@ -78,12 +88,23 @@ void generate_new_group_chat_response(int response, const char *response_message
     cJSON *content                 = cJSON_CreateObject();
 
     switch (response) {
-    case OK_CREATE_NEW_GROUP_CHAT:
+    case OK_CREATE_NEW_GROUP_CHAT: {
+        t_chat *chat = db_get_last_created_chat();
+        int chat_members = db_get_chat_members_count(chat->id);
+
         cJSON_AddNumberToObject(new_group_chat_response, "response_type", OK_CREATE_NEW_GROUP_CHAT);
         cJSON_AddStringToObject(content, "message", response_message);
+        cJSON_AddNumberToObject(content, "chat_id", chat->id);
+        cJSON_AddNumberToObject(content, "chat_type", chat->type);
+        cJSON_AddStringToObject(content, "chat_name", chat->name);
+        cJSON_AddNumberToObject(content, "chat_members", chat_members);
+
         cJSON_AddItemToObject(new_group_chat_response, "content", content);
         send_response(new_group_chat_response, client);
+        free_chat(chat);
         break;
+    }
+        
 
     case FAIL_CREATE_NEW_GROUP_CHAT:
         cJSON_AddNumberToObject(new_group_chat_response, "response_type", FAIL_CREATE_NEW_GROUP_CHAT);

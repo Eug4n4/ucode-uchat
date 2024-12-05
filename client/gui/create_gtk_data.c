@@ -7,6 +7,7 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     GtkTreeView       *chats_list_view;
     GtkTreeSelection  *chat_selection;
     GError            *error        = NULL;
+    GtkWidget *messages;
     GdkPixbuf         *private_chat = gdk_pixbuf_new_from_file(PRIVATE_CHAT_IMAGE_PATH, &error);
 
     if (!private_chat) {
@@ -37,7 +38,7 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     GtkLabel  *label_members_count = GTK_LABEL(gtk_builder_get_object(builder_main_window, "label_members_count"));
     GtkEntry  *entry_send_message  = GTK_ENTRY(gtk_builder_get_object(builder_main_window, "entry_send"));
     GtkButton *btn_send_message    = GTK_BUTTON(gtk_builder_get_object(builder_main_window, "btn_send"));
-    chat_selection                 = gtk_tree_view_get_selection(chats_list_view);
+    messages              = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "messages"));
 
     data->window              = window;
     data->chat_store          = chat_store;
@@ -49,7 +50,7 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     data->label_members_count = label_members_count;
     data->entry_send_message  = entry_send_message;
     data->btn_send_message    = btn_send_message;
-
+    data->messages   = messages;
     gtk_tree_view_set_headers_visible(data->chats_list_view, FALSE);
     return data;
 }
@@ -89,7 +90,6 @@ t_gtk_create_chat *create_gtk_create_chat_data(void) {
     toggle_renderer = GTK_CELL_RENDERER_TOGGLE(gtk_builder_get_object(builder_create_chat, "toggle_renderer"));
     entry_chat_name = GTK_ENTRY(gtk_builder_get_object(builder_create_chat, "entry_chat_name"));
     label_status    = GTK_LABEL(gtk_builder_get_object(builder_create_chat, "label_status"));
-    selected_user   = gtk_tree_view_get_selection(view_users);
 
     data->window          = window;
     data->view_users      = view_users;

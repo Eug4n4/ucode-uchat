@@ -140,6 +140,7 @@ void on_btn_create_chat_main_clicked(GtkWidget *button, gpointer data) {
 void on_log_out_subbtn_activate(GtkWidget *log_out_subbtn, gpointer data) {
     g_print("Log out button clicked\n");
     g_mutex_lock(&client_data->data_mutex);
+    clear_chat_history();
     gtk_entry_set_text(gtk_main_window->entry_send_message, "");
     client_data->is_logged_in = false;
     g_mutex_unlock(&client_data->data_mutex);
@@ -239,7 +240,8 @@ void on_chat_selection_changed(GtkTreeSelection *selection) {
         gtk_tree_model_get(model, &iter, 3, &chat_id, -1);
 
         send_get_chat_messages_request(chat_id);
-        
+        clear_chat_history();
+        show_chat_history();
         gchar *str_members_count = g_strdup_printf("Members: %d", chat_members);
         gtk_label_set_text(gtk_main_window->label_chat_name, chat_name);
         gtk_label_set_text(gtk_main_window->label_members_count, str_members_count);

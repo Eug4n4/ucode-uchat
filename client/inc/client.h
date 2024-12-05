@@ -7,6 +7,7 @@
 #define KEY_DISPLAY_NAME "display_name"
 #define KEY_PASSWORD "password"
 #define KEY_CONTENT "content"
+#define KEY_CHAT_ID "chat_id"
 
 #define KEY_RESPONSE_TYPE "response_type"
 #define KEY_MESSAGE "message"
@@ -39,12 +40,14 @@ cJSON   *create_request_new_private_chat();
 cJSON   *create_request_all_user_chats(void);
 cJSON   *create_request_all_users_exclude(void);
 cJSON   *create_request_new_chat(void);
+cJSON   *create_request_message();
 gboolean update_gui_with_response(gpointer data);
 int      send_login_request(const gchar *username, const gchar *password, SSL *ssl);
 int      send_registration_request(const gchar *username, const gchar *password, SSL *ssl);
 int      send_all_user_chats_request(SSL *ssl);
 int      send_all_users_exclude_request(t_client_data *client_data);
 int      send_create_chat_request(t_app *app, const char *chat_name);
+int      send_message_request(gint chat_id, const char *message_text, SSL *ssl);
 
 void handle_login_response(int response_type, cJSON *json_response);
 void handle_registration_response(int response_type, cJSON *json_response);

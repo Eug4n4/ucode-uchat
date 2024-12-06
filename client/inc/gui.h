@@ -19,6 +19,19 @@ typedef enum e_screen {
     ALL_SCREENS
 } t_screen;
 
+
+typedef struct s_message {
+    int               id;
+    char             *sender_username;
+    char             *content;
+    int64_t           timestamp;
+} t_message;
+
+typedef struct s_messages {
+    t_message *message;
+    struct s_messages *next;
+} t_messages;
+
 typedef struct s_user {
     char *username;
     char *display_name;
@@ -106,6 +119,6 @@ GtkWidget *show_reconnect_popup(void);
 gboolean   close_reconnect_popup(GtkWidget *dialog);
 
 void show_msg_in_chat_history(cJSON *json_message);
-gboolean new_incomming_message(gpointer data);
+gboolean scroll_to_last_message(gpointer data);
 void clear_chat_history(void);
 #endif  // GUI_H

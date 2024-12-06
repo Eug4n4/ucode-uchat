@@ -14,6 +14,7 @@ t_client_data *create_client_data(const char *host, int port, SSL *ssl, SSL_CTX 
     data->is_running   = true;
     data->is_connected = false;
     data->is_logged_in = false;
+    data->messages_list = NULL;
     data->current_user = create_user();
     return data;
 }

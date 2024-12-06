@@ -1,5 +1,12 @@
 #include "client.h"
 
+gboolean scroll_to_last_message(gpointer data) {
+    GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(gtk_main_window->chat_history_window);
+    gtk_adjustment_set_value(adj, gtk_adjustment_get_upper(adj) - gtk_adjustment_get_page_size(adj));
+    (void)data;
+    return G_SOURCE_REMOVE;
+}
+
 void clear_chat_history(void) {
     GList *childs = gtk_container_get_children(GTK_CONTAINER(gtk_main_window->messages));
 
@@ -8,6 +15,28 @@ void clear_chat_history(void) {
             gtk_widget_destroy(head->data);
         }
     }
+    free_messages();
+}
+
+void on_close_popover_clicked(GtkWidget *widget, gpointer data) {
+    gtk_popover_popdown(GTK_POPOVER(data));
+    (void)widget;
+}
+
+gboolean on_message_clicked(GtkWidget *button, GdkEventButton *event, gpointer data) {
+    if (event->button == 1) {
+        return FALSE;
+    }
+    GtkPopover *update_message_window = GTK_POPOVER(gtk_builder_get_object(builder_main_window, "update_message"));
+    GtkWidget *btn_close_popover = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "btn_close_popover"));
+
+    gtk_popover_set_relative_to(update_message_window, button);
+    gtk_popover_popup(update_message_window);
+    g_signal_connect(btn_close_popover, "clicked", G_CALLBACK(on_close_popover_clicked), update_message_window);
+    printf("right click\n");
+
+    (void)data;
+    return TRUE;
 }
 
 void show_msg_in_chat_history(cJSON *json_message) {
@@ -45,6 +74,7 @@ void show_msg_in_chat_history(cJSON *json_message) {
     gtk_container_add(GTK_CONTAINER(message_button), message_button_box);
     
     gtk_box_pack_start(GTK_BOX(gtk_main_window->messages), message_button, TRUE, TRUE, 10);
+    g_signal_connect(message_button, "button-press-event", G_CALLBACK(on_message_clicked), NULL);
     gtk_widget_show_all(message_button);
 }
 

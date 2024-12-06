@@ -190,12 +190,6 @@ void on_btn_create_chat_clicked(GtkButton *button, gpointer data) {
     (void)data;
 }
 
-gboolean new_incomming_message(gpointer data) {
-    GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(gtk_main_window->chat_history_window);
-    gtk_adjustment_set_value(adj, gtk_adjustment_get_upper(adj) - gtk_adjustment_get_page_size(adj));
-    (void)data;
-    return G_SOURCE_REMOVE;
-}
 
 void on_btn_send_message_clicked(GtkButton *button, gpointer data) {
     const gchar *message_text = gtk_entry_get_text(gtk_main_window->entry_send_message);
@@ -213,7 +207,7 @@ void on_btn_send_message_clicked(GtkButton *button, gpointer data) {
             return;
         }
         gtk_entry_set_text(gtk_main_window->entry_send_message, "");
-        g_timeout_add(500, new_incomming_message, NULL);
+        g_timeout_add(100, scroll_to_last_message, NULL);
     }
 
     (void)button;

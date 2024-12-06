@@ -133,12 +133,14 @@ void handle_new_chat_response(cJSON *json_response) {
 void handle_get_chat_messages_response(cJSON *response) {
     cJSON *content = cJSON_GetObjectItemCaseSensitive(response, "content");
     cJSON *messages_array = cJSON_GetObjectItemCaseSensitive(content, "messages");
-    cJSON *message = NULL;
+    cJSON *message_json = NULL;
 
-    cJSON_ArrayForEach(message, messages_array) {
-        show_msg_in_chat_history(message);
+    cJSON_ArrayForEach(message_json, messages_array) {
+        t_message *message = create_message_from_response(message_json);
+        client_data->messages_list = g_list_append(client_data->messages_list, message);
+        show_msg_in_chat_history(message_json);
     }
-    g_timeout_add(500, new_incomming_message, NULL);
+    g_timeout_add(100, scroll_to_last_message, NULL);
 }
 
 void handle_new_message_response(cJSON *response) {

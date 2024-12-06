@@ -30,6 +30,7 @@ static void create_chat_window_quit(void) {
     gtk_widget_destroy(GTK_WIDGET(gtk_create_chat->window));
     g_object_unref(builder_create_chat);
     free(gtk_create_chat);
+    free_messages();
     gtk_create_chat = NULL;
 }
 

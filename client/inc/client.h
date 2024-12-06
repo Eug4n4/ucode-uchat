@@ -24,6 +24,7 @@ typedef struct s_client_data {
     bool     is_running;  // New flag to signal thread shutdown
     bool     is_connected;
     bool     is_logged_in;
+    GList    *messages_list;
     t_user  *current_user;
 } t_client_data;
 
@@ -33,6 +34,11 @@ void     add_users_front(t_users **users, t_user *user);
 void     free_users(t_users **users);
 void     free_user(t_user *user);
 void     free_user_data(t_user *user);
+
+t_messages *create_message_list(void);
+void free_messages(void);
+t_message *create_message_from_response(cJSON *json_message);
+void free_message(t_message *message);
 
 cJSON *create_request_registration();
 cJSON *create_request_login();

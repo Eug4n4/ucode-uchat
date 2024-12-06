@@ -234,6 +234,8 @@ void on_chat_selection_changed(GtkTreeSelection *selection) {
         gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_members_count));
         gtk_widget_hide(GTK_WIDGET(gtk_main_window->entry_send_message));
         gtk_widget_hide(GTK_WIDGET(gtk_main_window->btn_send_message));
+        clear_chat_history();
+        gtk_widget_hide(gtk_main_window->messages);
         return;
     }
 
@@ -259,6 +261,9 @@ void on_chat_selection_changed(GtkTreeSelection *selection) {
         gchar *str_members_count = g_strdup_printf("Members: %d", chat_members);
         gtk_label_set_text(gtk_main_window->label_chat_name, chat_name);
         gtk_label_set_text(gtk_main_window->label_members_count, str_members_count);
+        if (!gtk_widget_is_visible(gtk_main_window->messages)) {
+            gtk_widget_show(gtk_main_window->messages);
+        }
         g_free(str_members_count);
         g_free(chat_name);
     }

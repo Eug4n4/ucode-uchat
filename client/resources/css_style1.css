@@ -1,0 +1,66 @@
+* {
+    outline-color: white;;
+    border-color: #957bff;
+}
+
+.background {
+    color: #727bff;
+    background-color: #141414;
+}
+
+button#message{
+    color: #171a3c;
+    background: #84a1ff;
+    outline-color: white;
+    border-color:  #26267d;
+}
+
+button {
+    color: #727bff;
+    background-image: linear-gradient(0.25turn, #26267d 60%, #303087, #4858be);
+    background-color: rgba(0, 0, 0, 0);
+    outline-color: white;
+    border-color:  #26267d;
+}
+
+button:hover {
+    color: #ffeff9;
+    background-image: linear-gradient(0.25turn, #26267d 40%, #35359f, #4c5ed4);
+    background-color: rgba(0, 0, 0, 0);
+    outline-color: white;
+    border-color:  #26267d;
+}
+
+button:active {
+    color: #727bff;
+    background: white;
+    background-color: #96b0ff;
+    outline-color: white;
+    border-color:  #96b0ff;
+}
+
+button:checked {
+    outline-color: white;
+    border-color:  #96b0ff;
+}
+
+.view#tv_users {
+    color: #727bff;
+    border: 1px solid;
+    outline-color: white;
+    border-color:  #525252;
+    background: #141414;
+}
+
+.view { 
+    color: #727bff;
+    background: linear-gradient(#1e1e47, #161616);
+}
+
+entry {
+    background: #15172c;
+    border-color: #6557ff;
+    color: #d1c7ff;
+
+}
+

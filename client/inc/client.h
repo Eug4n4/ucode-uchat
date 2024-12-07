@@ -43,6 +43,8 @@ cJSON *create_request_new_chat(void);
 cJSON *create_get_chat_messages_request(void);
 cJSON *create_request_message();
 
+void css_set(GtkCssProvider *css_provider, GtkWidget *widget);
+
 gboolean update_gui_with_response(gpointer data);
 int      send_login_request(const gchar *username, const gchar *password, SSL *ssl);
 int      send_registration_request(const gchar *username, const gchar *password, SSL *ssl);

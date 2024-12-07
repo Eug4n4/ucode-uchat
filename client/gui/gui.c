@@ -304,7 +304,6 @@ GtkWidget *show_reconnect_popup(void) {
 
 void css_set(GtkCssProvider *css_provider, GtkWidget *widget) {
     GtkStyleContext *context = gtk_widget_get_style_context(widget);
-
     gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
@@ -350,17 +349,33 @@ void init_gui(int argc, char **argv, t_app *app) {
 
     GtkCssProvider *css_provider;
     css_provider = gtk_css_provider_new();
-    gtk_css_provider_load_from_path(css_provider, "./resources/css_styles.css", NULL);
+    gtk_css_provider_load_from_path(css_provider, CSS_STYLE_PATH, NULL);
+
     css_set(css_provider, (GtkWidget*)gtk_main_window->window);
+    css_set(css_provider, (GtkWidget*)gtk_main_window->btn_send_message);
+    css_set(css_provider, (GtkWidget*)gtk_main_window->chats_list_view);
+    css_set(css_provider, (GtkWidget*)gtk_main_window->entry_send_message);
+
+    css_set(css_provider, (GtkWidget*)gtk_sign_in->window);
+    css_set(css_provider, (GtkWidget*)gtk_sign_in->entry_username);
+    css_set(css_provider, (GtkWidget*)gtk_sign_in->entry_password);
+
+    css_set(css_provider, (GtkWidget*)gtk_sign_up->window);
+    css_set(css_provider, (GtkWidget*)gtk_sign_up->entry_username);
+    css_set(css_provider, (GtkWidget*)gtk_sign_up->entry_password);
+
+    gtk_widget_set_name((GtkWidget*)gtk_create_chat->view_users, "tv_users");
+    css_set(css_provider, (GtkWidget*)gtk_create_chat->window);
+    css_set(css_provider, (GtkWidget*)gtk_create_chat->view_users);
+    css_set(css_provider, (GtkWidget*)gtk_create_chat->entry_chat_name);
+
     css_set(css_provider, (GtkWidget*)btn_create_chat_main);
     css_set(css_provider, (GtkWidget*)btn_create_chat);
     css_set(css_provider, (GtkWidget*)log_out_btn);
-
-    css_set(css_provider, (GtkWidget*)gtk_main_window->chats_list_view);
-    // css_set(css_provider, (GtkWidget*)gtk_main_window->chats_list_view);
-    // css_set(css_provider, (GtkWidget*)gtk_main_window->chat_selection);
+    css_set(css_provider, (GtkWidget*)btn_sign_in);
+    css_set(css_provider, (GtkWidget*)btn_sign_up_small);
+    css_set(css_provider, (GtkWidget*)btn_sign_up);
+    css_set(css_provider, (GtkWidget*)btn_sign_in_small);
 
     show_screen(LOGIN_SCREEN);
 }
-
-//gtk_main_window();

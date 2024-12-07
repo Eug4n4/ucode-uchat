@@ -15,28 +15,10 @@ void clear_chat_history(void) {
             gtk_widget_destroy(head->data);
         }
     }
-    free_messages();
-}
-
-void on_close_popover_clicked(GtkWidget *widget, gpointer data) {
-    gtk_popover_popdown(GTK_POPOVER(data));
-    (void)widget;
-}
-
-gboolean on_message_clicked(GtkWidget *button, GdkEventButton *event, gpointer data) {
-    if (event->button == 1) {
-        return FALSE;
+    if (childs) {
+        g_list_free(childs);
     }
-    GtkPopover *update_message_window = GTK_POPOVER(gtk_builder_get_object(builder_main_window, "update_message"));
-    GtkWidget *btn_close_popover = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "btn_close_popover"));
-
-    gtk_popover_set_relative_to(update_message_window, button);
-    gtk_popover_popup(update_message_window);
-    g_signal_connect(btn_close_popover, "clicked", G_CALLBACK(on_close_popover_clicked), update_message_window);
-    printf("right click\n");
-
-    (void)data;
-    return TRUE;
+    free_messages();
 }
 
 void show_msg_in_chat_history(cJSON *json_message) {

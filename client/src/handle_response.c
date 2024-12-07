@@ -153,6 +153,8 @@ void handle_new_message_response(cJSON *response) {
     if (gtk_tree_selection_get_selected(gtk_main_window->chat_selection, &model, &iter)) {
         gtk_tree_model_get(model, &iter, 3, &current_chat_id, -1);
         if (current_chat_id == chat_id) {
+            t_message *message = create_message_from_response(content);
+            client_data->messages_list = g_list_append(client_data->messages_list, message);
             show_msg_in_chat_history(content);
         }
     }

@@ -118,6 +118,8 @@ void destroy_screens(GtkWidget *widget, gpointer data);
 GtkWidget *show_reconnect_popup(void);
 gboolean   close_reconnect_popup(GtkWidget *dialog);
 
+gboolean on_message_clicked(GtkWidget *button, GdkEventButton *event, gpointer data);
+void destroy_edit_message_buttons(void);
 void show_msg_in_chat_history(cJSON *json_message);
 gboolean scroll_to_last_message(gpointer data);
 void clear_chat_history(void);

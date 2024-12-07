@@ -110,6 +110,7 @@ void     free_users(t_users **users);
 t_messages *create_message_list();
 void        append_message_to_list(t_messages *messages, t_message *msg);
 void        free_messages(t_messages **messages);
+void free_message(t_message *message);
 
 void           logging_format(int priority, const char *format, ...);
 unsigned char *hash_password(const char *password, int password_len);

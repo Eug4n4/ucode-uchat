@@ -40,3 +40,11 @@ void free_messages(t_messages **messages) {
     free(*messages);
     *messages = NULL;
 }
+
+void free_message(t_message *message) {
+    free(message->content);
+    free(message->sender_username);
+    free(message);
+}
+
+

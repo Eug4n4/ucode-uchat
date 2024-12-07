@@ -31,23 +31,25 @@ bool reconnect_to_server(t_client_data *client_data) {
     return false;
 }
 
-
 gpointer read_from_server_thread(gpointer data) {
-    char buffer[BUF_SIZE]  = { 0 };
-    bool reconnecting      = false;
-    int  reconnect_attempt = 0;
+    size_t buffer_size       = BUF_SIZE;
+    char  *buffer            = malloc(buffer_size);
+    size_t total_bytes       = 0;
+    bool   reconnecting      = false;
+    int    reconnect_attempt = 0;
 
     while (client_data->is_running) {
-
         if (!client_data->ssl) {
             printf("SSL object is null, terminating thread.\n");
+            free(buffer);
             break;
         }
+
         if (client_data->is_running && client_data->is_connected) {
-            int bytes_read = SSL_read(client_data->ssl, buffer, sizeof(buffer) - 1);
-            int res = 0;
+            int bytes_read = SSL_read(client_data->ssl, buffer + total_bytes, buffer_size - total_bytes - 1);
+
             if (bytes_read <= 0) {
-                res = SSL_get_error(client_data->ssl, bytes_read);
+                int res = SSL_get_error(client_data->ssl, bytes_read);
 
                 if (res != SSL_ERROR_WANT_READ && res != SSL_ERROR_WANT_WRITE && client_data->is_running == true) {
                     if (!reconnecting) {
@@ -61,6 +63,7 @@ gpointer read_from_server_thread(gpointer data) {
 
                         while (!reconnect_to_server(client_data)) {
                             if (!client_data->is_running) {
+                                free(buffer);
                                 return NULL;
                             }
 
@@ -70,7 +73,6 @@ gpointer read_from_server_thread(gpointer data) {
                             reconnect_attempt++;
                             int delay = (int)pow(2, reconnect_attempt);
 
-                            // Update the dialog with the current attempt
                             char message[256];
                             snprintf(message, sizeof(message), "Reconnection attempt #%d failed. Retrying in %d seconds...", reconnect_attempt, delay);
                             gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(popup), message);
@@ -92,15 +94,26 @@ gpointer read_from_server_thread(gpointer data) {
                         reconnecting = false;
                     }
                 }
-            } else if ((res == SSL_ERROR_WANT_READ || res == SSL_ERROR_WANT_WRITE) && client_data->is_running) {
-                continue;
-            }
+            } else {
+                total_bytes += bytes_read;
+                buffer[total_bytes] = '\0';
 
-            buffer[bytes_read] = '\0';
-            g_idle_add((GSourceFunc)update_gui_with_response, g_strdup(buffer));
+                if (total_bytes >= buffer_size - 1) {
+                    buffer_size *= 2;
+                    buffer = realloc(buffer, buffer_size);
+                }
+
+                if (is_complete_message(buffer)) {
+                    g_idle_add((GSourceFunc)update_gui_with_response, g_strdup(buffer));
+
+                    total_bytes = 0;
+                    memset(buffer, 0, buffer_size);
+                }
+            }
         }
     }
     (void)data;
+    free(buffer);
     return NULL;
 }
 
@@ -132,7 +145,7 @@ int main(int argc, char *argv[]) {
         printf("SSL connection failed\n");
         exit(EXIT_FAILURE);
     }
-    t_app *app = malloc(sizeof(t_app));
+    t_app *app        = malloc(sizeof(t_app));
     app->current_user = NULL;
     app->users        = NULL;
 

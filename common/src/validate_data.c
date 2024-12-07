@@ -34,3 +34,12 @@ bool check_password(const char *password) {
 
     return has_upper && has_lower && has_digit && has_special;
 }
+
+bool is_complete_message(const char *buffer) {
+    cJSON *json = cJSON_Parse(buffer);
+    if (json == NULL) {
+        return false;
+    }
+    cJSON_Delete(json);
+    return true;
+}

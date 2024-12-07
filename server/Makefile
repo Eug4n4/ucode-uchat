@@ -56,7 +56,7 @@ $(COMMON_OBJFILES):
 	
 
 $(OBJDIR):
-	@mkdir $@
+	@mkdir -p $@
 
 clean:
 	@rm -rf $(OBJDIR)

@@ -29,7 +29,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
 
 
 $(OBJDIR):
-	@mkdir $@
+	@mkdir -p $@
 
 
 clean:

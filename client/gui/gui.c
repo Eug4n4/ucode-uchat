@@ -286,7 +286,7 @@ void show_reconnect_popup_callback(GtkWidget *dialog) {
 }
 
 GtkWidget *show_reconnect_popup(void) {
-    GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_sign_in->window),
+    GtkWidget *dialog = gtk_message_dialog_new(get_visible_window(),
                                                GTK_DIALOG_MODAL,
                                                GTK_MESSAGE_INFO,
                                                GTK_BUTTONS_NONE,

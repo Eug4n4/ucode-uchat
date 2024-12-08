@@ -118,6 +118,7 @@ void css_set(void);
 void show_screen(int screen);
 void destroy_screens(GtkWidget *widget, gpointer data);
 
+GtkWindow* get_visible_window(void);
 GtkWidget *show_reconnect_popup(void);
 gboolean   close_reconnect_popup(GtkWidget *dialog);
 void on_btn_edit_message_popover_clicked(GtkWidget *button, gpointer data);
@@ -127,3 +128,4 @@ void show_msg_in_chat_history(cJSON *json_message);
 gboolean scroll_to_last_message(gpointer data);
 void clear_chat_history(void);
 #endif  // GUI_H
+

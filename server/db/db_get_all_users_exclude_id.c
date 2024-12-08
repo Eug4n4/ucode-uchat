@@ -7,7 +7,7 @@ t_users *db_get_all_users_exclude_id(int user_id) {
     char *query = "SELECT * FROM users WHERE id != ?1;";
     
     if (sqlite3_prepare_v2(db, query, -1, &stmt, NULL) != SQLITE_OK) {
-        printf("Error: %s\n", sqlite3_errmsg(db));
+        logging_format(LOG_ERR, "Error: %s\n", sqlite3_errmsg(db));
         return NULL;
     }
     sqlite3_bind_int(stmt, 1, user_id);

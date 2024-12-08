@@ -160,3 +160,38 @@ void handle_new_message_response(cJSON *response) {
     }
 }
 
+
+void handle_update_message_response(cJSON *response) {
+    cJSON *content = cJSON_GetObjectItemCaseSensitive(response, "content");
+    int chat_id = cJSON_GetObjectItemCaseSensitive(content, "chat_id")->valueint;
+    int message_id = cJSON_GetObjectItemCaseSensitive(content, "message_id")->valueint;
+    const char *message_content = cJSON_GetObjectItemCaseSensitive(content, "message_content")->valuestring;
+    int current_chat_id;
+    GtkTreeIter iter;
+    GtkTreeModel *model = gtk_tree_view_get_model(gtk_main_window->chats_list_view);
+    
+    if (gtk_tree_selection_get_selected(gtk_main_window->chat_selection, &model, &iter)) {
+        gtk_tree_model_get(model, &iter, 3, &current_chat_id, -1);
+        if (current_chat_id == chat_id) {
+            GList *keys = g_hash_table_get_keys(client_data->id_button_table);
+
+            for (GList *head_key = keys; head_key; head_key = head_key->next) {
+                gpointer value = g_hash_table_lookup(client_data->id_button_table, head_key->data);
+                
+                if (*(int *)head_key->data == message_id) {
+                    GtkWidget *child = gtk_bin_get_child(GTK_BIN(value));
+                    GList *btn_box = gtk_container_get_children(GTK_CONTAINER(child));
+                    
+                    gtk_label_set_text(GTK_LABEL(btn_box->next->data), message_content);
+                    g_list_free(btn_box);
+                    break;
+                }
+            }
+            g_list_free(keys);
+                
+        }
+            
+    }
+    
+}
+

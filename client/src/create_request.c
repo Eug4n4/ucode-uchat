@@ -75,3 +75,15 @@ cJSON *create_request_message() {
 
     return json;
 }
+
+cJSON *create_request_update_message(void) {
+    cJSON *json = cJSON_CreateObject();
+
+    cJSON_AddNumberToObject(json, KEY_REQUEST_TYPE, UPDATE_MESSAGE);
+    cJSON *content = cJSON_CreateObject();
+    
+    cJSON_AddItemToObject(json, KEY_CONTENT, content);
+
+    return json;
+
+}

@@ -15,7 +15,7 @@ void *serve_client(void *args) {
     client->client_id = -1;
     client->ssl = ssl;
     if (!SSL_set_fd(client->ssl, client->client_fd)) {
-        printf("SSL_set_fd(client->ssl, client->client_fd) failed\n");
+        logging_format(LOG_ERR, "SSL_set_fd(client->ssl, client->client_fd) failed\n");
         free(client);
         SSL_CTX_free(ctx);
         SSL_free(ssl);
@@ -23,7 +23,7 @@ void *serve_client(void *args) {
     }
     int ret = SSL_accept(client->ssl);
     if (ret != 1) {
-        printf("SSL_accept() failed %d\n", ret);
+        logging_format(LOG_ERR, "SSL_accept() failed %d\n", ret);
         free(client);
         SSL_CTX_free(ctx);
         SSL_free(ssl);
@@ -41,18 +41,18 @@ void *serve_client(void *args) {
                 continue;
             }
             if (bytes_read == 0) {
-                printf("Client disconnected.\n");
+                logging_format(LOG_INFO, "Client disconnected.\n");
             } else {
-                perror("Error reading from client");
+                logging_format(LOG_ERR, "Error reading from client");
             }
             break;
         }
 
-        printf("Received request: %s\n", buffer);
+        logging_format(LOG_INFO, "Received request: %s\n", buffer);
         cJSON *request = cJSON_Parse(buffer);
 
         if (request == NULL) {
-            printf("Failed to parse JSON request\n");
+            logging_format(LOG_ERR, "Failed to parse JSON request\n");
             continue;
         }
 
@@ -68,17 +68,17 @@ void *serve_client(void *args) {
 
 void load_cert_and_key(SSL_CTX *ctx) {
     if (SSL_CTX_use_certificate_file(ctx, OPENSSL_CERT, SSL_FILETYPE_PEM) <= 0) {
-        printf("Error in load_cert_and_key\n");
+        logging_format(LOG_ERR,"Error in load_cert_and_key\n");
         return;
     }
 
     if (SSL_CTX_use_PrivateKey_file(ctx, OPENSSL_KEY, SSL_FILETYPE_PEM) <= 0) {
-        printf("Error in load_cert_and_key\n");
+        logging_format(LOG_ERR,"Error in load_cert_and_key\n");
         return;
     }
 
     if (SSL_CTX_check_private_key(ctx) != 1) {
-        printf("Error in load_cert_and_key\n");
+        logging_format(LOG_ERR,"Error in load_cert_and_key\n");
     }
 }
 

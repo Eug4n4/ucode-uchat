@@ -145,6 +145,26 @@ void generate_message_response(int response, t_accepted_client *client) {
     cJSON_Delete(message_response);
 }
 
+void generate_update_message_response(int response, t_message *message, t_accepted_client *client) {
+    cJSON *message_update_response = cJSON_CreateObject();
+    cJSON *content          = cJSON_CreateObject();
+
+    switch (response) {
+    case OK_UPDATE_MESSAGE:
+        cJSON_AddNumberToObject(message_update_response, "response_type", OK_UPDATE_MESSAGE);
+        cJSON_AddNumberToObject(content, "message_id", message->id);
+        cJSON_AddNumberToObject(content, "chat_id", message->receiver_id);
+        cJSON_AddStringToObject(content, "message_content", message->content);
+        cJSON_AddItemToObject(message_update_response, "content", content);
+        
+        send_response(message_update_response, client);
+        break;
+    default:
+        break;
+    }
+    cJSON_Delete(message_update_response);
+}
+
 void generate_all_chats_response(int response, t_chats **chats, t_accepted_client *client) {
     cJSON *all_chats_response = cJSON_CreateObject();
     cJSON *content            = cJSON_CreateObject();

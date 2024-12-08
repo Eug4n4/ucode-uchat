@@ -254,3 +254,15 @@ void handle_new_chat_request(t_server_state *state, cJSON *request, t_accepted_c
         process_response_type(FAIL_CREATE_NEW_PRIVATE_CHAT, "Failed to create new chat. List of users is empty", client);
     }
 }
+
+void handle_update_message_request(t_server_state *state, cJSON *request) {
+    cJSON *content = cJSON_GetObjectItemCaseSensitive(request, "content");
+    int message_id = cJSON_GetObjectItemCaseSensitive(content, "message_id")->valueint;
+    const char *message_content = cJSON_GetObjectItemCaseSensitive(content, "message_content")->valuestring;
+    t_message *updated_message = db_update_message(message_id, message_content);
+    
+    if (updated_message) {
+        notify_updated_message(state, updated_message);
+        free_message(updated_message);
+    }
+}

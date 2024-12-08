@@ -15,7 +15,7 @@ bool db_check_user_in_chat(int user_id, int chat_id) {
         }
         sqlite3_finalize(stmt);
     } else {
-        syslog(LOG_ERR, "Error checking user in chat: %s", sqlite3_errmsg(db));
+        logging_format(LOG_ERR, "Error checking user in chat: %s", sqlite3_errmsg(db));
     }
 
     db_close(db);

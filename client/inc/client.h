@@ -25,6 +25,7 @@ typedef struct s_client_data {
     bool     is_connected;
     bool     is_logged_in;
     GList    *messages_list;
+    GHashTable *id_button_table;
     t_user  *current_user;
 } t_client_data;
 
@@ -48,6 +49,7 @@ cJSON *create_request_all_users_exclude(void);
 cJSON *create_request_new_chat(void);
 cJSON *create_get_chat_messages_request(void);
 cJSON *create_request_message();
+cJSON *create_request_update_message(void);
 
 gboolean update_gui_with_response(gpointer data);
 int      send_login_request(const gchar *username, const gchar *password, SSL *ssl);
@@ -57,6 +59,7 @@ int      send_all_users_exclude_request(t_client_data *client_data);
 int      send_create_chat_request(t_app *app, const char *chat_name);
 int      send_get_chat_messages_request(int chat_id);
 int      send_message_request(gint chat_id, const char *message_text, SSL *ssl);
+int send_update_message_request(int message_id, const char *message_content);
 
 void handle_login_response(int response_type, cJSON *json_response);
 void handle_registration_response(int response_type, cJSON *json_response);
@@ -65,6 +68,7 @@ void handle_all_users_exclude_response(cJSON *response);
 void handle_new_chat_response(cJSON *json_response);
 void handle_get_chat_messages_response(cJSON *response);
 void handle_new_message_response(cJSON *response);
+void handle_update_message_response(cJSON *response);
 
 bool reconnect_to_server(t_client_data *client_data);
 

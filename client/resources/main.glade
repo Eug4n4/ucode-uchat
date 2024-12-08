@@ -449,7 +449,7 @@
         <property name="layout-style">start</property>
         <child>
           <object class="GtkButton" id="btn_edit_message">
-            <property name="label" translatable="yes">Edit</property>
+            <property name="label" translatable="yes">Edit p</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
@@ -462,7 +462,7 @@
         </child>
         <child>
           <object class="GtkButton" id="btn_delete_message">
-            <property name="label" translatable="yes">Delete</property>
+            <property name="label" translatable="yes">Delete p</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>

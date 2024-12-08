@@ -56,6 +56,7 @@ typedef struct s_message {
     char             *sender_username;
     char             *content;
     int64_t           timestamp;
+    int               receiver_id;
     struct s_message *next;
 } t_message;
 
@@ -76,6 +77,7 @@ void handle_message_request(cJSON *request, t_accepted_client *client, t_server_
 void handle_all_chats_request(t_accepted_client *client);
 void handle_get_chat_messages_request(cJSON *request, t_accepted_client *client);
 void handle_get_all_users_exclude_request(cJSON *request, t_accepted_client *client);
+void handle_update_message_request(t_server_state *state, cJSON *request);
 void generate_login_response(int response, const char *response_message, t_accepted_client *client);
 void generate_registration_response(int response, const char *response_message, t_accepted_client *client);
 void generate_new_private_chat_response(int response, const char *response_message, t_accepted_client *client);
@@ -84,12 +86,14 @@ void generate_message_response(int response, t_accepted_client *client);
 void generate_all_chats_response(int response, t_chats **chats, t_accepted_client *client);
 void generate_get_chat_messages_response(int response, t_messages *messages, t_accepted_client *client);
 void generate_all_users_exclude_response(int response, t_users **users, t_accepted_client *client);
+void generate_update_message_response(int response, t_message *message, t_accepted_client *client);
 void send_response(cJSON *response, t_accepted_client *client);
 void send_message_to_online_chat_users(int chat_id, t_accepted_client *sender, const char *message, int64_t timestamp, t_server_state *state);
 void process_request_type(cJSON *request, t_accepted_client *client, t_server_state *state);
 void process_response_type(int response_type, const char *response_message, t_accepted_client *client);
 
 void notify_new_chat_creation(t_server_state *state, t_accepted_client *client, int chat_id);
+void notify_updated_message(t_server_state *state, t_message *message);
 
 void    add_client(t_server_state *state, t_accepted_client *client);
 void    remove_client(t_server_state *state, t_accepted_client *client);

@@ -35,6 +35,8 @@ void process_response_type(int response_type, const char *response_message, t_ac
     case FAIL_CREATE_NEW_GROUP_CHAT:
         generate_new_group_chat_response(FAIL_CREATE_NEW_GROUP_CHAT, response_message, client);
         break;
+    case OK_UPDATE_MESSAGE:
+        break;
     default:
         break;
     }

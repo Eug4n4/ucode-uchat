@@ -1,7 +1,5 @@
 #include "db.h"
 
-#include "db.h"
-
 int db_save_message(int sender_id, int chat_id, const char *message, int64_t *timestamp) {
     sqlite3 *db = db_open("test.db");
     if (db == NULL) {
@@ -10,7 +8,7 @@ int db_save_message(int sender_id, int chat_id, const char *message, int64_t *ti
 
     if (!db_check_user_in_chat(sender_id, chat_id)) {
         sqlite3_close(db);
-        syslog(LOG_ERR, "User %d is not part of chat %d", sender_id, chat_id);
+        logging_format(LOG_ERR, "User %d is not part of chat %d", sender_id, chat_id);
         return -1;
     }
 
@@ -38,7 +36,7 @@ int db_save_message(int sender_id, int chat_id, const char *message, int64_t *ti
         }
         sqlite3_finalize(stmt);
     } else {
-        syslog(LOG_ERR, "Error inserting message: %s", sqlite3_errmsg(db));
+        logging_format(LOG_ERR, "Error inserting message: %s", sqlite3_errmsg(db));
     }
 
     sqlite3_close(db);

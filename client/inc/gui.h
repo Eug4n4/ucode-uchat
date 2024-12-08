@@ -67,6 +67,7 @@ typedef struct s_gtk_main_window {
     GtkWindow        *window;
     GtkScrolledWindow *chat_history_window;
     GtkListStore     *chat_store;
+    GtkPopover *popover_menu;
     GtkTreeView      *chats_list_view;
     GtkTreeSelection *chat_selection;
     GdkPixbuf        *private_chat_image;
@@ -109,7 +110,6 @@ t_gtk_sign_in     *create_gtk_sign_in_data(void);
 t_gtk_sign_up     *create_gtk_sign_up_data(void);
 t_gtk_main_window *create_gtk_main_window_data(void);
 t_gtk_create_chat *create_gtk_create_chat_data(void);
-void               sign_up_connect_signals(t_gtk_sign_in *gtk_sign_in, t_gtk_sign_up *gtk_sign_up);
 t_gtk_main_window *create_gtk_main_window_data(void);
 
 void show_screen(int screen);
@@ -117,7 +117,7 @@ void destroy_screens(GtkWidget *widget, gpointer data);
 
 GtkWidget *show_reconnect_popup(void);
 gboolean   close_reconnect_popup(GtkWidget *dialog);
-
+void on_btn_edit_message_popover_clicked(GtkWidget *button, gpointer data);
 gboolean on_message_clicked(GtkWidget *button, GdkEventButton *event, gpointer data);
 void destroy_edit_message_buttons(void);
 void show_msg_in_chat_history(cJSON *json_message);

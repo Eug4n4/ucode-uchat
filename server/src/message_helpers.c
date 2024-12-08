@@ -24,6 +24,16 @@ void append_message_to_list(t_messages *messages, t_message *msg) {
     messages->count++;
 }
 
+void free_message(t_message *message) {
+    if (message->content) {
+        free(message->content);
+    }
+    if (message->sender_username) {
+        free(message->sender_username);
+    }
+    free(message);
+}
+
 void free_messages(t_messages **messages) {
     if (!messages || !*messages)
         return;
@@ -31,9 +41,7 @@ void free_messages(t_messages **messages) {
     t_message *current = (*messages)->head;
     while (current) {
         t_message *next = current->next;
-        free(current->content);
-        free(current->sender_username);
-        free(current);
+        free_message(current);
         current = next;
     }
 
@@ -41,10 +49,5 @@ void free_messages(t_messages **messages) {
     *messages = NULL;
 }
 
-void free_message(t_message *message) {
-    free(message->content);
-    free(message->sender_username);
-    free(message);
-}
 
 

@@ -25,6 +25,9 @@ void process_request_type(cJSON *request, t_accepted_client *client, t_server_st
     case ALL_USERS_EXCLUDE:
         handle_get_all_users_exclude_request(request, client);
         break;
+    case UPDATE_MESSAGE:
+        handle_update_message_request(state, request);
+        break;
     default:
         break;
     }

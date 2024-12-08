@@ -32,6 +32,7 @@ static void create_chat_window_quit(void) {
     free(gtk_create_chat);
     free_messages();
     gtk_create_chat = NULL;
+    g_hash_table_destroy(client_data->id_button_table);
 }
 
 static void destroy_screen(t_screen screen) {

@@ -25,10 +25,10 @@ void daemonize_server(void) {
     }
     struct rlimit rlim;
 
-    // chdir("/");
+    
     getrlimit(RLIMIT_NOFILE, &rlim);
     for (size_t fd = 0; fd < rlim.rlim_max; ++fd) {
         close(fd);
     }
-    openlog(NULL, LOG_PID, LOG_DAEMON);
+
 }

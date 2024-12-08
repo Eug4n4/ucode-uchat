@@ -117,3 +117,18 @@ int send_message_request(gint chat_id, const char *message_text, SSL *ssl) {
 
     return result;
 }
+
+int send_update_message_request(int message_id, const char *message_content) {
+    cJSON *request = create_request_update_message();
+    cJSON *content = cJSON_GetObjectItemCaseSensitive(request, KEY_CONTENT);
+    cJSON_AddNumberToObject(content, "message_id", message_id);
+    cJSON_AddStringToObject(content, "message_content", message_content);
+    char *str    = cJSON_PrintUnformatted(request);
+    int   result = SSL_write(client_data->ssl, str, strlen(str));
+
+    free(str);
+    cJSON_Delete(request);
+
+    return result;
+}
+

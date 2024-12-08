@@ -8,7 +8,7 @@ t_chats *db_get_all_user_chats(int user_id) {
                         "FROM chats JOIN chat_users "
                         "ON chats.id = chat_id WHERE user_id = ?1;";
     if (sqlite3_prepare_v2(db, query_chats, -1, &stmt, NULL) != SQLITE_OK) {
-        printf("Error: %s\n", sqlite3_errmsg(db));
+        logging_format(LOG_ERR, "Error: %s\n", sqlite3_errmsg(db));
         return NULL;
     }
 

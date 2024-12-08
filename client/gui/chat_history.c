@@ -22,6 +22,9 @@ void clear_chat_history(void) {
 }
 
 void show_msg_in_chat_history(cJSON *json_message) {
+    int id = cJSON_GetObjectItemCaseSensitive(json_message, "id")->valueint;
+    int *message_id = g_new0(gint, 1);
+    *message_id = id;
     char *sender = cJSON_GetObjectItemCaseSensitive(json_message, "sender_username")->valuestring;
     char *content = cJSON_GetObjectItemCaseSensitive(json_message, "content")->valuestring;
     int64_t timestamp = cJSON_GetObjectItemCaseSensitive(json_message, "timestamp")->valueint;
@@ -57,6 +60,7 @@ void show_msg_in_chat_history(cJSON *json_message) {
     
     gtk_box_pack_start(GTK_BOX(gtk_main_window->messages), message_button, TRUE, TRUE, 10);
     g_signal_connect(message_button, "button-press-event", G_CALLBACK(on_message_clicked), NULL);
+    g_hash_table_insert(client_data->id_button_table, message_id, message_button);
     gtk_widget_show_all(message_button);
 }
 

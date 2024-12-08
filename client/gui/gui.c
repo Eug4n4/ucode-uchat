@@ -9,6 +9,11 @@ GtkBuilder        *builder_create_chat  = NULL;
 GtkBuilder        *builder_login        = NULL;
 GtkBuilder        *builder_registration = NULL;
 
+void destroy_id_button_table(void) {
+    g_hash_table_destroy(client_data->id_button_table);
+    client_data->id_button_table = g_hash_table_new_full(g_direct_hash, g_direct_equal, g_free, NULL);
+}
+
 void on_btn_sign_in_clicked(GtkButton *button, gpointer data) {
     const gchar *username = gtk_entry_get_text(gtk_sign_in->entry_username);
     const gchar *password = gtk_entry_get_text(gtk_sign_in->entry_password);
@@ -142,6 +147,7 @@ void on_log_out_subbtn_activate(GtkWidget *log_out_subbtn, gpointer data) {
     g_mutex_lock(&client_data->data_mutex);
     clear_chat_history();
     destroy_edit_message_buttons();
+    destroy_id_button_table();
     client_data->is_logged_in = false;
     g_mutex_unlock(&client_data->data_mutex);
     show_screen(LOGIN_SCREEN);
@@ -252,6 +258,7 @@ void on_chat_selection_changed(GtkTreeSelection *selection) {
         gtk_tree_model_get(model, &iter, 3, &chat_id, -1);
         clear_chat_history();
         destroy_edit_message_buttons();
+        destroy_id_button_table();
         send_get_chat_messages_request(chat_id);
         gchar *str_members_count = g_strdup_printf("Members: %d", chat_members);
         gtk_label_set_text(gtk_main_window->label_chat_name, chat_name);

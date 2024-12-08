@@ -138,6 +138,7 @@
                 <property name="can-focus">False</property>
                 <property name="vexpand">True</property>
                 <property name="orientation">vertical</property>
+                <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkScrolledWindow" id="chat_list_window">
                     <property name="visible">True</property>
@@ -453,6 +454,9 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+            <style>
+              <class name="btn_edit_message"/>
+            </style>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -466,6 +470,9 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+            <style>
+              <class name="btn_delete_message"/>
+            </style>
           </object>
           <packing>
             <property name="expand">True</property>

@@ -1,6 +1,6 @@
 * {
     outline-color: white;;
-    border-color: #957bff;
+    border-color: #141414;
 }
 
 .background {
@@ -8,7 +8,14 @@
     background-color: #141414;
 }
 
-button#message{
+button.message{
+    color: #171a3c;
+    background: #84a1ff;
+    outline-color: white;
+    border-color:  #26267d;
+}
+
+button.message:hover{
     color: #171a3c;
     background: #84a1ff;
     outline-color: white;
@@ -62,5 +69,18 @@ entry {
     border-color: #6557ff;
     color: #d1c7ff;
 
+}
+
+popover {
+    background: #15172c;
+    border-color: #6557ff;
+}
+
+popover .btn_edit_message {
+    color: #727bff;
+}
+
+popover .btn_delete_message {
+    color: #727bff;
 }
 

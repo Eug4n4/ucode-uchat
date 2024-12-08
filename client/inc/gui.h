@@ -113,7 +113,7 @@ t_gtk_main_window *create_gtk_main_window_data(void);
 t_gtk_create_chat *create_gtk_create_chat_data(void);
 t_gtk_main_window *create_gtk_main_window_data(void);
 
-void css_set(GtkCssProvider *css_provider, GtkWidget *widget);
+void css_set(void);
 
 void show_screen(int screen);
 void destroy_screens(GtkWidget *widget, gpointer data);

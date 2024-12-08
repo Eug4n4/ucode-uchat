@@ -144,7 +144,6 @@
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="hscrollbar-policy">never</property>
-                    <property name="vscrollbar-policy">always</property>
                     <property name="shadow-type">in</property>
                     <child>
                       <object class="GtkViewport">
@@ -406,6 +405,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
+                    <property name="always-show-image">True</property>
                     <signal name="clicked" handler="on_btn_send_message_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -450,7 +450,7 @@
         <property name="layout-style">start</property>
         <child>
           <object class="GtkButton" id="btn_edit_message">
-            <property name="label" translatable="yes">Edit p</property>
+            <property name="label" translatable="yes">Edit</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
@@ -466,7 +466,7 @@
         </child>
         <child>
           <object class="GtkButton" id="btn_delete_message">
-            <property name="label" translatable="yes">Delete p</property>
+            <property name="label" translatable="yes">Delete</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>

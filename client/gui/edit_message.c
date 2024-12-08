@@ -6,7 +6,6 @@ gboolean is_my_message(GtkWidget *button) {
     if (GTK_IS_BUTTON(button)) {
         GtkWidget *child = gtk_bin_get_child(GTK_BIN(button));
         if (GTK_IS_LABEL(child)) {
-            g_print("%s\n",gtk_label_get_text(GTK_LABEL(child)));
             return FALSE;
         }
         GList *children = gtk_container_get_children(GTK_CONTAINER(child));
@@ -84,11 +83,10 @@ void on_btn_edit_message_popover_clicked(GtkWidget *button, gpointer data) {
     
     gtk_entry_set_text(gtk_main_window->entry_send_message, text);
     g_list_free(children);
-    // GtkPopover *update_message_window = GTK_POPOVER(gtk_builder_get_object(builder_main_window, "update_message"));
-
+    
     g_signal_connect(cancel_button, "clicked", G_CALLBACK(on_btn_cancel_clicked), NULL);
     g_signal_connect(edit_button, "clicked", G_CALLBACK(on_btn_edit_clicked), data);
-
+    g_signal_handlers_disconnect_by_data(gtk_main_window->btn_edit_message, data);
     gtk_widget_show(edit_button);
     gtk_widget_show(cancel_button);
 
@@ -104,11 +102,9 @@ gboolean on_message_clicked(GtkWidget *button, GdkEventButton *event, gpointer d
     if (!is_my_message(button)) {
         return TRUE;
     }
-    GtkWidget *btn_edit_message = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "btn_edit_message"));
-    
     gtk_popover_set_relative_to(gtk_main_window->popover_menu, button);
     gtk_popover_popup(gtk_main_window->popover_menu);
-    g_signal_connect(btn_edit_message, "clicked", G_CALLBACK(on_btn_edit_message_popover_clicked), button);
+    g_signal_connect(gtk_main_window->btn_edit_message, "clicked", G_CALLBACK(on_btn_edit_message_popover_clicked), button);
     (void)data;
     return TRUE;
 }

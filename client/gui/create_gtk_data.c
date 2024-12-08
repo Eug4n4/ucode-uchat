@@ -8,10 +8,11 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     GtkTreeSelection  *chat_selection;
     GError            *error        = NULL;
     GtkScrolledWindow *chat_history_window;
-    GtkPopover *popover_menu;
-    GtkWidget *messages;
+    GtkPopover        *popover_menu;
+    GtkWidget         *btn_edit_message;
+    GtkWidget         *messages;
     GdkPixbuf         *private_chat = gdk_pixbuf_new_from_file(PRIVATE_CHAT_IMAGE_PATH, &error);
-    // GMenuModel *menu_model;
+
     if (!private_chat) {
         g_print("Error loading image %s\n", error->message);
         g_error_free(error);
@@ -40,10 +41,11 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     GtkLabel  *label_members_count = GTK_LABEL(gtk_builder_get_object(builder_main_window, "label_members_count"));
     GtkEntry  *entry_send_message  = GTK_ENTRY(gtk_builder_get_object(builder_main_window, "entry_send"));
     GtkButton *btn_send_message    = GTK_BUTTON(gtk_builder_get_object(builder_main_window, "btn_send"));
-    chat_history_window = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder_main_window, "chat_history_window"));
+    chat_history_window            = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder_main_window, "chat_history_window"));
     popover_menu                   = GTK_POPOVER(gtk_builder_get_object(builder_main_window, "update_message"));
-    messages              = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "messages"));
-    // menu_model                     = G_MENU_MODEL(gtk_builder_get_object(builder_main_window, "menu1"));
+    messages                       = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "messages"));
+    btn_edit_message               = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "btn_edit_message"));
+
     data->window              = window;
     data->chat_store          = chat_store;
     data->group_chat_image    = group_chat;
@@ -57,7 +59,8 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     data->chat_history_window = chat_history_window;
     data->messages   = messages;
     data->popover_menu = popover_menu;
-    // gtk_popover_bind_model(popover_menu, menu_model, NULL);
+    data->btn_edit_message = btn_edit_message;
+
     gtk_tree_view_set_headers_visible(data->chats_list_view, FALSE);
     return data;
 }

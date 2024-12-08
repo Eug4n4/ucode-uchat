@@ -67,10 +67,11 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage">
+              <object class="GtkImage" id="user_icon">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="pixbuf">user_icon.png</property>
+                <property name="pixel_size">50</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>

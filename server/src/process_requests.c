@@ -28,6 +28,9 @@ void process_request_type(cJSON *request, t_accepted_client *client, t_server_st
     case UPDATE_MESSAGE:
         handle_update_message_request(state, request);
         break;
+    case DELETE_MESSAGE:
+        handle_delete_message_request(state, request);
+        break;
     default:
         break;
     }

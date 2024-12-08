@@ -9,7 +9,8 @@ typedef enum e_request_type { REGISTRATION,
                               GET_CHAT_MESSAGES,
                               ALL_USERS_EXCLUDE,
                               NEW_CHAT,
-                              UPDATE_MESSAGE } t_request_type;
+                              UPDATE_MESSAGE,
+                              DELETE_MESSAGE } t_request_type;
 
 typedef enum e_response_type { OK_LOGIN,
                                FAIL_LOGIN,
@@ -29,6 +30,7 @@ typedef enum e_response_type { OK_LOGIN,
                                FAIL_CREATE_NEW_GROUP_CHAT,
                                BAD_REQUEST,
                                NEW_MESSAGE,
-                               OK_UPDATE_MESSAGE } t_response_type;
+                               OK_UPDATE_MESSAGE,
+                               OK_DELETE_MESSAGE } t_response_type;
 
 #endif //ENUMS_H

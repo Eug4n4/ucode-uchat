@@ -10,6 +10,8 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     GtkScrolledWindow *chat_history_window;
     GtkPopover        *popover_menu;
     GtkWidget         *btn_edit_message;
+    GtkWidget         *btn_delete_message;
+
     GtkWidget         *messages;
     GdkPixbuf         *private_chat = gdk_pixbuf_new_from_file(PRIVATE_CHAT_IMAGE_PATH, &error);
 
@@ -45,7 +47,7 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     popover_menu                   = GTK_POPOVER(gtk_builder_get_object(builder_main_window, "update_message"));
     messages                       = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "messages"));
     btn_edit_message               = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "btn_edit_message"));
-
+    btn_delete_message             = GTK_WIDGET(gtk_builder_get_object(builder_main_window, "btn_delete_message"));
     data->window              = window;
     data->chat_store          = chat_store;
     data->group_chat_image    = group_chat;
@@ -60,6 +62,7 @@ t_gtk_main_window *create_gtk_main_window_data(void) {
     data->messages   = messages;
     data->popover_menu = popover_menu;
     data->btn_edit_message = btn_edit_message;
+    data->btn_delete_message = btn_delete_message;
 
     gtk_tree_view_set_headers_visible(data->chats_list_view, FALSE);
     return data;

@@ -22,5 +22,6 @@ t_chat        *db_get_last_created_chat(void);
 t_message *db_get_last_created_message(void);
 t_message *db_get_message_by_id(int message_id);
 t_message *db_update_message(int message_id, const char *content);
+t_message *db_delete_message_by_id(int message_id);
 int            db_change_display_name(int user_id, const char *new_display_name);
 #endif  // DB_H

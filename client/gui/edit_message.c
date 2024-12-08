@@ -1,6 +1,14 @@
 #include "client.h"
 
 
+void on_popover_closed(GtkWidget *widget, gpointer data) {
+    g_signal_handlers_disconnect_by_data(gtk_main_window->btn_edit_message, data);
+    g_signal_handlers_disconnect_by_data(gtk_main_window->btn_delete_message, data);
+    g_signal_handlers_disconnect_by_data(gtk_main_window->popover_menu, data);
+    (void)widget;
+
+}
+
 gboolean is_my_message(GtkWidget *button) {
     gboolean result = FALSE;
     if (GTK_IS_BUTTON(button)) {
@@ -39,10 +47,8 @@ void on_btn_edit_clicked(GtkWidget *button, gpointer data) {
             GList *keys = g_hash_table_get_keys(client_data->id_button_table);
 
             for (GList *head_messsage = keys; head_messsage; head_messsage = head_messsage->next) {
-                printf("%d\n",*(int *)head_messsage->data);
                 gpointer value = g_hash_table_lookup(client_data->id_button_table, head_messsage->data);
                 if (memcmp(value, data, sizeof(GtkWidget)) == 0) {
-                    g_print("This\n");
                     send_update_message_request(*(int *)head_messsage->data, new_content);
                     break;
                 }
@@ -60,10 +66,33 @@ void on_btn_edit_clicked(GtkWidget *button, gpointer data) {
        
 
 }
+void on_btn_delete_message_popover_clicked(GtkWidget *button, gpointer data) {
+    g_print("delete this message\n");
 
+    if (GTK_IS_BUTTON(data)) {
+        GtkWidget *child = gtk_bin_get_child(GTK_BIN(data));
+
+        if (GTK_IS_BOX(child)) {
+            GList *children = gtk_container_get_children(GTK_CONTAINER(child));
+            GList *keys = g_hash_table_get_keys(client_data->id_button_table);
+
+            for (GList *head_messsage = keys; head_messsage; head_messsage = head_messsage->next) {
+                gpointer value = g_hash_table_lookup(client_data->id_button_table, head_messsage->data);
+                if (memcmp(value, data, sizeof(GtkWidget)) == 0) {
+                    send_delete_message_request(*(int *)head_messsage->data);
+                    break;
+                }
+            }
+            g_list_free(keys);
+            g_list_free(children);
+        }
+    
+    }
+    gtk_popover_popdown(gtk_main_window->popover_menu);
+    (void)button;
+}
 
 void on_btn_edit_message_popover_clicked(GtkWidget *button, gpointer data) {
-    gtk_popover_popdown(gtk_main_window->popover_menu);
     gtk_widget_hide(GTK_WIDGET(gtk_main_window->btn_send_message));
     GtkGrid           *grid_send_message = GTK_GRID(gtk_builder_get_object(builder_main_window, "send_message_grid"));
 
@@ -86,12 +115,12 @@ void on_btn_edit_message_popover_clicked(GtkWidget *button, gpointer data) {
     
     g_signal_connect(cancel_button, "clicked", G_CALLBACK(on_btn_cancel_clicked), NULL);
     g_signal_connect(edit_button, "clicked", G_CALLBACK(on_btn_edit_clicked), data);
-    g_signal_handlers_disconnect_by_data(gtk_main_window->btn_edit_message, data);
+    gtk_popover_popdown(gtk_main_window->popover_menu);
+
     gtk_widget_show(edit_button);
     gtk_widget_show(cancel_button);
 
     (void)button;
-    (void)data;
 }
 
 
@@ -104,7 +133,9 @@ gboolean on_message_clicked(GtkWidget *button, GdkEventButton *event, gpointer d
     }
     gtk_popover_set_relative_to(gtk_main_window->popover_menu, button);
     gtk_popover_popup(gtk_main_window->popover_menu);
+    g_signal_connect(gtk_main_window->popover_menu, "closed", G_CALLBACK(on_popover_closed), button);
     g_signal_connect(gtk_main_window->btn_edit_message, "clicked", G_CALLBACK(on_btn_edit_message_popover_clicked), button);
+    g_signal_connect(gtk_main_window->btn_delete_message, "clicked", G_CALLBACK(on_btn_delete_message_popover_clicked), button);
     (void)data;
     return TRUE;
 }

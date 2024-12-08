@@ -68,8 +68,9 @@ typedef struct s_gtk_main_window {
     GtkWindow        *window;
     GtkScrolledWindow *chat_history_window;
     GtkListStore     *chat_store;
-    GtkPopover *popover_menu;
-    GtkWidget *btn_edit_message;
+    GtkPopover       *popover_menu;
+    GtkWidget        *btn_edit_message;
+    GtkWidget        *btn_delete_message;
     GtkTreeView      *chats_list_view;
     GtkTreeSelection *chat_selection;
     GdkPixbuf        *private_chat_image;

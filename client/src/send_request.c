@@ -132,3 +132,16 @@ int send_update_message_request(int message_id, const char *message_content) {
     return result;
 }
 
+int send_delete_message_request(int message_id) {
+    cJSON *request = create_request_delete_message();
+    cJSON *content = cJSON_GetObjectItemCaseSensitive(request, KEY_CONTENT);
+    cJSON_AddNumberToObject(content, "message_id", message_id);
+    char *str    = cJSON_PrintUnformatted(request);
+    int   result = SSL_write(client_data->ssl, str, strlen(str));
+
+    free(str);
+    cJSON_Delete(request);
+
+    return result;
+}
+

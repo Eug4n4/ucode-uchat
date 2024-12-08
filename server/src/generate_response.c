@@ -281,3 +281,25 @@ void generate_all_users_exclude_response(int response, t_users **users, t_accept
     send_response(all_users_response, client);
     cJSON_Delete(all_users_response);
 }
+
+
+void generate_delete_message_response(int response_type, t_message *deleted_message, t_accepted_client *client) {
+    cJSON *delete_message_response = cJSON_CreateObject();
+    cJSON *content            = cJSON_CreateObject();
+
+    switch (response_type) {
+    case OK_DELETE_MESSAGE:
+        cJSON_AddNumberToObject(delete_message_response, "response_type", OK_DELETE_MESSAGE);
+        cJSON_AddNumberToObject(content, "chat_id", deleted_message->receiver_id);
+        cJSON_AddNumberToObject(content, "message_id", deleted_message->id);
+        cJSON_AddItemToObject(delete_message_response, "content", content);
+        send_response(delete_message_response, client);
+        break;
+    
+    default:
+        break;
+    }
+    cJSON_Delete(delete_message_response);
+}
+
+

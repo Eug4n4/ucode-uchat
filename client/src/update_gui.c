@@ -71,6 +71,9 @@ gboolean update_gui_with_response(gpointer data) {
     case OK_UPDATE_MESSAGE:
         handle_update_message_response(json_response);
         break;
+    case OK_DELETE_MESSAGE:
+        handle_delete_message_response(json_response);
+        break;
     default:
         g_printerr("Unknown response type: %d\n", response_type);
         break;

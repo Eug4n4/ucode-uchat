@@ -266,3 +266,17 @@ void handle_update_message_request(t_server_state *state, cJSON *request) {
         free_message(updated_message);
     }
 }
+
+
+void handle_delete_message_request(t_server_state *state, cJSON *request) {
+    cJSON *content = cJSON_GetObjectItemCaseSensitive(request, "content");
+    int message_id = cJSON_GetObjectItemCaseSensitive(content, "message_id")->valueint;
+    
+    t_message *deleted_message = db_delete_message_by_id(message_id);
+    
+    if (deleted_message) {
+        notify_message_deletion(state, deleted_message);
+        free_message(deleted_message);
+    }
+}
+

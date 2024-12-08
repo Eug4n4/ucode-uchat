@@ -62,7 +62,7 @@ cJSON *create_get_chat_messages_request(void) {
     return json;
 }
 
-cJSON *create_request_message() {
+cJSON *create_request_message(void) {
     cJSON *json = cJSON_CreateObject();
 
     cJSON_AddNumberToObject(json, KEY_REQUEST_TYPE, MESSAGE);
@@ -87,3 +87,16 @@ cJSON *create_request_update_message(void) {
     return json;
 
 }
+
+
+cJSON *create_request_delete_message(void) {
+    cJSON *json = cJSON_CreateObject();
+
+    cJSON_AddNumberToObject(json, KEY_REQUEST_TYPE, DELETE_MESSAGE);
+    cJSON *content = cJSON_CreateObject();
+    
+    cJSON_AddItemToObject(json, KEY_CONTENT, content);
+
+    return json;
+}
+

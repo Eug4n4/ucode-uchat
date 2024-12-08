@@ -10,6 +10,7 @@
 #define GLADE_CREATE_CHAT_PATH "resources/create_chat.glade"
 #define PRIVATE_CHAT_IMAGE_PATH "resources/private_chat_icon.png"
 #define GROUP_CHAT_IMAGE_PATH "resources/group_icon.png"
+#define CSS_STYLE_PATH "./resources/css_style1.css"
 
 typedef enum e_screen {
     LOGIN_SCREEN,
@@ -111,6 +112,8 @@ t_gtk_sign_up     *create_gtk_sign_up_data(void);
 t_gtk_main_window *create_gtk_main_window_data(void);
 t_gtk_create_chat *create_gtk_create_chat_data(void);
 t_gtk_main_window *create_gtk_main_window_data(void);
+
+void css_set(GtkCssProvider *css_provider, GtkWidget *widget);
 
 void show_screen(int screen);
 void destroy_screens(GtkWidget *widget, gpointer data);

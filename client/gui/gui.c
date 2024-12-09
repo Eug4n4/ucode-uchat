@@ -349,6 +349,8 @@ void init_gui(int argc, char **argv, t_app *app) {
     g_signal_connect(gtk_main_window->window, "destroy", G_CALLBACK(destroy_screens), NULL);
     g_signal_connect(gtk_create_chat->window, "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
     g_signal_connect(gtk_main_window->btn_send_message, "clicked", G_CALLBACK(on_btn_send_message_clicked), NULL);
+    
+    gtk_widget_set_name((GtkWidget*)gtk_create_chat->view_users, "tv_users");
     css_set();
     show_screen(LOGIN_SCREEN);
 }

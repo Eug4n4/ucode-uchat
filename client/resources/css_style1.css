@@ -17,7 +17,7 @@ button.message{
 
 button.message:hover{
     color: #171a3c;
-    background: #84a1ff;
+    background: #082eac;
     outline-color: white;
     border-color:  #26267d;
 }
@@ -82,5 +82,9 @@ popover .btn_edit_message {
 
 popover .btn_delete_message {
     color: #727bff;
+}
+
+.label_username {
+    font-size: 18px;
 }
 

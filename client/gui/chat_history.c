@@ -60,8 +60,11 @@ void show_msg_in_chat_history(cJSON *json_message) {
 
     gtk_widget_set_name((GtkWidget*)message_button, "message");
     GtkStyleContext *context = gtk_widget_get_style_context(message_button);
-    gtk_style_context_add_class(context, "message");
     
+    gtk_style_context_add_class(context, "message");
+    context = gtk_widget_get_style_context(label_username);
+    
+    gtk_style_context_add_class(context, "label_username");
     gtk_box_pack_start(GTK_BOX(gtk_main_window->messages), message_button, TRUE, TRUE, 10);
     g_signal_connect(message_button, "button-press-event", G_CALLBACK(on_message_clicked), NULL);
     g_hash_table_insert(client_data->id_button_table, message_id, message_button);

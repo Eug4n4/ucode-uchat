@@ -41,4 +41,7 @@ clean:
 	@make --no-print-directory -C $(CLIENT_DIR) clean
 	@make --no-print-directory -C $(COMMON_DIR) clean
 
+uninstall: clean
+
+reinstall: uninstall all
 

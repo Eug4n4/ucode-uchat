@@ -60,3 +60,8 @@ $(OBJDIR):
 
 clean:
 	@rm -rf $(OBJDIR)
+
+uninstall: clean
+
+reinstall: uninstall all
+

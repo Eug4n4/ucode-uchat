@@ -17,8 +17,7 @@ gboolean update_gui_with_response(gpointer data) {
         g_free(data);
         return FALSE;
     }
-    char *res = cJSON_Print(json_response);
-    printf("%s\n", res);
+
     t_response_type response_type = (t_response_type)response_type_json->valueint;
 
     switch (response_type) {
@@ -75,7 +74,6 @@ gboolean update_gui_with_response(gpointer data) {
         handle_delete_message_response(json_response);
         break;
     default:
-        g_printerr("Unknown response type: %d\n", response_type);
         break;
     }
 
@@ -84,3 +82,5 @@ gboolean update_gui_with_response(gpointer data) {
 
     return FALSE;
 }
+
+

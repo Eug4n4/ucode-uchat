@@ -63,22 +63,5 @@ void logging_format(int priority, const char *format, ...) {
     fclose(f);
 }
 
-// // priority - macros from sys/syslog.h with LOG prefix
-// // e.g. LOG_INFO LOG_ERR
-// void logging(int priority, const char *message) {
-//     FILE *f = fopen(LOGGING_FILE, "a");
-//     if (f == NULL) {
-//         return;
-//     }
-//     time_t now;
-//
-//     time(&now);
-//     fprintf(f, "%s", ctime(&now));
-//     print_log_priority(f, priority);
-//     fprintf(f, "[pid %d] ", getpid());
-//     fprintf(f, "'%s'\n", message);
-//
-//     fclose(f);
-// }
 
 

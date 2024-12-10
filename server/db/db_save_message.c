@@ -42,3 +42,4 @@ int db_save_message(int sender_id, int chat_id, const char *message, int64_t *ti
     sqlite3_close(db);
     return success;
 }
+

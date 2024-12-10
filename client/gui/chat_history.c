@@ -71,3 +71,4 @@ void show_msg_in_chat_history(cJSON *json_message) {
     gtk_widget_show_all(message_button);
 }
 
+

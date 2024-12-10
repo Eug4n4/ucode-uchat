@@ -41,3 +41,4 @@ void process_response_type(int response_type, const char *response_message, t_ac
         break;
     }
 }
+

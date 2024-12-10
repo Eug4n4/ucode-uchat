@@ -28,3 +28,4 @@ int db_change_display_name(int user_id, const char *new_display_name) {
     logging_format(LOG_INFO, "Successfully updated display name for user ID %d", user_id);
     return SQLITE_OK;
 }
+

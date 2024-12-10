@@ -29,3 +29,4 @@ t_chats *db_get_all_user_chats(int user_id) {
 
     return chats;
 }
+

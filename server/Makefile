@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -std=c11 -Wall -Wextra -Wpedantic -Werror -gdwarf-2
+CFLAGS = -std=c11 -Wall -Wextra -Wpedantic -Werror
 SRCDIR = src
 INCDIR = inc
 OBJDIR = obj
@@ -38,7 +38,7 @@ all: $(BIN)
 
 
 $(BIN): $(OBJFILES) $(DB_OBJFILES) $(LOG_OBJFILES) $(COMMON_OBJFILES)
-	$(CC) -gdwarf-2 -o $@ $^ $(LDFLAGS) $(LDLIBS)
+	$(CC) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
 $(OBJFILES): | $(OBJDIR)
 

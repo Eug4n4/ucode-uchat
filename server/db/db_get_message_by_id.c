@@ -28,3 +28,4 @@ t_message *db_get_message_by_id(int message_id) {
     db_close(db);
     return message;
 }
+

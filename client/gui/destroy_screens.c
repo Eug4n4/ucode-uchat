@@ -1,21 +1,18 @@
 #include "client.h"
 
 static void sign_up_window_quit(void) {
-    g_print("Sign-up window quit\n");
     g_object_unref(builder_registration);
     free(gtk_sign_up);
     gtk_sign_up = NULL;
 }
 
 static void sign_in_window_quit(void) {
-    g_print("Sign-in window quit\n");
     g_object_unref(builder_login);
     free(gtk_sign_in);
     gtk_sign_in = NULL;
 }
 
 static void main_window_quit(void) {
-    g_print("main window quit\n");
     g_object_unref(gtk_main_window->private_chat_image);
     g_object_unref(gtk_main_window->group_chat_image);
     g_object_unref(builder_main_window);
@@ -26,7 +23,6 @@ static void main_window_quit(void) {
 }
 
 static void create_chat_window_quit(void) {
-    g_print("create chat window quit\n");
     gtk_widget_destroy(GTK_WIDGET(gtk_create_chat->window));
     g_object_unref(builder_create_chat);
     free(gtk_create_chat);
@@ -55,7 +51,6 @@ static void destroy_screen(t_screen screen) {
 }
 
 void destroy_screens(GtkWidget *widget, gpointer data) {
-    g_print("Closing GUI and stopping threads...\n");
     g_mutex_lock(&client_data->data_mutex);
     client_data->is_running = false;
     g_mutex_unlock(&client_data->data_mutex);
@@ -74,3 +69,4 @@ void destroy_screens(GtkWidget *widget, gpointer data) {
     (void)widget;
     (void)data;
 }
+

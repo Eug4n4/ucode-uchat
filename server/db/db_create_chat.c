@@ -24,3 +24,4 @@ int db_create_chat(const char *chat_name, int chat_type) {
     db_close(db);
     return chat_id;
 }
+

@@ -23,3 +23,4 @@ t_message *db_get_last_created_message(void) {
     db_close(db);
     return message;
 }
+

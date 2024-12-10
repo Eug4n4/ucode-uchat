@@ -30,3 +30,4 @@ t_messages *db_get_messages_for_chat(int chat_id) {
     db_close(db);
     return messages;
 }
+

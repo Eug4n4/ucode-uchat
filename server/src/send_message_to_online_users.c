@@ -32,3 +32,4 @@ void send_message_to_online_chat_users(int chat_id, t_accepted_client *sender, c
 
     pthread_mutex_unlock(&state->client_list_mutex);
 }
+

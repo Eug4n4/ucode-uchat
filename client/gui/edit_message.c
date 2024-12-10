@@ -29,7 +29,6 @@ gboolean is_my_message(GtkWidget *button) {
 }
 
 void on_btn_cancel_clicked(GtkWidget *button, gpointer data) {
-    g_print("Here on_btn_cancel_clicked\n");
 
     destroy_edit_message_buttons();
     gtk_widget_show(GTK_WIDGET(gtk_main_window->btn_send_message));
@@ -67,7 +66,6 @@ void on_btn_edit_clicked(GtkWidget *button, gpointer data) {
 
 }
 void on_btn_delete_message_popover_clicked(GtkWidget *button, gpointer data) {
-    g_print("delete this message\n");
 
     if (GTK_IS_BUTTON(data)) {
         GtkWidget *child = gtk_bin_get_child(GTK_BIN(data));

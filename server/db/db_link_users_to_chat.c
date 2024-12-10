@@ -20,3 +20,4 @@ int db_link_users_to_chat(int chat_id, int user_id) {
     db_close(db);
     return result;
 }
+

@@ -25,3 +25,4 @@ int db_add_new_user(const char *username, const char *display_name, const char *
     return 0;
 }
 
+

@@ -22,3 +22,4 @@ t_message *db_update_message(int message_id, const char *content) {
     
     return message;
 }
+

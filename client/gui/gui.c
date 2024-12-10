@@ -87,7 +87,7 @@ void on_btn_sign_up_clicked(GtkButton *button, gpointer data) {
     }
     (void)button;
     (void)data;
-    g_print("Sign up button clicked\n");
+    
 }
 
 void on_btn_sign_up_small_clicked(GtkButton *button, gpointer data) {
@@ -117,7 +117,6 @@ void on_btn_sign_in_small_clicked(GtkButton *button, gpointer data) {
 }
 
 void on_toggle_renderer_toggled(GtkCellRendererToggle *cell, gchar *path) {
-    g_print("toggle renderer toggled\n");
     gboolean      state;
     GtkTreeModel *model = gtk_tree_view_get_model(gtk_create_chat->view_users);
     GtkTreeIter   iter;
@@ -129,21 +128,19 @@ void on_toggle_renderer_toggled(GtkCellRendererToggle *cell, gchar *path) {
 }
 
 void on_selected_user_changed(GtkTreeSelection *selection) {
-    g_print("Changed\n");
     (void)selection;
 }
 
 void on_btn_create_chat_main_clicked(GtkWidget *button, gpointer data) {
-    printf("add chat button clicked\n");
     send_all_users_exclude_request(client_data);
     show_screen(CREATE_CHAT_SCREEN);
     gtk_list_store_clear(gtk_create_chat->users_store);
+    gtk_label_set_text(gtk_create_chat->label_status, "");
     (void)button;
     (void)data;
 }
 
 void on_log_out_subbtn_activate(GtkWidget *log_out_subbtn, gpointer data) {
-    g_print("Log out button clicked\n");
     g_mutex_lock(&client_data->data_mutex);
     clear_chat_history();
     destroy_edit_message_buttons();
@@ -157,7 +154,6 @@ void on_log_out_subbtn_activate(GtkWidget *log_out_subbtn, gpointer data) {
 
 void on_btn_create_chat_clicked(GtkButton *button, gpointer data) {
     t_app *app = (t_app *)data;
-    g_print("button create chat clicked\n");
     const gchar *chat_name = gtk_entry_get_text(gtk_create_chat->entry_chat_name);
     gboolean     state;
     gchar       *username;
@@ -166,7 +162,6 @@ void on_btn_create_chat_clicked(GtkButton *button, gpointer data) {
         gtk_label_set_text(gtk_create_chat->label_status, "Enter chat name to create a new chat");
         return;
     }
-
     GtkTreeModel *model = gtk_tree_view_get_model(gtk_create_chat->view_users);
     GtkTreeIter   iter;
     gint          selected_users_count = 0;
@@ -221,7 +216,6 @@ void on_btn_send_message_clicked(GtkButton *button, gpointer data) {
 }
 
 void on_chat_selection_changed(GtkTreeSelection *selection) {
-    printf("changed\n");
     gchar        *chat_name;
     gint          chat_members;
     gint          chat_id;
@@ -229,7 +223,6 @@ void on_chat_selection_changed(GtkTreeSelection *selection) {
     GtkTreeModel *model = gtk_tree_view_get_model(gtk_main_window->chats_list_view);
 
     if (!gtk_tree_model_get_iter_first(model, &iter)) {
-        printf("Empty\n");
         gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_chat_name));
         gtk_widget_hide(GTK_WIDGET(gtk_main_window->label_members_count));
         gtk_widget_hide(GTK_WIDGET(gtk_main_window->entry_send_message));
@@ -299,7 +292,7 @@ GtkWidget *show_reconnect_popup(void) {
     gtk_window_set_title(GTK_WINDOW(dialog), "Reconnection in Progress");
 
     GtkWidget *close_button = gtk_button_new_with_label("Close 4hat");
-    g_signal_connect(close_button, "clicked", G_CALLBACK(destroy_screens), NULL);  // Terminate the application
+    g_signal_connect(close_button, "clicked", G_CALLBACK(destroy_screens), NULL);
 
     GtkWidget *content_area = gtk_message_dialog_get_message_area(GTK_MESSAGE_DIALOG(dialog));
     gtk_box_pack_end(GTK_BOX(content_area), close_button, FALSE, FALSE, 0);
@@ -354,3 +347,4 @@ void init_gui(int argc, char **argv, t_app *app) {
     css_set();
     show_screen(LOGIN_SCREEN);
 }
+

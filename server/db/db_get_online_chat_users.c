@@ -17,3 +17,4 @@ t_client_node *db_get_online_chat_users(t_server_state *state, int chat_id) {
     pthread_mutex_unlock(&state->client_list_mutex);
     return online_users;
 }
+

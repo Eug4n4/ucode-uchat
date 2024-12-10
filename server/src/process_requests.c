@@ -35,3 +35,5 @@ void process_request_type(cJSON *request, t_accepted_client *client, t_server_st
         break;
     }
 }
+
+

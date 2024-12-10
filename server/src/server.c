@@ -3,8 +3,8 @@
 
 void *serve_client(void *args) {
     intptr_t *arg = (intptr_t *)args;
-    int client_fd = (int)arg[0];                       // Retrieve client_fd
-    t_server_state *state = (t_server_state *)arg[1];  // Retrieve pointer to t_server_state
+    int client_fd = (int)arg[0];                      
+    t_server_state *state = (t_server_state *)arg[1];
     SSL_CTX *ctx = (SSL_CTX *)arg[2];
     SSL *ssl = SSL_new(ctx);
 
@@ -40,15 +40,10 @@ void *serve_client(void *args) {
             if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
                 continue;
             }
-            if (bytes_read == 0) {
-                logging_format(LOG_INFO, "Client disconnected.\n");
-            } else {
-                logging_format(LOG_ERR, "Error reading from client");
-            }
             break;
         }
 
-        logging_format(LOG_INFO, "Received request: %s\n", buffer);
+
         cJSON *request = cJSON_Parse(buffer);
 
         if (request == NULL) {
@@ -84,26 +79,21 @@ void load_cert_and_key(SSL_CTX *ctx) {
 
 
 int main(int argc, char **argv) {
-    if (argc != 3) {
-        printf("Usage: %s <port> <debug>\n", argv[0]);
+    if (argc != 2) {
+        printf("Usage: %s <port>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
-    int debug_mode = atoi(argv[2]);
-
-    if (!debug_mode) {
-        daemonize_server();
-    }
+    // int debug_mode = atoi(argv[2]);
+    daemonize_server();
+    // if (!debug_mode) {
+    //     daemonize_server();
+    // }
     SSL_CTX *ctx = setup_ssl_context(true);
     load_cert_and_key(ctx);
     
     int port = atoi(argv[1]);
     int server_fd = do_connection(NULL, port);
 
-    if (debug_mode) {
-        printf("Server started with PID: %d\n", getpid());
-    } else {
-        logging_format(LOG_INFO, "Server started with PID: %d", getpid());
-    }
 
     t_server_state state = { .client_list_head = NULL, .client_list_mutex = PTHREAD_MUTEX_INITIALIZER };
 
@@ -111,16 +101,13 @@ int main(int argc, char **argv) {
         int client_fd = accept(server_fd, NULL, NULL);
         if (client_fd == -1) {
             SSL_CTX_free(ctx);
-            if (debug_mode) {
-                perror("Error accepting connection");
-            }
             exit(EXIT_FAILURE);
         }
 
         pthread_t thread;
-        intptr_t *args = malloc(3 * sizeof(intptr_t));  // Allocate space for two intptr_t values
-        args[0] = (intptr_t)client_fd;                  // Store client_fd as intptr_t (it will hold integer values safely)
-        args[1] = (intptr_t)&state;                     // Store the address of state as intptr_t
+        intptr_t *args = malloc(3 * sizeof(intptr_t));  
+        args[0] = (intptr_t)client_fd;                  
+        args[1] = (intptr_t)&state;
         args[2] = (intptr_t)ctx;
         if (pthread_create(&thread, NULL, serve_client, args) != 0) {
             free(args);
@@ -132,3 +119,4 @@ int main(int argc, char **argv) {
     close(server_fd);
     return 0;
 }
+
